@@ -24,29 +24,17 @@
 #include "mki/utils/strings/str_checker.h"
 #include "mki/utils/singleton/singleton.h"
 #include "mki/loader/device_kernel/device_kernel_loader.h"
-// #include "host_so_dl.h"
 
 namespace Mki {
 
 HostLoader::HostLoader()
 {
-    // const char *mkiHome = std::getenv("MKI_HOME_PATH");
-    // MKI_CHECK(mkiHome != nullptr, "env MKI_HOME_PATH not exists", return);
-
-    // soLoadSuccess_ = LoadFromSo(mkiHome, "ops_lib/");
-    // MKI_CHECK(soLoadSuccess_, ".so load failed", return);
-
     CreateOperations();
     CreateKernels();
     MKI_LOG(DEBUG) << "Operation & kernel loaded!";
 }
 
 HostLoader::~HostLoader() {}
-
-// bool HostLoader::IsValid() const
-// {
-//     return soLoadSuccess_;
-// }
 
 void HostLoader::GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const
 {
@@ -60,42 +48,6 @@ void HostLoader::GetOpKernels(const std::string &opName, KernelMap &kernels) con
         kernels = it->second;
     }
 }
-
-// bool HostLoader::LoadFromSo(const std::string &mkiHome, const std::string &soPath)
-// {
-//     std::vector<std::string> hostSoPaths = {mkiHome, soPath};
-//     std::string hostSoPath = FileSystem::Join(hostSoPaths);
-//     MKI_CHECK(CheckNameValid(hostSoPath), "invalid hostSoPath", return false);
-//     MKI_CHECK(FileSystem::Exists(hostSoPath), "hostSoPath is not exit", return false);
-
-//     std::vector<std::string> soFilePaths;
-//     FileSystem::GetDirChildFiles(hostSoPath, soFilePaths);
-
-//     bool validSoExists = false;
-//     for (auto &filePath: soFilePaths) {
-//         const char *fileName = std::strrchr(filePath.c_str(), '/');
-//         MKI_CHECK(fileName != nullptr, "Invalid filePath: " << filePath, continue);
-
-//         const char *ext = std::strrchr(fileName, '.');
-//         MKI_CHECK(ext != nullptr, "Invalid file extension: " << fileName, continue);
-
-//         std::string extStr(ext);
-//         MKI_CHECK(extStr.compare(".so") == 0, "Invalid file extension: " << fileName, continue);
-
-//         MKI_LOG(INFO) << "Load so: " << filePath;
-
-//         auto hostSoDl = std::make_unique<Dl>(filePath);
-//         if (!hostSoDl->IsValid()) continue;
-//         validSoExists = true;
-//         hostSoDls_.push_back(std::move(hostSoDl));
-//     }
-//     if (!validSoExists) return false;
-
-//     CreateOperations();
-//     CreateCreators();
-
-//     return validSoExists;
-// }
 
 void HostLoader::CreateOperations()
 {

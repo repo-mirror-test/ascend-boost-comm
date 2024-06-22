@@ -30,14 +30,14 @@ void Loader::GetAllOperations(std::unordered_map<std::string, Operation *> &ops)
     ops = ops_;
 }
 
-// bool Loader::IsValid() const
-// {
-//     return loadSuccess_;
-// }
+bool Loader::IsValid() const
+{
+    return loadSuccess_;
+}
 
 void Loader::Load()
 {
-    // loadSuccess_ = false;
+    loadSuccess_ = false;
     opLoader_->GetAllOperations(ops_);
 
     for (const auto &[opName, op] : ops_) {
@@ -50,6 +50,6 @@ void Loader::Load()
             opBase->AddKernel(kernelName, kernel);
         }
     }
-    // loadSuccess_ = true;
+    loadSuccess_ = true;
 }
 } // namespace Mki

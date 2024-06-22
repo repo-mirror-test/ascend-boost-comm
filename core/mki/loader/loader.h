@@ -27,10 +27,10 @@ public:
     Loader();
     ~Loader();
     void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
-    // bool IsValid() const;
+    bool IsValid() const;
 private:
     void Load();
-    // std::atomic_bool loadSuccess_{true};
+    std::atomic_bool loadSuccess_{false};
 
 private:
     std::unique_ptr<HostLoader> opLoader_;

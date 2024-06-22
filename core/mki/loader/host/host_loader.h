@@ -32,15 +32,11 @@ public:
     ~HostLoader();
     void GetOpKernels(const std::string &opName, KernelMap &kernels) const;
     void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
-    // bool IsValid() const;
 private:
-    // bool LoadFromSo(const std::string &mkiHome, const std::string &soPath);
     void CreateOperations();
     void CreateKernels();
-    // std::atomic_bool soLoadSuccess_{false};
 
 private:
-    // std::vector<std::unique_ptr<Dl>> hostSoDls_;
     std::unordered_map<std::string, Operation *> opMap_;
     std::unordered_map<std::string, KernelMap> opKernelMap_;
 };
