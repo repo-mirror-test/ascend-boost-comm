@@ -16,18 +16,28 @@
 #include "loader.h"
 #include "mki/base/operation_base.h"
 #include "mki/base/kernel_base.h"
-#include "mki/loader/host/host_loader.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
+#include "mki/base/op_register.h"
+#include "mki/utils/singleton/singleton.h"
+#include "mki/loader/device_kernel_loader.h"
 
 namespace Mki {
-Loader::Loader() : opLoader_(std::make_unique<HostLoader>()) { Load(); }
+Loader::Loader() { Load(); }
 
 Loader::~Loader() {}
 
 void Loader::GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const
 {
-    ops = ops_;
+    ops = opMap_;
+}
+
+void Loader::GetOpKernels(const std::string &opName, KernelMap &kernels) const
+{
+    auto it = opKernelMap_.find(opName);
+    if (it != opKernelMap_.end()) {
+        kernels = it->second;
+    }
 }
 
 bool Loader::IsValid() const
@@ -35,17 +45,45 @@ bool Loader::IsValid() const
     return loadSuccess_;
 }
 
+void Loader::CreateOperations()
+{
+    auto &operationCreators = OperationRegister::OperationCreators();
+    for (const auto &opCreator : operationCreators) {
+        Operation *operation = opCreator();
+        opMap_[operation->GetName()] = operation;
+        MKI_LOG(DEBUG) << "Create operation " << operation->GetName();
+    }
+}
+
+void Loader::CreateKernels()
+{
+    auto &kernelCreators = KernelRegister::KernelCreators();
+    for (const auto &[kernelCreator, opName] : kernelCreators) {
+        auto &opKernel = opKernelMap_[opName];
+        const Kernel *kernel = kernelCreator();
+        MKI_CHECK(kernel != nullptr, "Invalid kernel found in op: " << opName, continue);
+        if (GetSingleton<KernelBinaryLoader>().HasKernelMetaInfo(kernel->GetName())) {
+            opKernel[kernel->GetName()] = kernel;
+        }
+    }
+}
+
 void Loader::Load()
 {
     loadSuccess_ = false;
-    opLoader_->GetAllOperations(ops_);
 
-    for (const auto &[opName, op] : ops_) {
+    CreateOperations();
+    CreateKernels();
+    for (const auto &[opName, op] : opMap_) {
         MKI_LOG(DEBUG) << "mki load operation: " << opName;
         OperationBase *opBase = reinterpret_cast<OperationBase *>(op);  // TODO: 为什么dynamic_cast不行，什么原因？
         MKI_CHECK(opBase != nullptr, opName << ": opBase is nullptr", return);
-        KernelMap nameKernelsMap;
-        opLoader_->GetOpKernels(op->GetName(), nameKernelsMap);
+        auto it = opKernelMap_.find(opName);
+        if (it == opKernelMap_.end()) {
+            MKI_LOG(WARN) << opName << ": find kernels map fail ";
+            continue;
+        }
+        auto &nameKernelsMap = it->second;
         for (const auto &[kernelName, kernel] : nameKernelsMap) {
             opBase->AddKernel(kernelName, kernel);
         }

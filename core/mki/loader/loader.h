@@ -19,7 +19,7 @@
 #include <memory>
 #include <atomic>
 #include "mki/utils/noncopyable/noncopyable.h"
-#include "mki/loader/host/host_loader.h"
+#include "mki/operation.h"
 #include "mki/kernel.h"
 namespace Mki {
 class Loader : public NonCopyable {
@@ -27,14 +27,17 @@ public:
     Loader();
     ~Loader();
     void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
+    void GetOpKernels(const std::string &opName, KernelMap &kernels) const;
     bool IsValid() const;
 private:
     void Load();
+    void CreateOperations();
+    void CreateKernels();
     std::atomic_bool loadSuccess_{false};
 
 private:
-    std::unique_ptr<HostLoader> opLoader_;
-    std::unordered_map<std::string, Operation *> ops_;
+    std::unordered_map<std::string, Operation *> opMap_;
+    std::unordered_map<std::string, KernelMap> opKernelMap_;
 };
 } // namespace Mki
 #endif

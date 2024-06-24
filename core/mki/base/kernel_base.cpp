@@ -15,7 +15,7 @@
  */
 #include "mki/base/kernel_base.h"
 #include <securec.h>
-#include "mki/loader/device_kernel/device_kernel_loader.h"
+#include "mki/loader/device_kernel_loader.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/checktensor/check_tensor.h"
 #include "mki/utils/filesystem/filesystem.h"

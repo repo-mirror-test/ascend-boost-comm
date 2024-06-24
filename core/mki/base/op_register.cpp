@@ -15,7 +15,7 @@
  */
 
 #include "mki/base/op_register.h"
-#include "mki/loader/device_kernel/device_kernel_loader.h"
+#include "mki/loader/device_kernel_loader.h"
 #include "mki/utils/singleton/singleton.h"
 
 namespace Mki {

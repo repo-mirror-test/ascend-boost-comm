@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mki/loader/device_kernel/device_kernel_loader.h"
+#include "mki/loader/device_kernel_loader.h"
 #include <cmath>
 #include <cstdlib>
 #include "mki/utils/assert/assert.h"
