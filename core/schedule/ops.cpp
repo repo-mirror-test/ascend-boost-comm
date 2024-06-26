@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mki/ops.h"
-#include "mki/schedule/op_schedule.h"
+#include "schedule/ops.h"
+#include "op_schedule.h"
 
-namespace Mki {
+namespace OpSpace {
 Ops::Ops() : opSchedule_(std::make_unique<OpSchedule>()) {}
 
 Ops::~Ops() {}
@@ -33,4 +33,4 @@ Operation *Ops::GetOperationByName(const std::string &opName) const { return opS
 
 Kernel *Ops::GetKernelInstance(const std::string &opName) const { return opSchedule_->GetKernelInstance(opName); }
 
-} // namespace Mki
+} // namespace OpSpace

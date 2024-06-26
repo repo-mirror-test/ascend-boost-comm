@@ -22,9 +22,9 @@
 #include "mki/utils/filesystem/filesystem.h"
 #include "mki/base/kernel_base.h"
 #include "mki/utils/singleton/singleton.h"
-#include "mki/loader/loader.h"
+#include "loader.h"
 
-namespace Mki {
+namespace OpSpace {
 OpSchedule::OpSchedule() { AddAllOperations(); }
 
 OpSchedule::~OpSchedule() {}
@@ -101,4 +101,4 @@ void OpSchedule::AddKernel(Kernel const *kernel)
         MKI_LOG(WARN) << "kernelName:" << kernelName << " repeat";
     }
 }
-} // namespace Mki
+} // namespace OpSpace

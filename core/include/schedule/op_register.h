@@ -19,13 +19,16 @@
 #include <map>
 #include <vector>
 
-#include "kernel_base.h"
+#include "mki/base/kernel_base.h"
 #include "mki/base/operation_base.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 
-namespace Mki {
+using namespace Mki;
+namespace OpSpace {
 using NewOperationFunc = Operation*(*)();
+using NewKernelFunc = const Kernel*(*)(BinHandle *); // TODO: const
+
 class OperationRegister {
 public:
     OperationRegister(const char *opName, NewOperationFunc func) noexcept
@@ -45,42 +48,25 @@ public:
 
 class KernelRegister {
 public:
+    struct CreatorInfo {
+        NewKernelFunc func;
+        std::string opName;
+        std::string kernelName;
+    };
     KernelRegister(const char *opName, const char *kerName, NewKernelFunc func) noexcept
     {
         MKI_CHECK(opName != nullptr, "opName is nullptr", return);
         MKI_CHECK(kerName != nullptr, "kerName is nullptr", return);
         auto &kernelCreators = KernelCreators();
-        kernelCreators[func] = opName;
+        kernelCreators.push_back({ func, opName, kerName });
         MKI_LOG(DEBUG) << "register kernel " << kerName << " of operation " << opName;
     }
 
-    static std::unordered_map<NewKernelFunc, std::string> &KernelCreators()
+    static std::vector<CreatorInfo> &KernelCreators()
     {
-        static std::unordered_map<NewKernelFunc, std::string> kernelCreators;
+        static std::vector<CreatorInfo> kernelCreators;
         return kernelCreators;
     }
-};
-
-class HandleRegister {
-public:
-    HandleRegister(const std::string &kerName);
-    KernelHandle GetHandle();
-
-private:
-    void RegisterBin();
-    void RegisterBinWithSingleKernel(MkiRtModuleInfo &moduleInfo);
-    void RegisterBinWithMultiKernel(MkiRtModuleInfo &moduleInfo);
-
-private:
-    std::string kerName_;
-    void *handle_ = nullptr;
-    void *moduleHandle_ = nullptr;
-};
-
-struct BinaryBasicInfo {
-    const uint8_t *binaryBuf = nullptr;
-    uint32_t binaryLen = 0;
-    std::string targetSoc;
 };
 
 class KernelBinaryRegister {
@@ -101,8 +87,6 @@ public:
     }
 };
 
-void SetKernelSelfCreator(KernelBase &kernel, KernelBase::KernelSelfCreator func);
-
 #define REG_OPERATION(opName)                                                                                          \
     Operation *GetOperation##opName()                                                                                  \
     {                                                                                                                  \
@@ -112,17 +96,16 @@ void SetKernelSelfCreator(KernelBase &kernel, KernelBase::KernelSelfCreator func
     static OperationRegister op##opName##register = OperationRegister(#opName, GetOperation##opName)
 
 #define REG_KERNEL_BASE(kerName)                                                                                       \
-    Kernel const *GetKernel##kerName()                                                                                 \
+    Kernel const *GetKernel##kerName(BinHandle *binHandle)                                                                                 \
     {                                                                                                                  \
-        static HandleRegister handleRegister##kerName(#kerName);                                                       \
-        static kerName ker##kerName(#kerName, handleRegister##kerName.GetHandle());                                    \
-        SetKernelSelfCreator(ker##kerName, [](){ return new kerName(#kerName, handleRegister##kerName.GetHandle()); });\
+        static kerName ker##kerName(#kerName, binHandle);                                            \
+        SetKernelSelfCreator(ker##kerName, [](){ return new kerName(#kerName, binHandle); });        \
         return &ker##kerName;                                                                                          \
     }                                                                                                                  \
     static KernelRegister ker##kerName##register = KernelRegister(OperationPlaceHolder, #kerName, GetKernel##kerName)
 
 #define REG_KERNEL(soc, kerName, binary)                                                                               \
     static KernelBinaryRegister bin##kerName##soc##register = KernelBinaryRegister(#soc, #kerName, binary, sizeof(binary))
-} // namespace Mki
+} // namespace OpSpace
 
 #endif

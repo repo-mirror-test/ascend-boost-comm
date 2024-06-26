@@ -23,18 +23,19 @@
 #include "mki/kernel_info.h"
 #include "mki/run_info.h"
 #include "mki/utils/rt/rt.h"
+#include "mki/bin_handle.h"
 
 namespace Mki {
-using KernelHandle = void**;
-
 class KernelBase : public Kernel {
 using KernelSelfCreator = std::function<KernelBase*(void)>;
 public:
     KernelBase() = delete;
-    KernelBase(const std::string &opName, KernelHandle handle);
+    KernelBase(const std::string &opName, BinHandle *handle); // TODO: const
     ~KernelBase() override;
     KernelBase(const KernelBase &) = delete;
+    KernelBase(KernelBase &&other) = delete;
     KernelBase &operator= (const KernelBase &) = delete;
+    KernelBase &operator= (KernelBase &&) = delete; // TODO: 是否需要
 
     std::string GetName() const override;
     KernelType GetType() const override;
@@ -54,7 +55,7 @@ public:
 
 protected:
     virtual Status InitImpl(const LaunchParam &launchParam);
-    KernelHandle GetHandle() const;
+    BinHandle *GetBinHandle() const;
     void Copy(const KernelBase &other);
     uint32_t launchBufferSize_ = 0;
 
@@ -74,12 +75,14 @@ private:
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
     bool launchWithTiling_{true};
-    KernelHandle handle_{nullptr};
+    BinHandle *handle_{nullptr}; // TODO: const BinHandle
     mutable KernelInfo kInfo_;
     bool initFlag_{false};
     KernelSelfCreator creator_{nullptr};
     friend void SetKernelSelfCreator(KernelBase &kernel, KernelSelfCreator func);
 };
+
+void SetKernelSelfCreator(KernelBase &kernel, KernelBase::KernelSelfCreator func);
 } // namespace Mki
 
 #endif

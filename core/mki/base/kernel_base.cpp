@@ -15,7 +15,6 @@
  */
 #include "mki/base/kernel_base.h"
 #include <securec.h>
-#include "mki/loader/device_kernel_loader.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/checktensor/check_tensor.h"
 #include "mki/utils/filesystem/filesystem.h"
@@ -27,11 +26,14 @@
 #define UNUSED_VALUE(x) (void)(x)
 
 namespace Mki {
-KernelBase::KernelBase(const std::string &opName, KernelHandle handle) : kernelName_(opName), handle_(handle)
+KernelBase::KernelBase(const std::string &opName, BinHandle *handle) : kernelName_(opName), handle_(handle) // TODO: const
 {
-    launchBufferSize_ = GetSingleton<KernelBinaryLoader>().GetKernelTilingSize(kernelName_);
-    MKI_LOG(DEBUG) << "Create kernel " << kernelName_ << ", launch buffer size " << launchBufferSize_;
+    if (handle_ != nullptr) {
+        launchBufferSize_ = handle_->GetKernelTilingSize();
+    }
     UpdateKernelType();
+    MKI_LOG(DEBUG) << "Create kernel " << kernelName_ << ", launch buffer size " << launchBufferSize_
+                   << ", coreType: " << kernelType_;
 }
 
 KernelBase::~KernelBase() {}
@@ -40,7 +42,7 @@ std::string KernelBase::GetName() const { return kernelName_; }
 
 KernelType KernelBase::GetType() const { return kernelType_; }
 
-KernelHandle KernelBase::GetHandle() const { return handle_; }
+BinHandle *KernelBase::GetBinHandle() const { return handle_; }
 
 KernelInfo &KernelBase::GetKernelInfo() const { return kInfo_; }
 
@@ -137,19 +139,19 @@ Status KernelBase::Run(const LaunchParam &launchParam, RunInfo &runInfo)
         argsEx.hostInputInfoNum = constTensorCount;
     }
     MKI_LOG(INFO) << "Ready to run, KernelInfo:\n" << kernelInfo.ToString();
-    if (*handle_ != nullptr) {
+    if (*handle_->GetHandle() != nullptr) {
         MKI_LOG(DEBUG) << "launch function with handle";
-        int st = MkiRtFunctionLaunchWithHandle(*handle_, &kernelParam, runInfo.GetStream(), nullptr);
+        int st = MkiRtFunctionLaunchWithHandle(*handle_->GetHandle(), &kernelParam, runInfo.GetStream(), nullptr);
         MKI_CHECK(
             st == MKIRT_SUCCESS, "Mki RtFunction LaunchWithHandle fail",
-            return Mki::Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction LaunchWithHandle fail"));
+            return Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction LaunchWithHandle fail"));
     } else {
         MKI_LOG(DEBUG) << "launch function with flag";
-        int st = MkiRtFunctionLaunchWithFlag(handle_, &kernelParam, runInfo.GetStream(), nullptr);
+        int st = MkiRtFunctionLaunchWithFlag(handle_->GetHandle(), &kernelParam, runInfo.GetStream(), nullptr);
         MKI_CHECK(st == MKIRT_SUCCESS, "Mki RtFunction LaunchWithFlag fail",
-                    return Mki::Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction Launch fail"));
+                    return Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction Launch fail"));
     }
-    return Mki::Status::OkStatus();
+    return Status::OkStatus();
 }
 
 bool KernelBase::CanSupport(const LaunchParam &launchParam) const
@@ -195,7 +197,8 @@ uint64_t KernelBase::GetKernelParamNum(const LaunchParam &launchParam)
 
 void KernelBase::UpdateKernelType()
 {
-    int32_t coreType = GetSingleton<KernelBinaryLoader>().GetKernelCoreType(kernelName_);
+    MKI_CHECK(handle_ != nullptr, "Kernel " << kernelName_ << " handle is nullptr", return);
+    int32_t coreType = handle_->GetKernelCoreType();
     switch (coreType) {
         case -1: MKI_LOG(ERROR) << "Failed to get core type!"; return;
         case 0: kernelType_ = KernelType::KERNEL_TYPE_AI_CORE; return;
@@ -325,4 +328,9 @@ Kernel *KernelBase::Clone() const
     return kernel;
 }
 
+void SetKernelSelfCreator(KernelBase &kernel, KernelBase::KernelSelfCreator func)
+{
+    MKI_CHECK(func != nullptr, "creator function is nullptr", return);
+    kernel.creator_ = func;
+}
 } // namespace Mki

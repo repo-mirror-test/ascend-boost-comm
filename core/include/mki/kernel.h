@@ -60,6 +60,5 @@ public:
 
     virtual uint64_t GetTilingSize(const LaunchParam &launchParam) const = 0;
 };
-using NewKernelFunc = const Kernel*(*)();
 } // namespace Mki
 #endif

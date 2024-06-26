@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mki/ops.h"
+#include "schedule/ops.h"
 
 int main()
 {
     // it is only used to check mki symbols
-    (void)Mki::Ops::Instance();
+    (void)OpSpace::Ops::Instance();
     return 0;
 }

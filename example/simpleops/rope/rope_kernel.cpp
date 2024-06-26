@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <mki/base/op_register.h>
+#include <schedule/op_register.h>
 #include <mki/utils/assert/assert.h>
 #include <mki/utils/log/log.h>
 #include <mki/utils/platform/platform_info.h>

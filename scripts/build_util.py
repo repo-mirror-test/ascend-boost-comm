@@ -142,8 +142,8 @@ def write_to_cpp(binary_path, header, dst_cpp_path, tactic, target_version):
     # 将数据写入到cpp文件中
     name = f'kernelBin_{tactic}_{target_version}'
     with open(dst_cpp_path, 'w') as f:
-        f.write('#include <cstdint>\n#include "mki/base/op_register.h"\n')
-        f.write('namespace Mki {\nstatic const uint8_t ')
+        f.write('#include <cstdint>\n#include "schedule/op_register.h"\n')
+        f.write('namespace OpSpace {\nstatic const uint8_t ')
         f.write(name)
         f.write('[] = {')
         for i in range(0, len(data), 16):

@@ -18,7 +18,7 @@
 #include <securec.h>
 
 #include "mki/base/kernel_base.h"
-#include "mki/base/op_register.h"
+#include "schedule/op_register.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/platform/platform_info.h"
@@ -44,7 +44,7 @@ struct MemsetArgs {
 };
 
 public:
-    explicit MemsetKernel(const std::string &opName, KernelHandle handle) noexcept : KernelBase(opName, handle)
+    explicit MemsetKernel(const std::string &opName, BinHandle *handle) noexcept : KernelBase(opName, handle) // TODO: const
     {
         launchBufferSize_ = sizeof(MemsetTilingData);
     }
@@ -56,7 +56,7 @@ public:
 
     Kernel *Clone() const override
     {
-        auto kernel = new MemsetKernel(this->GetName(), this->GetHandle());
+        auto kernel = new MemsetKernel(this->GetName(), this->GetBinHandle());
         kernel->Copy(*this);
         return kernel;
     }
@@ -132,10 +132,17 @@ public:
     }
 };
 
+// TODO: complete clear kernel schedule
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)
 {
-    static HandleRegister handleRegisterMemset("MemsetKernel");
-    static MemsetKernel memsetKernel("MemsetKernel", handleRegisterMemset.GetHandle());
-    return memsetKernel.Run(args, argsNum, memsetInfo, handleRegisterMemset.GetHandle(), stream);
+    // auto &binaryMap = KernelBinaryRegister::GetKernelBinaryMap();
+    // static BinHandle handleRegisterMemset("MemsetKernel");
+    // static MemsetKernel memsetKernel("MemsetKernel", handleRegisterMemset.GetHandle());
+    // return memsetKernel.Run(args, argsNum, memsetInfo, handleRegisterMemset.GetHandle(), stream);
+    (void)args;
+    (void)argsNum;
+    (void)memsetInfo;
+    (void)stream;
+    return Status::OkStatus();
 }
 } // namespace Mki

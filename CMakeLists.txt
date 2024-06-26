@@ -29,6 +29,7 @@ link_directories(
 )
 
 file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/mki/*.cpp")
+file(GLOB_RECURSE SCHEDULE_SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/schedule/*.cpp")
 
 # Add memset kernel to libmki (Not available)
 add_subdirectory(${PROJECT_SOURCE_DIR}/core/memset)
@@ -37,15 +38,20 @@ set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki_static srcs)
 target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki_static PRIVATE fe=${NAMESPACE}Fe)
+target_compile_definitions(mki_static PRIVATE fe=MkiFe)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki srcs)
 target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki PRIVATE fe=${NAMESPACE}Fe)
+target_compile_definitions(mki PRIVATE fe=MkiFe)
+
+add_library(schedule STATIC ${SCHEDULE_SOURCE_FILES})
+target_link_libraries(schedule PUBLIC mki dl pthread c_sec mmpa)
+target_compile_definitions(schedule PRIVATE fe=${NAMESPACE}Fe)
+target_compile_definitions(schedule PRIVATE OpSpace=OpSpace)
 
 add_executable(sym_check ${PROJECT_SOURCE_DIR}/core/sym_check.cpp)
-target_link_libraries(sym_check PRIVATE mki)
+target_link_libraries(sym_check PRIVATE schedule mki)
 
 if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)
@@ -69,11 +75,12 @@ list(APPEND SCRIPTS_FILES
 install(FILES ${SCRIPTS_FILES} DESTINATION ./scripts)
 
 install(DIRECTORY
-    ${PROJECT_SOURCE_DIR}/core/include/mki DESTINATION include)
+    ${PROJECT_SOURCE_DIR}/core/include DESTINATION .)
 
 # install libs
 install(TARGETS mki_static DESTINATION lib)
 install(TARGETS mki DESTINATION lib)
+install(TARGETS schedule DESTINATION lib)
 
 set(BINARY_SRC_LIST "" CACHE INTERNAL "src path")
 set(BINARY_TARGET_LIST "" CACHE INTERNAL "target list")

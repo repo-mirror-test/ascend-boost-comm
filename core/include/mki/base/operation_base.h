@@ -38,9 +38,9 @@ public:
 
     const KernelList &GetKernelList() const override;
     Kernel *GetKernelByName(const std::string &kernelName) const override;
+    void AddKernel(const std::string &kernelName, Kernel const *kernel); // TODO: protected
 
 protected:
-    void AddKernel(const std::string &kernelName, Kernel const *kernel);
     virtual Status InferShapeImpl(const LaunchParam &launchParam, SVector<Tensor> &outTensors) const = 0;
     friend class Loader;
 

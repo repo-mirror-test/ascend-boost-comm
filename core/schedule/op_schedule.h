@@ -13,31 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef CORE_LOADER_LOADER_H
-#define CORE_LOADER_LOADER_H
+#ifndef CORE_SCHEDULE_OPSCHEDULE_H
+#define CORE_SCHEDULE_OPSCHEDULE_H
+#include <vector>
+#include <string>
 #include <unordered_map>
 #include <memory>
-#include <atomic>
-#include "mki/utils/noncopyable/noncopyable.h"
+#include "mki/run_info.h"
 #include "mki/operation.h"
-#include "mki/kernel.h"
-namespace Mki {
-class Loader : public NonCopyable {
+
+namespace OpSpace {
+using namespace Mki;
+
+class OpSchedule {
 public:
-    Loader();
-    ~Loader();
-    void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
-    void GetOpKernels(const std::string &opName, KernelMap &kernels) const;
-    bool IsValid() const;
+    OpSchedule();
+    ~OpSchedule();
+    std::vector<Operation *> GetAllOperations() const;
+    Operation *GetOperationByName(const std::string &opName) const;
+    Kernel *GetKernelInstance(const std::string &kernelName) const;
+
 private:
-    void Load();
-    void CreateOperations();
-    void CreateKernels();
-    std::atomic_bool loadSuccess_{false};
+    void AddAllOperations();
+    void AddOperationByName(Operation *op);
+    void AddOperationKernels(Operation *op);
+    void AddKernel(Kernel const *kernel);
 
 private:
     std::unordered_map<std::string, Operation *> opMap_;
-    std::unordered_map<std::string, KernelMap> opKernelMap_;
+    KernelMap kernelMap_;
 };
-} // namespace Mki
+} // namespace OpSpace
+
 #endif

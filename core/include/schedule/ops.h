@@ -23,7 +23,8 @@
 #include "mki/tensor.h"
 #include "mki/run_info.h"
 
-namespace Mki {
+namespace OpSpace {
+using namespace Mki;
 class OpSchedule;
 
 class Ops {
@@ -62,6 +63,6 @@ private:
 private:
     std::unique_ptr<OpSchedule> opSchedule_;
 };
-} // namespace Mki
+} // namespace OpSpace
 
 #endif
