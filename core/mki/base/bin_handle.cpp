@@ -153,13 +153,13 @@ bool BinHandle::RegisterBinWithSingleKernel(const std::string &kernelName, MkiRt
 {
     MKI_LOG(DEBUG) << "SingleKernel RegisterBin start, opName:" << kernelName;
     int st = MkiRtModuleCreate(&moduleInfo, &moduleHandle_);
-    MKI_CHECK(st != MKIRT_SUCCESS, kernelName << " Create RtModule fail, error:" << st, return false);
+    MKI_CHECK(st == MKIRT_SUCCESS, kernelName << " Create RtModule fail, error:" << st, return false);
 
     MKI_CHECK(moduleHandle_ == nullptr, kernelName << " Create RtModule fail,"
                                                    << " because it return false null handle", return false);
 
     st = MkiRtModuleBindFunction(moduleHandle_, metaInfo_.kernelList[0].c_str(), &handle_);
-    MKI_CHECK(st != MKIRT_SUCCESS, kernelName << " Mki RtModuleGetFunction fail, errCode:" << st
+    MKI_CHECK(st == MKIRT_SUCCESS, kernelName << " Mki RtModuleGetFunction fail, errCode:" << st
                                               << ", errName:" << MkiRtErrorName(st)
                                               << ", errDesc:" << MkiRtErrorDesc(st), return false);
 
@@ -171,7 +171,7 @@ bool BinHandle::RegisterBinWithMultiKernel(const std::string &kernelName, MkiRtM
 {
     MKI_LOG(DEBUG) << "MultiKernel RegisterBin start, opName:" << kernelName;
     int st = AstRtRegisterAllFunction(&moduleInfo, &handle_);
-    MKI_CHECK(st != MKIRT_SUCCESS, kernelName << " Mki RtRegister AllFunction fail, error:" << st, return false);
+    MKI_CHECK(st == MKIRT_SUCCESS, kernelName << " Mki RtRegister AllFunction fail, error:" << st, return false);
 
     MKI_CHECK(handle_ != nullptr, kernelName << " Mki RtRegister AllFunction fail,"
                                              << " because it return false null handle" << st, return false);

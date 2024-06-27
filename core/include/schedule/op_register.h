@@ -71,14 +71,14 @@ public:
 
 class KernelBinaryRegister {
 public:
-    KernelBinaryRegister(const char *soc, const char *opName, const uint8_t *binary, uint32_t binaryLen) noexcept
+    KernelBinaryRegister(const char *soc, const char *kernelName, const uint8_t *binary, uint32_t binaryLen) noexcept
     {
-        MKI_CHECK(opName != nullptr, "opName is nullptr", return);
+        MKI_CHECK(kernelName != nullptr, "kernelName is nullptr", return);
         MKI_CHECK(soc != nullptr, "target soc is nullptr", return);
         MKI_CHECK(binary != nullptr, "binary addr is nullptr", return);
         auto &binaryMap = GetKernelBinaryMap();
-        binaryMap[std::string(opName)].push_back({ binary, binaryLen, soc });
-        MKI_LOG(DEBUG) << "register kernel binary " << opName << "-" << soc << " success";
+        binaryMap[std::string(kernelName)].push_back({ binary, binaryLen, soc });
+        MKI_LOG(DEBUG) << "register kernel binary " << kernelName << "-" << soc << " success";
     }
     static std::map<std::string, std::vector<BinaryBasicInfo>> &GetKernelBinaryMap()
     {
@@ -99,7 +99,7 @@ public:
     Kernel const *GetKernel##kerName(BinHandle *binHandle)                                                                                 \
     {                                                                                                                  \
         static kerName ker##kerName(#kerName, binHandle);                                            \
-        SetKernelSelfCreator(ker##kerName, [](){ return new kerName(#kerName, binHandle); });        \
+        SetKernelSelfCreator(ker##kerName, [=](){ return new kerName(#kerName, binHandle); });        \
         return &ker##kerName;                                                                                          \
     }                                                                                                                  \
     static KernelRegister ker##kerName##register = KernelRegister(OperationPlaceHolder, #kerName, GetKernel##kerName)
