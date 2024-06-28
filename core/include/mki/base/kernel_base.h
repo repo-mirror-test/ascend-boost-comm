@@ -25,12 +25,13 @@
 #include "mki/utils/rt/rt.h"
 #include "mki/bin_handle.h"
 
+// TODO: 用于打印namepace的字符串
 namespace Mki {
 class KernelBase : public Kernel {
 using KernelSelfCreator = std::function<KernelBase*(void)>;
 public:
     KernelBase() = delete;
-    KernelBase(const std::string &opName, BinHandle *handle); // TODO: const
+    KernelBase(const std::string &opName, const BinHandle *handle);
     ~KernelBase() override;
     KernelBase(const KernelBase &) = delete;
     KernelBase(KernelBase &&other) = delete;
@@ -55,7 +56,7 @@ public:
 
 protected:
     virtual Status InitImpl(const LaunchParam &launchParam);
-    BinHandle *GetBinHandle() const;
+    const BinHandle *GetBinHandle() const;
     void Copy(const KernelBase &other);
     uint32_t launchBufferSize_ = 0;
 
@@ -75,7 +76,7 @@ private:
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
     bool launchWithTiling_{true};
-    BinHandle *handle_{nullptr}; // TODO: const BinHandle
+    const BinHandle *handle_{nullptr};
     mutable KernelInfo kInfo_;
     bool initFlag_{false};
     KernelSelfCreator creator_{nullptr};

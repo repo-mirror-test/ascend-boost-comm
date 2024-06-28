@@ -65,7 +65,7 @@ bool Loader::IsValid() const
 
 void Loader::CreateOperations()
 {
-    auto &operationCreators = OperationRegister::OperationCreators();
+    auto &operationCreators = OperationRegister::GetOperationCreators();
     for (const auto &opCreator : operationCreators) {
         Operation *operation = opCreator();
         opMap_[operation->GetName()] = operation;
@@ -87,8 +87,8 @@ bool Loader::GetDeviceSocVersion(std::string &deviceVersion)
 
 void Loader::CreateKernels()
 {
-    auto &kernelCreators = KernelRegister::KernelCreators();
-    for (const auto creatorInfo : kernelCreators) {
+    auto &kernelCreators = KernelRegister::GetKernelCreators();
+    for (const auto &creatorInfo : kernelCreators) {
         const auto &kernelName = creatorInfo.kernelName;
         auto it = binHandles_.find(kernelName);
         if (it == binHandles_.end()) {

@@ -38,7 +38,7 @@ BinHandle::BinHandle(const BinaryBasicInfo *binInfo) : basicInfo_(binInfo) {}
 
 BinHandle::~BinHandle() {}
 
-KernelHandle BinHandle::GetHandle() { return &handle_; }
+KernelHandle BinHandle::GetHandle() const { return &handle_; }
 
 bool BinHandle::CheckBinaryValid() const
 {

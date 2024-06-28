@@ -26,7 +26,7 @@
 #define UNUSED_VALUE(x) (void)(x)
 
 namespace Mki {
-KernelBase::KernelBase(const std::string &opName, BinHandle *handle) : kernelName_(opName), handle_(handle) // TODO: const
+KernelBase::KernelBase(const std::string &opName, const BinHandle *handle) : kernelName_(opName), handle_(handle)
 {
     if (handle_ != nullptr) {
         launchBufferSize_ = handle_->GetKernelTilingSize();
@@ -42,7 +42,7 @@ std::string KernelBase::GetName() const { return kernelName_; }
 
 KernelType KernelBase::GetType() const { return kernelType_; }
 
-BinHandle *KernelBase::GetBinHandle() const { return handle_; }
+const BinHandle *KernelBase::GetBinHandle() const { return handle_; }
 
 KernelInfo &KernelBase::GetKernelInfo() const { return kInfo_; }
 

@@ -22,7 +22,7 @@
 #include "mki/utils/noncopyable/noncopyable.h"
 
 namespace Mki {
-using KernelHandle = void**;
+using KernelHandle = void *const *;
 
 struct BinaryBasicInfo {
     const uint8_t *binaryBuf = nullptr;
@@ -45,7 +45,7 @@ class BinHandle : public NonCopyable {
 public:
     BinHandle(const BinaryBasicInfo *binInfo);
     ~BinHandle();
-    KernelHandle GetHandle();
+    KernelHandle GetHandle() const;
     bool Init(const std::string &kernelName);
     uint32_t GetKernelTilingSize() const;
     int32_t GetKernelCoreType() const;

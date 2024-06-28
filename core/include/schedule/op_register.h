@@ -24,22 +24,25 @@
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 
+#define MACRO_TO_STR(name) #name
+#define MKI_NAMESPACE_LOG(level, spaceName) MKI_LOG(level) << (MACRO_TO_STR(spaceName))
+
 using namespace Mki;
 namespace OpSpace {
 using NewOperationFunc = Operation*(*)();
-using NewKernelFunc = const Kernel*(*)(BinHandle *); // TODO: const
+using NewKernelFunc = const Kernel*(*)(const BinHandle *);
 
 class OperationRegister {
 public:
     OperationRegister(const char *opName, NewOperationFunc func) noexcept
     {
         MKI_CHECK(opName != nullptr, "opName is nullptr", return);
-        auto &operationCreators = OperationCreators();
+        auto &operationCreators = GetOperationCreators();
         operationCreators.push_back(func);
-        MKI_LOG(DEBUG) << "register operation " << opName;
+        MKI_NAMESPACE_LOG(DEBUG, OpSpace) << " register operation " << opName;
     }
 
-    static std::vector<NewOperationFunc> &OperationCreators()
+    static std::vector<NewOperationFunc> &GetOperationCreators()
     {
         static std::vector<NewOperationFunc> operationCreators;
         return operationCreators;
@@ -57,12 +60,12 @@ public:
     {
         MKI_CHECK(opName != nullptr, "opName is nullptr", return);
         MKI_CHECK(kerName != nullptr, "kerName is nullptr", return);
-        auto &kernelCreators = KernelCreators();
+        auto &kernelCreators = GetKernelCreators();
         kernelCreators.push_back({ func, opName, kerName });
-        MKI_LOG(DEBUG) << "register kernel " << kerName << " of operation " << opName;
+        MKI_NAMESPACE_LOG(DEBUG, OpSpace) << " register kernel " << kerName << " of operation " << opName;
     }
 
-    static std::vector<CreatorInfo> &KernelCreators()
+    static std::vector<CreatorInfo> &GetKernelCreators()
     {
         static std::vector<CreatorInfo> kernelCreators;
         return kernelCreators;
@@ -78,7 +81,7 @@ public:
         MKI_CHECK(binary != nullptr, "binary addr is nullptr", return);
         auto &binaryMap = GetKernelBinaryMap();
         binaryMap[std::string(kernelName)].push_back({ binary, binaryLen, soc });
-        MKI_LOG(DEBUG) << "register kernel binary " << kernelName << "-" << soc << " success";
+        MKI_NAMESPACE_LOG(DEBUG, OpSpace) << " register kernel binary " << kernelName << "-" << soc << " success";
     }
     static std::map<std::string, std::vector<BinaryBasicInfo>> &GetKernelBinaryMap()
     {
@@ -96,10 +99,10 @@ public:
     static OperationRegister op##opName##register = OperationRegister(#opName, GetOperation##opName)
 
 #define REG_KERNEL_BASE(kerName)                                                                                       \
-    Kernel const *GetKernel##kerName(BinHandle *binHandle)                                                                                 \
+    Kernel const *GetKernel##kerName(const BinHandle *binHandle)                                                       \
     {                                                                                                                  \
-        static kerName ker##kerName(#kerName, binHandle);                                            \
-        SetKernelSelfCreator(ker##kerName, [=](){ return new kerName(#kerName, binHandle); });        \
+        static kerName ker##kerName(#kerName, binHandle);                                                              \
+        SetKernelSelfCreator(ker##kerName, [=](){ return new kerName(#kerName, binHandle); });                         \
         return &ker##kerName;                                                                                          \
     }                                                                                                                  \
     static KernelRegister ker##kerName##register = KernelRegister(OperationPlaceHolder, #kerName, GetKernel##kerName)

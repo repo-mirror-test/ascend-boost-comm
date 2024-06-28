@@ -44,7 +44,7 @@ struct MemsetArgs {
 };
 
 public:
-    explicit MemsetKernel(const std::string &opName, BinHandle *handle) noexcept : KernelBase(opName, handle) // TODO: const
+    explicit MemsetKernel(const std::string &opName, const BinHandle *handle) noexcept : KernelBase(opName, handle)
     {
         launchBufferSize_ = sizeof(MemsetTilingData);
     }
