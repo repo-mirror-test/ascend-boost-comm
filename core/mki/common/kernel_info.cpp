@@ -28,6 +28,20 @@ KernelInfo::~KernelInfo()
     ResetArgs();
 }
 
+KernelInfo &KernelInfo::operator=(KernelInfo &&other)
+{
+    tilingExtInfo_ = other.tilingExtInfo_;
+    other.tilingExtInfo_.hostTilingAddr = nullptr;
+    hwsyncIdx_ = other.hwsyncIdx_;
+    constTensorInfo_ = std::move(other.constTensorInfo_);
+    scratchSizes_ = std::move(other.scratchSizes_);
+    memsetInfo_ = std::move(other.memsetInfo_);
+    argsSize_ = other.argsSize_;
+    args_ = other.args_;
+    other.args_ = nullptr;
+    return *this;
+}
+
 void KernelInfo::Reset(bool deleteTiling)
 {
     hwsyncIdx_ = -1;

@@ -36,6 +36,31 @@ KernelBase::KernelBase(const std::string &opName, const BinHandle *handle) : ker
                    << ", coreType: " << kernelType_;
 }
 
+KernelBase::KernelBase(KernelBase &&other)
+{
+    kernelName_ = std::move(other.kernelName_);
+    launchBufferSize_ = other.launchBufferSize_;
+    handle_ = other.handle_;
+    kernelType_ = other.kernelType_;
+    launchWithTiling_ = other.launchWithTiling_;
+    initFlag_ = other.initFlag_;
+    creator_ = std::move(other.creator_);
+    kInfo_ = std::move(other.kInfo_);
+}
+
+KernelBase &KernelBase::operator=(KernelBase &&other)
+{
+    kernelName_ = std::move(other.kernelName_);
+    launchBufferSize_ = other.launchBufferSize_;
+    handle_ = other.handle_;
+    kernelType_ = other.kernelType_;
+    launchWithTiling_ = other.launchWithTiling_;
+    initFlag_ = other.initFlag_;
+    creator_ = std::move(other.creator_);
+    kInfo_ = std::move(other.kInfo_);
+    return *this;
+}
+
 KernelBase::~KernelBase() {}
 
 std::string KernelBase::GetName() const { return kernelName_; }
