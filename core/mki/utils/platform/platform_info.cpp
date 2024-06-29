@@ -48,14 +48,19 @@ void PlatformInfo::Init()
 
     if (socVersion.find("Ascend310P") == 0) {
         platformType_ = PlatformType::ASCEND_310P;
+        platformName_ = "ascend310p";
     } else if (socVersion.find("Ascend910A") == 0) {
         platformType_ = PlatformType::ASCEND_910A;
+        platformName_ = "ascend910";
     } else if (socVersion.find("Ascend910B") == 0) {
         platformType_ = PlatformType::ASCEND_910B;
+        platformName_ = "ascend910b";
     } else if (socVersion.find("Ascend910C") == 0) {
         platformType_ = PlatformType::ASCEND_910B;
+        platformName_ = "ascend910c";
     } else {
         MKI_LOG(ERROR) << "Unsupport soc";
+        platformName_ = "unrecognized";
         return;
     }
 
@@ -152,4 +157,5 @@ bool PlatformInfo::GetAicoreIntrinsic(const string &intrinsicName)
 }
 
 PlatformType PlatformInfo::GetPlatformType() const { return platformType_; }
+std::string PlatformInfo::GetPlatformName() const { return platformName_; }
 } // namespace Mki

@@ -34,7 +34,6 @@ public:
     bool IsValid() const;
 private:
     void Load();
-    bool GetDeviceSocVersion(std::string &deviceVersion);
     bool LoadKernelBinarys();
     void CreateOperations();
     void CreateKernels();
@@ -43,8 +42,7 @@ private:
 private:
     std::unordered_map<std::string, Operation *> opMap_;
     std::unordered_map<std::string, KernelMap> opKernelMap_;
-    // std::unordered_map<std::string, BinaryBasicInfo*> binBasicInfoMap_;
-    std::unordered_map<std::string, BinHandle> binHandles_; //<kernel>
+    std::unordered_map<std::string, BinHandle> binHandles_;
 };
 } // namespace OpSpace
 #endif

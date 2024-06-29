@@ -17,6 +17,7 @@
 #define MKI_PLATFORM_INFO_H
 
 #include <string>
+#include <unordered_map>
 
 #include "mki/utils/platform/platform_manager.h"
 
@@ -49,6 +50,7 @@ public:
     bool SupportL0c2out();
 
     PlatformType GetPlatformType() const;
+    std::string GetPlatformName() const;
 
 private:
     PlatformInfo();
@@ -62,6 +64,7 @@ private:
 
     // platform
     PlatformType platformType_ = PlatformType::PLATFORM_INVALID;
+    std::string platformName_;
 
     fe::PlatFormInfos platformInfo_;
 };

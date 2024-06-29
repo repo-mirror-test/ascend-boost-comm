@@ -21,24 +21,7 @@
 #include "mki/utils/log/log.h"
 #include "schedule/op_register.h"
 #include "mki/utils/singleton/singleton.h"
-
-namespace {
-const std::unordered_map<std::string, std::string> DEVICE_VERSION_MAP {
-    // 310p
-    {"Ascend310P", "ascend310p"}, {"Ascend310P3", "ascend310p"},
-    // 910
-    {"Ascend910A", "ascend910"}, {"Ascend910", "ascend910"},
-    // 910b
-    {"Ascend910B", "ascend910b"}, {"Ascend910B1", "ascend910b"}, {"Ascend910B2", "ascend910b"},
-    {"Ascend910B2C", "ascend910b"}, {"Ascend910B3", "ascend910b"}, {"Ascend910B4", "ascend910b"},
-    // 910c
-    {"Ascend910C", "ascend910b"}, {"Ascend910C1", "ascend910b"}, {"Ascend910C2", "ascend910b"},
-    {"Ascend910C3", "ascend910b"}, {"Ascend910C4", "ascend910b"},
-    // 310b
-    {"Ascend310B1", "ascend310b"}, {"Ascend310B2", "ascend310b"}, {"Ascend310B3", "ascend310b"},
-    {"Ascend310B4", "ascend310b"}
-};
-}
+#include <mki/utils/platform/platform_info.h>
 
 namespace OpSpace {
 Loader::Loader() { Load(); }
@@ -73,18 +56,6 @@ void Loader::CreateOperations()
     }
 }
 
-bool Loader::GetDeviceSocVersion(std::string &deviceVersion)
-{
-    const uint32_t deviceVersionLen = 20;
-    char socVersion[deviceVersionLen];
-    MKI_CHECK(MkiRtDeviceGetSocVersion(socVersion, deviceVersionLen) == MKIRT_SUCCESS,
-        "Get device version failed!", return false);
-    const auto item = DEVICE_VERSION_MAP.find(socVersion);
-    MKI_CHECK(item != DEVICE_VERSION_MAP.end(), "Unrecognized device version!", return false);
-    deviceVersion = item->second;
-    return true;
-}
-
 void Loader::CreateKernels()
 {
     auto &kernelCreators = KernelRegister::GetKernelCreators();
@@ -111,8 +82,8 @@ void Loader::CreateKernels()
 
 bool Loader::LoadKernelBinarys()
 {
-    std::string deviceVersion;
-    MKI_CHECK(GetDeviceSocVersion(deviceVersion), "Get device soc version fail", return false);
+    std::string deviceVersion = PlatformInfo::Instance().GetPlatformName();
+    MKI_CHECK(deviceVersion != "unrecognized", "Get device soc version fail: " << deviceVersion, return false);
 
     const auto &kernelBinaryMap = KernelBinaryRegister::GetKernelBinaryMap();
     for (auto &item : kernelBinaryMap) {
@@ -138,7 +109,7 @@ void Loader::Load()
     CreateKernels();
     for (const auto &[opName, op] : opMap_) {
         MKI_LOG(DEBUG) << "mki load operation: " << opName;
-        OperationBase *opBase = reinterpret_cast<OperationBase *>(op);  // TODO: 为什么dynamic_cast不行，什么原因？
+        OperationBase *opBase = dynamic_cast<OperationBase *>(op);
         MKI_CHECK(opBase != nullptr, opName << ": opBase is nullptr", return);
         auto it = opKernelMap_.find(opName);
         if (it == opKernelMap_.end()) {

@@ -16,6 +16,7 @@
 #include "mki/utils/memset/memset_launcher.h"
 
 #include <securec.h>
+#include <memory>
 
 #include "mki/base/kernel_base.h"
 #include "schedule/op_register.h"
@@ -101,7 +102,7 @@ public:
         return blockDim;
     }
 
-    Status Run(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, KernelHandle handle, void *stream)
+    Status Run(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)
     {
         MemsetArgs memsetArgs;
         (void)memset_s(&memsetArgs, sizeof(MemsetArgs), 0, sizeof(MemsetArgs));
@@ -125,24 +126,38 @@ public:
         kernelParam.blockDim = blockDim;
         kernelParam.argsEx = &argsEx;
 
-        int st = MkiRtFunctionLaunchWithFlag(&handle, &kernelParam, stream, nullptr);
+        int st = MkiRtFunctionLaunchWithFlag(GetBinHandle()->GetHandle(), &kernelParam, stream, nullptr);
         MKI_CHECK(st == MKIRT_SUCCESS, "fail to launch memset", return Mki::Status::FailStatus(1));
 
         return Status::OkStatus();
     }
 };
 
-// TODO: complete clear kernel schedule
+static MemsetKernel *MemsetInit() 
+{
+    auto &binaryMap = OpSpace::KernelBinaryRegister::GetKernelBinaryMap();
+    auto it = binaryMap.find("MemsetKernel");
+    MKI_CHECK(it != binaryMap.end(), "get memset kernel binary info fail", return nullptr);
+    std::string deviceVersion = PlatformInfo::Instance().GetPlatformName();
+    auto &binarys = it->second;
+    const BinaryBasicInfo *binaryBasicInfo = nullptr;
+    for (size_t i = 0; i < binarys.size(); i++) {
+        if (binarys.at(i).targetSoc == deviceVersion) { binaryBasicInfo = &binarys.at(i); }
+    }
+    MKI_CHECK(binaryBasicInfo != nullptr, "get memset kernel binary info fail", return nullptr);
+    static BinHandle binHandle(binaryBasicInfo);
+    return new MemsetKernel("MemsetKernel", &binHandle);
+}
+
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)
 {
-    // auto &binaryMap = KernelBinaryRegister::GetKernelBinaryMap();
-    // static BinHandle handleRegisterMemset("MemsetKernel");
-    // static MemsetKernel memsetKernel("MemsetKernel", handleRegisterMemset.GetHandle());
-    // return memsetKernel.Run(args, argsNum, memsetInfo, handleRegisterMemset.GetHandle(), stream);
-    (void)args;
-    (void)argsNum;
-    (void)memsetInfo;
-    (void)stream;
-    return Status::OkStatus();
+    static bool initedFlag = false;
+    static MemsetKernel* memsetKernel = nullptr;
+    if (!initedFlag) {
+        initedFlag = true;
+        memsetKernel = MemsetInit();
+    }
+    MKI_CHECK(memsetKernel != nullptr, "memset kernel is nullptr", return Mki::Status::FailStatus(1));
+    return memsetKernel->Run(args, argsNum, memsetInfo, stream);
 }
 } // namespace Mki
