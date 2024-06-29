@@ -387,7 +387,7 @@ function fn_main()
             if [ -z $arg2 ];then
                 echo "the namespace is not set. This should be set like --namespace=Mki"
             else
-                COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNAMESPACE=$arg2"
+                COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNAMESPACE:STRING=$arg2"
             fi
             ;;
         "--skip_build")

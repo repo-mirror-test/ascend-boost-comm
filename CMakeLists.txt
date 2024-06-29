@@ -38,26 +38,19 @@ set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki_static srcs)
 target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki_static PRIVATE fe=MkiFe)
-target_compile_definitions(mki_static PRIVATE ${NAMESPACE}=Mki)
+target_compile_definitions(mki_static PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki srcs)
 target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki PRIVATE fe=MkiFe)
-target_compile_definitions(mki PRIVATE ${NAMESPACE}=Mki)
+target_compile_definitions(mki PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
 
 add_library(schedule STATIC ${SCHEDULE_SOURCE_FILES})
 target_link_libraries(schedule PUBLIC mki dl pthread c_sec mmpa)
 target_compile_definitions(schedule PRIVATE fe=${NAMESPACE}Fe)
 
-# add_library(schedule_shared SHARED ${SCHEDULE_SOURCE_FILES})
-# target_link_libraries(schedule_shared PUBLIC mki dl pthread c_sec mmpa)
-# target_compile_definitions(schedule_shared PRIVATE fe=${NAMESPACE}Fe)
-
 add_executable(sym_check ${PROJECT_SOURCE_DIR}/core/sym_check.cpp)
 target_link_libraries(sym_check PRIVATE schedule mki)
-target_compile_definitions(sym_check PRIVATE OpSpace=${NAMESPACE})
 
 if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)
@@ -87,7 +80,6 @@ install(DIRECTORY
 install(TARGETS mki_static DESTINATION lib)
 install(TARGETS mki DESTINATION lib)
 install(TARGETS schedule DESTINATION lib)
-# install(TARGETS schedule_shared DESTINATION lib)
 
 set(BINARY_SRC_LIST "" CACHE INTERNAL "src path")
 set(BINARY_TARGET_LIST "" CACHE INTERNAL "target list")

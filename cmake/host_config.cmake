@@ -3,8 +3,6 @@ set(CMAKE_SKIP_RPATH TRUE)
 
 string(REGEX REPLACE "[^A-Za-z0-9_]" "" NAMESPACE "${NAMESPACE}")
 
-message(STATUS "The namespace for infra would be: ^${NAMESPACE}$")
-
 if(NOT DEFINED NO_WERROR)
     add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:-Wall;-Wextra;-Werror>")
 endif()
@@ -17,11 +15,15 @@ add_compile_options(
     "$<$<NOT:$<CONFIG:Release>>:-g>"
 )
 
-if(NOT NAMESPACE STREQUAL "")
-    add_compile_definitions(OpSpace=${NAMESPACE}) # TODO: 第一次构建，需要指定NAMESPACE，存储在cmake的CACHE变量中
+if(NAMESPACE STREQUAL "")
+    set(NAMESPACE "OpSpaceDefault")
+    message(WARNING "NAMESPACE is not set, please set the namespace option by '--namespace=<namespace-name>'")
 endif()
 
+message(STATUS "The namespace for infra would be: ${NAMESPACE}")
+
 add_compile_definitions(
+    OpSpace=${NAMESPACE}
     "$<$<COMPILE_LANGUAGE:CXX>:_GLIBCXX_USE_CXX11_ABI=$<BOOL:${USE_CXX11_ABI}>>"
     "$<$<NOT:$<CONFIG:Release>>:_DEBUG>"
 )
