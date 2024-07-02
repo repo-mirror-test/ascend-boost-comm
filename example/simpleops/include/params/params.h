@@ -19,6 +19,7 @@
 #include "params/fast_soft_max.h"
 #include "params/fast_soft_max_grad.h"
 #include "params/rope.h"
+#include "params/kvcache.h"
 #include "params/rope_grad.h"
 
 namespace SimpleOps {

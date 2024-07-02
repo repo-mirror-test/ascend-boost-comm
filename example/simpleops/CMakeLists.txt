@@ -61,16 +61,12 @@ include_directories(
     ${OPS_THIRD_PARTY_DIR}/metadef/register
 )
 
-#########################
-# 算子路径（算子开发者配置）
-#########################
-
-add_subdirectory(rope)
-# TODO: 自动获取所有含CMakeLists.txt的子路径
-
-#########################
-# end
-#########################
+file(GLOB_RECURSE CMAKELISTS_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/*/CMakeLists.txt")
+string(REPLACE "/CMakeLists.txt" "" CMAKELISTS_PATHS "${CMAKELISTS_PATHS}")
+foreach(SUB_DIR ${CMAKELISTS_PATHS})
+    message(STATUS "add subdirectory: ${SUB_DIR}")
+    add_subdirectory(${SUB_DIR})
+endforeach()
 
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 message("BINARY_SRC_LIST: ${BINARY_SRC_LIST}")
@@ -92,19 +88,15 @@ add_custom_target(BINARY_SRC_TARGET ALL
 add_library(simple_ops SHARED ${BINARY_SRC_LIST})
 add_dependencies(simple_ops BINARY_SRC_TARGET)
 target_link_libraries(simple_ops PUBLIC)
+target_link_libraries(simple_ops PUBLIC "-Wl,--whole-archive" schedule "-Wl,--no-whole-archive")
 target_link_libraries(simple_ops PRIVATE ${ops_objects} mki)
 
 add_library(simple_ops_static STATIC ${BINARY_SRC_LIST})
 add_dependencies(simple_ops_static BINARY_SRC_TARGET)
+target_link_libraries(simple_ops_static PUBLIC "-Wl,--whole-archive" schedule "-Wl,--no-whole-archive")
 target_link_libraries(simple_ops_static PUBLIC)
 target_link_libraries(simple_ops_static PRIVATE ${ops_objects} mki)
 
 install(TARGETS simple_ops DESTINATION ops_lib)
 install(TARGETS simple_ops_static DESTINATION ops_lib)
 install(DIRECTORY include DESTINATION .)
-#########################
-# end
-#########################
-
-set(BINARY_SRC_LIST "" CACHE INTERNAL "src path")
-set(BINARY_TARGET_LIST "" CACHE INTERNAL "target list")

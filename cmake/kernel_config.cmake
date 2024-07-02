@@ -26,8 +26,10 @@ macro(add_kernel kernel soc channel srcs tac)
         add_custom_target(ascendc_${kernel}_${soc} ALL
             DEPENDS ${${kernel}_${soc}_output}
         )
-        set(BINARY_SRC_LIST ${BINARY_SRC_LIST} $ENV{CACHE_DIR}/obj/${soc}/${op_name}/${kernel}.cpp CACHE INTERNAL "src path")
-        set(BINARY_TARGET_LIST ${BINARY_TARGET_LIST} ascendc_${kernel}_${soc} CACHE INTERNAL "target list")
+        set(LOCAL_BINARY_SRC_LIST ${LOCAL_BINARY_SRC_LIST} $ENV{CACHE_DIR}/obj/${soc}/${op_name}/${kernel}.cpp)
+        set(BINARY_SRC_LIST ${BINARY_SRC_LIST} ${LOCAL_BINARY_SRC_LIST} PARENT_SCOPE)
+        set(LOCAL_BINARY_TARGET_LIST ${LOCAL_BINARY_TARGET_LIST} ascendc_${kernel}_${soc})
+        set(BINARY_TARGET_LIST ${BINARY_TARGET_LIST} ${LOCAL_BINARY_TARGET_LIST} PARENT_SCOPE)
     endif()
 endmacro()
 

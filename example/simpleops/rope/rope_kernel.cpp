@@ -131,7 +131,7 @@ Status RopeTiling(const LaunchParam &launchParam, KernelInfo &kernelInfo)
 
 class RopeKernel : public KernelBase {
 public:
-    explicit RopeKernel(const std::string &kernelName, KernelHandle handle) noexcept : KernelBase(kernelName, handle) {}
+    explicit RopeKernel(const std::string &kernelName, const BinHandle *handle) noexcept : KernelBase(kernelName, handle) {}
 
     bool RopeDtypeCheck(const LaunchParam &launchParam, TensorDType dtypeCheck) const
     {

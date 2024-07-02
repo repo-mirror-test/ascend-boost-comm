@@ -62,7 +62,7 @@ private:
     KernelMetaInfo metaInfo_;
     void *handle_ = nullptr;
     void *moduleHandle_ = nullptr;
-    BinaryBasicInfo const *basicInfo_ = nullptr;
+    BinaryBasicInfo const *const basicInfo_ = nullptr;
     std::atomic_bool codeLoadSuccess_ = false;
 };
 } // namespace Mki

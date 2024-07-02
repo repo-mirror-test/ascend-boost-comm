@@ -54,7 +54,7 @@ public:
      * @param[const std::string&] opName
      * @return Kernel*
      */
-    Kernel *GetKernelInstance(const std::string &opName) const;
+    Kernel *GetKernelInstance(const std::string &kernelName) const;
 
 private:
     Ops();

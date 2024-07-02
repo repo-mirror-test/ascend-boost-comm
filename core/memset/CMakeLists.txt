@@ -25,17 +25,11 @@ add_kernel(memset ascend310p vector
 add_kernel(memset ascend910b vector
     kernel/memset.cpp MemsetKernel)
 
-# set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_custom_command(
-    OUTPUT ${BINARY_SRC_LIST}
-    DEPENDS ${BINARY_TARGET_LIST}
+    OUTPUT ${LOCAL_BINARY_SRC_LIST}
+    DEPENDS ${LOCAL_BINARY_TARGET_LIST}
     COMMAND python3 $ENV{CODE_ROOT}/scripts/build_util.py --binary_dir ${CMAKE_BINARY_DIR} --op_type ascendc
 )
 add_custom_target(srcs ALL
-    DEPENDS ${BINARY_SRC_LIST}
+    DEPENDS ${LOCAL_BINARY_SRC_LIST}
 )
-# add_library(mki_memset SHARED ${BINARY_SRC_LIST})
-# add_dependencies(mki_memset srcs)
-
-# set(BINARY_SRC_LIST "" CACHE INTERNAL "src path")
-# set(BINARY_TARGET_LIST "" CACHE INTERNAL "target list")

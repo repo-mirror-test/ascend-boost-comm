@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "schedule/ops.h"
-#include "op_schedule.h"
+#ifndef ASCEND_OPS_COMMON_H
+#define ASCEND_OPS_COMMON_H
 
-namespace OpSpace {
-Ops::Ops() : opSchedule_(std::make_unique<OpSchedule>()) {}
+#include "asdops/utils/svector/svector.h"
 
-Ops::~Ops() {}
-
-Ops &Ops::Instance()
+namespace AsdOps {
+template<class T>
+bool CheckParamAllPositive(SVector<T> &param)
 {
-    static Ops instance;
-    return instance;
+    for (size_t i = 0; i < param.size(); i++) {
+        if (param[i] <= 0) {
+            return false;
+        }
+    }
+    return true;
 }
+template<class T>
+bool CheckParamAnyNegative(SVector<T> &param)
+{
+    for (size_t i = 0; i < param.size(); i++) {
+        if (param[i] < 0) {
+            return true;
+        }
+    }
+    return false;
+}
+} // namespace AsdOps
 
-std::vector<Operation *> Ops::GetAllOperations() const { return opSchedule_->GetAllOperations(); }
-
-Operation *Ops::GetOperationByName(const std::string &opName) const { return opSchedule_->GetOperationByName(opName); }
-
-Kernel *Ops::GetKernelInstance(const std::string &kernelName) const { return opSchedule_->GetKernelInstance(kernelName); }
-
-} // namespace OpSpace
+#endif

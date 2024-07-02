@@ -13,24 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "schedule/ops.h"
-#include "op_schedule.h"
+#ifndef ASCEND_OPS_KVCACHE_TILING_DATA_H
+#define ASCEND_OPS_KVCACHE_TILING_DATA_H
 
-namespace OpSpace {
-Ops::Ops() : opSchedule_(std::make_unique<OpSchedule>()) {}
+#include <cstdint>
 
-Ops::~Ops() {}
-
-Ops &Ops::Instance()
-{
-    static Ops instance;
-    return instance;
+namespace SimpleOps {
+struct KVCacheTilingData {
+    uint32_t batch{0};
+    uint32_t maxSeqLen{0};
+    uint32_t hiddenSize{0};
+    uint32_t batchPerCore{0};
+};
 }
-
-std::vector<Operation *> Ops::GetAllOperations() const { return opSchedule_->GetAllOperations(); }
-
-Operation *Ops::GetOperationByName(const std::string &opName) const { return opSchedule_->GetOperationByName(opName); }
-
-Kernel *Ops::GetKernelInstance(const std::string &kernelName) const { return opSchedule_->GetKernelInstance(kernelName); }
-
-} // namespace OpSpace
+#endif // ASCEND_OPS_KVCACHE_TILING_DATA_H

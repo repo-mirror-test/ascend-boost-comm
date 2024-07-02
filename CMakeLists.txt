@@ -80,6 +80,3 @@ install(DIRECTORY
 install(TARGETS mki_static DESTINATION lib)
 install(TARGETS mki DESTINATION lib)
 install(TARGETS schedule DESTINATION lib)
-
-set(BINARY_SRC_LIST "" CACHE INTERNAL "src path")
-set(BINARY_TARGET_LIST "" CACHE INTERNAL "target list")

@@ -26,6 +26,9 @@ set(OP_LIST_YAML_DIR "${MKI_PACKAGE_DIR}/configs")
 option(USE_CXX11_ABI "USE_CXX11_ABI" ON)
 message(STATUS "USE_CXX11_ABI:${USE_CXX11_ABI}")
 
+# 算子库namespace
+set(NAMESPACE "SimpleOps")
+
 include(${MKI_PACKAGE_DIR}/cmake/host_config.cmake)
 
 #########################

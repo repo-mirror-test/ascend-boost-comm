@@ -56,6 +56,7 @@ public:
         std::string opName;
         std::string kernelName;
     };
+
     KernelRegister(const char *opName, const char *kerName, NewKernelFunc func) noexcept
     {
         MKI_CHECK(opName != nullptr, "opName is nullptr", return);
@@ -83,6 +84,7 @@ public:
         binaryMap[std::string(kernelName)].push_back({ binary, binaryLen, soc });
         MKI_NAMESPACE_LOG(DEBUG, OpSpace) << " register kernel binary " << kernelName << "-" << soc << " success";
     }
+
     static std::map<std::string, std::vector<BinaryBasicInfo>> &GetKernelBinaryMap()
     {
         static std::map<std::string, std::vector<BinaryBasicInfo>> binaryMap;
