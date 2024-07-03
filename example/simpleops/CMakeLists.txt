@@ -17,7 +17,7 @@ if(NOT EXISTS ${OP_LIST_YAML_DIR}/op_list.yaml)
     endif()
 endif()
 
-set(OP_LIST_CMD_PARAMS "'${MKI_PACKAGE_DIR}/configs/op_list.yaml', '${MKI_PACKAGE_DIR}/cmake/op_build.cmake'")
+set(OP_LIST_CMD_PARAMS "'${OP_LIST_YAML_DIR}/op_list.yaml', '${MKI_PACKAGE_DIR}/cmake/op_build.cmake'")
 execute_process(COMMAND python3 -c "import op_list_utils\nop_list_utils.build_cmake_options(${OP_LIST_CMD_PARAMS})"
                 WORKING_DIRECTORY ${MKI_PACKAGE_DIR}/scripts
                 ERROR_VARIABLE RESULT_INFO

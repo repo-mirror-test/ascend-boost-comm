@@ -50,7 +50,7 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
 
     with open(dst_yaml_path, 'w') as yf:
         logging.debug(yaml.dump(op_kernel_list))
-        yf.write(yaml.dump(op_kernel_list))
+        yf.write(yaml.dump(op_kernel_list, indent=4))
         logging.info(f'op list is build at {dst_yaml_path}')
 
 
@@ -64,6 +64,8 @@ def input_args_check(src_root_dir, dst_yaml_dir):
 
 
 def build_cmake_options(yaml_file_path, cmake_option_path):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(filename)s [line:%(lineno)d] - %(levelname)s: %(message)s')
     if os.path.basename(yaml_file_path) != 'op_list.yaml':
         logging.error(f'{yaml_file_path}: file name error')
         exit(1)

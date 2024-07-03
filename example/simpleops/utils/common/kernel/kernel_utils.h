@@ -24,7 +24,7 @@ __aicore__ inline uint32_t CeilDiv(uint32_t x, uint32_t y)
     return y == 0 ? 0 : ((x + y - 1) / y);
 }
 
-_aicore__ inline uint32_t RoundUp(uint32_t x, uint32_t y = 16)
+__aicore__ inline uint32_t RoundUp(uint32_t x, uint32_t y = 16)
 {
     return (x + y - 1) / y * y;
 }

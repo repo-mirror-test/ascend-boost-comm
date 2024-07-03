@@ -27,7 +27,9 @@ option(USE_CXX11_ABI "USE_CXX11_ABI" ON)
 message(STATUS "USE_CXX11_ABI:${USE_CXX11_ABI}")
 
 # 算子库namespace
-set(NAMESPACE "SimpleOps")
+if(NAMESPACE STREQUAL "")
+    set(NAMESPACE "SimpleOps")
+endif()
 
 include(${MKI_PACKAGE_DIR}/cmake/host_config.cmake)
 
