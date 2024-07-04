@@ -27,7 +27,7 @@ option(USE_CXX11_ABI "USE_CXX11_ABI" ON)
 message(STATUS "USE_CXX11_ABI:${USE_CXX11_ABI}")
 
 # 算子库namespace
-if(NAMESPACE STREQUAL "")
+if(NOT NAMESPACE)
     set(NAMESPACE "SimpleOps")
 endif()
 
