@@ -29,19 +29,21 @@ link_directories(
 )
 
 file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/mki/*.cpp")
+list(REMOVE_ITEM SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/mki/utils/memset/kernel/memset_kernel.cpp")
+
 file(GLOB_RECURSE SCHEDULE_SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/schedule/*.cpp")
 
-# Add memset kernel to libmki (Not available)
-add_subdirectory(${PROJECT_SOURCE_DIR}/core/memset)
+# Add memset kernel to libmki
+add_subdirectory(${PROJECT_SOURCE_DIR}/core/mki/utils/memset/kernel)
 
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
-add_dependencies(mki_static srcs)
+add_dependencies(mki_static binary_encode_srcs)
 target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa)
 target_compile_definitions(mki_static PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
-add_dependencies(mki srcs)
+add_dependencies(mki binary_encode_srcs)
 target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
 target_compile_definitions(mki PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
 

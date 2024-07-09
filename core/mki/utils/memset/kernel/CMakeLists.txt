@@ -20,16 +20,16 @@ set(BUILD_MemsetOperation_MemsetKernel_ascend910b ON)
 set(op_name MemsetOperation)
 
 add_kernel(memset ascend310p vector
-    kernel/memset.cpp MemsetKernel)
+    memset_kernel.cpp MemsetKernel)
 
 add_kernel(memset ascend910b vector
-    kernel/memset.cpp MemsetKernel)
+    memset_kernel.cpp MemsetKernel)
 
 add_custom_command(
     OUTPUT ${LOCAL_BINARY_SRC_LIST}
     DEPENDS ${LOCAL_BINARY_TARGET_LIST}
     COMMAND python3 $ENV{CODE_ROOT}/scripts/build_util.py --binary_dir ${CMAKE_BINARY_DIR} --op_type ascendc
 )
-add_custom_target(srcs ALL
+add_custom_target(binary_encode_srcs ALL
     DEPENDS ${LOCAL_BINARY_SRC_LIST}
 )
