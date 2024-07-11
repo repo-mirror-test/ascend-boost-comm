@@ -71,7 +71,7 @@ def get_header_from_file(file_path):
                   "RT_DEV_BINARY_MAGIC_ELF_AICUBE": 0x41494343}
     core_type_dict = {
         "AiCore": 0,
-        "VectorCore": 2,    # TODO: 确认是否需要
+        "VectorCore": 2,
         "MIX": 4
     }
     aling_bytes = struct.calcsize('I')
@@ -245,7 +245,6 @@ def copy_ascendc_code_all_version(input_paras):
             f"{target_version} has {ascendc_file_count} AscendC tactics.")
 
 
-# TODO: ascendC不依赖 ini
 def copy_tbe_device_code(args):
     env_cache_dir = os.getenv("CACHE_DIR")
     if not (env_cache_dir):
