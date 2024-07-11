@@ -40,12 +40,12 @@ set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki_static binary_encode_srcs)
 target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki_static PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
+target_compile_definitions(mki_static PRIVATE fe=MkiFe ${NAMESPACE}=Mki)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki binary_encode_srcs)
 target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
-target_compile_definitions(mki PRIVATE fe=MkiFe PRIVATE ${NAMESPACE}=Mki)
+target_compile_definitions(mki PRIVATE fe=MkiFe ${NAMESPACE}=Mki)
 
 add_library(schedule STATIC ${SCHEDULE_SOURCE_FILES})
 target_link_libraries(schedule PUBLIC mki dl pthread c_sec mmpa)
@@ -72,6 +72,7 @@ file(GLOB_RECURSE SCRIPTS_FILES "${PROJECT_SOURCE_DIR}/scripts/*.py")
 list(APPEND SCRIPTS_FILES 
     ${PROJECT_SOURCE_DIR}/scripts/build_env_setup.sh
     ${PROJECT_SOURCE_DIR}/scripts/build_ops.sh
+    ${PROJECT_SOURCE_DIR}/scripts/set_ops_env.sh
 )
 install(FILES ${SCRIPTS_FILES} DESTINATION ./scripts)
 

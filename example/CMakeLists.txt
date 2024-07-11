@@ -38,3 +38,6 @@ include(${MKI_PACKAGE_DIR}/cmake/host_config.cmake)
 #########################
 
 add_subdirectory(simpleops)
+if(BUILD_TEST_FRAMEWORK)
+    add_subdirectory(simpleops_tests/autogen)
+endif()

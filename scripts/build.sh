@@ -39,7 +39,7 @@ IS_RELEASE=False
 SKIP_BUILD=OFF
 CMC_URL_COMMON=https://cmc-szver-artifactory.cmc.tools.huawei.com/artifactory/cmc-software-release/Baize%20C/AscendTransformerBoost/1.0.0/asdops_dependency/common
 CMC_URL=https://cmc-szver-artifactory.cmc.tools.huawei.com/artifactory/cmc-software-release/Baize%20C/AscendTransformerBoost/1.0.0/asdops_dependency/$DEPENDENCY_DIR
-BUILD_OPTION_LIST="testframework example unittest pythontest alltest all_test_run debug release help dev clean"
+BUILD_OPTION_LIST="testframework example testexample unittest pythontest alltest all_test_run debug release help dev clean"
 BUILD_CONFIGURE_LIST=("--output=.*" "--cache=.*" "--incremental" "--gcov" "--force_clean" "--use_cxx11_abi=0"
                       "--use_cxx11_abi=1" "--build_config=.*" "--skip_build" "--no_werror" "--namespace=.*")
 
@@ -258,9 +258,29 @@ function fn_build()
     fn_tbe_info_copy
 }
 
+function fn_build_testframework()
+{
+    fn_build_release_3rdparty
+    export OPS_ROOT=$CODE_ROOT/example/output/simpleops
+    [[ ! -d "$CACHE_DIR/testframework" ]] && mkdir $CACHE_DIR/testframework
+    cd $CACHE_DIR/testframework
+    COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$OUTPUT_DIR/mki"
+    if command -v ccache &> /dev/null; then
+        COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+    fi
+    echo "COMPILE_OPTIONS:$COMPILE_OPTIONS"
+
+    echo "** Mki test framework build and install!"
+    fn_compile_and_install "$CODE_ROOT/tests/framework" "$COMPILE_OPTIONS"
+}
+
 function fn_build_example()
 {
     cd $CODE_ROOT/example
+    if [ "$BUILD_TEST_FRAMEWORK" == "ON" ];then
+        bash $SCRIPT_DIR/build_ops.sh testframework --mkidir=$OUTPUT_DIR/mki
+        return
+    fi
     bash $SCRIPT_DIR/build_ops.sh --mkidir=$OUTPUT_DIR/mki
 }
 
@@ -425,6 +445,11 @@ function fn_main()
             fn_build
             ;;
         "example")
+            fn_build_example
+            ;;
+        "testexample")
+            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DBUILD_TEST_FRAMEWORK=ON"
+            BUILD_TEST_FRAMEWORK=ON
             fn_build_example
             ;;
         "clean")

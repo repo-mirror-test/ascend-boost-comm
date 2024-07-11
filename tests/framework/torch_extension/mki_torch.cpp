@@ -97,7 +97,7 @@ std::string MkiTorch::FreeWorkspace(const Mki::KernelInfo &kernelInfo, Mki::RunI
 std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki::Tensor> &inTensors,
                             std::vector<Mki::Tensor> &outTensors)
 {
-    Mki::Operation *op = Mki::Ops::Instance().GetOperationByName(opName_);
+    Mki::Operation *op = GetOpByName(opName_);
     if (op == nullptr) {
         MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
         return "get operation by name fail";
@@ -206,7 +206,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         }
         inTensorIdx++;
     }
-    Mki::Operation *op = Mki::Ops::Instance().GetOperationByName(opName_);
+    Mki::Operation *op = GetOpByName(opName_);
     if (op == nullptr) {
         MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
         return "get operation by name fail";

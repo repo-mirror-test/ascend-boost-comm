@@ -170,7 +170,7 @@ bool BinHandle::RegisterBinWithSingleKernel(const std::string &kernelName, MkiRt
 bool BinHandle::RegisterBinWithMultiKernel(const std::string &kernelName, MkiRtModuleInfo &moduleInfo)
 {
     MKI_LOG(DEBUG) << "MultiKernel RegisterBin start, opName:" << kernelName;
-    int st = AstRtRegisterAllFunction(&moduleInfo, &handle_);
+    int st = MkiRtRegisterAllFunction(&moduleInfo, &handle_);
     MKI_CHECK(st == MKIRT_SUCCESS, kernelName << " Mki RtRegister AllFunction fail, error:" << st, return false);
 
     MKI_CHECK(handle_ != nullptr, kernelName << " Mki RtRegister AllFunction fail,"

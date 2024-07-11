@@ -100,3 +100,5 @@ target_link_libraries(simple_ops_static PRIVATE ${ops_objects} mki)
 install(TARGETS simple_ops DESTINATION ops_lib)
 install(TARGETS simple_ops_static DESTINATION ops_lib)
 install(DIRECTORY include DESTINATION .)
+
+install(FILES ${MKI_PACKAGE_DIR}/scripts/set_ops_env.sh DESTINATION .)

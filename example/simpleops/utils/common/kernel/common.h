@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MKI_DESC_JSON_H
-#define MKI_DESC_JSON_H
+#ifndef INCLUDE_COMMON_H
+#define INCLUDE_COMMON_H
 
-#include <nlohmann/json.hpp>
-#include <string>
-#include "mki/launch_param.h"
-#include "mki/operation.h"
+#define CONST_2 2
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void JsonToOpParam(const nlohmann::json &opDescJson, Mki::LaunchParam &launchParam);
-Mki::Operation *GetOpByName(const std::string &operationName);
-
-#ifdef __cplusplus
-}
+#ifdef USE_ASCENDC
+#define SET_FLAG(trigger, waiter, e) AscendC::SetFlag<AscendC::HardEvent::trigger##_##waiter>((e))
+#define WAIT_FLAG(trigger, waiter, e) AscendC::WaitFlag<AscendC::HardEvent::trigger##_##waiter>((e))
+#define PIPE_BARRIER(pipe) AscendC::PipeBarrier<PIPE_##pipe>()
+#else
+#define SET_FLAG(trigger, waiter, e) set_flag(PIPE_##trigger, PIPE_##waiter, (e))
+#define WAIT_FLAG(trigger, waiter, e) wait_flag(PIPE_##trigger, PIPE_##waiter, (e))
+#define PIPE_BARRIER(pipe) pipe_barrier(PIPE_##pipe)
 #endif
 
 #endif

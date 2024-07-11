@@ -47,17 +47,15 @@ class OpTest(unittest.TestCase):
         self.out_flag = False
         self.support_soc = []
 
-    def set_param(self, op_type, op_name, op_param):
+    def set_param(self, op_name, op_param):
         self.op_desc = {
-            "opType": op_type,
             "opName": op_name,
             "specificParam": op_param}
         self.mki = torch.classes.MkiTorch.MkiTorch(json.dumps(
             self.op_desc))
     
-    def set_param_perf(self, op_type, op_name, run_times, op_param):
+    def set_param_perf(self, op_name, run_times, op_param):
         self.op_desc = {
-            "opType": op_type,
             "opName": op_name,
             "runTimes": run_times,
             "specificParam": op_param}

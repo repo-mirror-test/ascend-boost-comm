@@ -75,7 +75,7 @@ public:
 
     Kernel *GetBestKernel(const LaunchParam &launchParam) const override
     {
-        return GetKernelByName("KVCacheKernel");
+        return GetKernelByName("KVCacheNdKernel");
     }
 };
 

@@ -256,10 +256,10 @@ def copy_tbe_device_code(args):
 
     if (args.op_type == "tbe" or args.op_type is None):
         env_code_root = os.getenv("CODE_ROOT")
-        tbe_kernel_path = os.getenv("MKI_KERNEL_PATH")
+        tbe_kernel_path = os.getenv("ASCEND_KERNEL_PATH")
         if not (env_code_root and tbe_kernel_path):
             logging.error(
-            "env CODE_ROOT | MKI_KERNEL_PATH not exist!")
+            "env CODE_ROOT | ASCEND_KERNEL_PATH not exist!")
             exit(1)
         logging.info(f"tbe_kernel_path: {tbe_kernel_path}")
         input_path = os.path.join(env_code_root, "configs/tbe_tactic_json.ini")

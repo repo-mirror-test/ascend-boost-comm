@@ -1,26 +1,25 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2024. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ * http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #ifndef ROTARY_POS_EMB_FP16
 #define ROTARY_POS_EMB_FP16
 #include "rotary_pos_emb_base.h"
+
+using AscendC::HardEvent;
+
 template <typename QK_DTYPE, typename COS_DTYPE, bool IF_COS_BROADCAST>
 class RopeFp16 : public RopeBase<QK_DTYPE, COS_DTYPE, IF_COS_BROADCAST> {
 public:
-    __aicore__ inline RopeFp16(SimpleOps::RopeTilingData *tilingData)
-        :RopeBase<QK_DTYPE, COS_DTYPE, IF_COS_BROADCAST>(tilingData)
+    __aicore__ inline RopeFp16(SimpleOps::RopeTilingData *tilingData, AscendC::TPipe *pipe)
+        :RopeBase<QK_DTYPE, COS_DTYPE, IF_COS_BROADCAST>(tilingData, pipe)
     {
         this->repeatSize_ = 128; // 128 = 256B / sizeof(half)
         this->maxProcessNum_ = this->tilingData_->maxUbSize / sizeof(uint16_t);
@@ -30,118 +29,129 @@ public:
         this->alignHalfHeadDim_ = (this->rotateStride_ * NUM_TWO) % ELE_NUM_FP16;
         this->hiddenSizeAlign_ = ((this->hiddenSize_ + this->repeatSize_ - 1) /
             this->repeatSize_) * this->repeatSize_;
-        
+        sliceSizeTmp_ = (SLICE_SIZE_FP16 / this->tilingData_->headDim) * this->tilingData_->headDim; // 向下取整 12096
+        uint32_t sliceSizeUb = (sliceSizeTmp_ + this->repeatSize_ - 1) / this->repeatSize_ * this->repeatSize_;
+
         this->cosPad_ = 0;
-        this->sinPad_ = this->cosPad_ + this->hiddenSizeAlign_;
-        this->negOne_ = this->sinPad_ + this->hiddenSizeAlign_;
-        this->oriPos_ = this->negOne_ + this->hiddenSizeAlign_;
-        this->padBefore_ = this->oriPos_ + this->hiddenSizeAlign_;
-        this->removeBefore_ = this->padBefore_ + this->hiddenSizeAlign_;
-        sinResPos_ = this->removeBefore_ + this->hiddenSizeAlign_;
-        this->repeatTimes_ = this->hiddenSizeAlign_ / this->repeatSize_;
+        this->sinPad_ = this->cosPad_ + sliceSizeUb;
+        this->negOne_ = this->sinPad_ + sliceSizeUb;
+        this->oriPos_ = this->negOne_ + sliceSizeUb;
+        this->padBefore_ = this->oriPos_ + sliceSizeUb;
+        this->removeBefore_ = this->padBefore_ + sliceSizeUb;
+        sinResPos_ = this->removeBefore_ + sliceSizeUb;
+        this->repeatTimes_ = sliceSizeUb / this->repeatSize_;
 
         this->syncOffset_ = (this->tilingData_->headDim % ELE_NUM_FP16 == 0) ?
-            this->hiddenSizeAlign_ : this->headNum_ * headDimAlign_;
-        this->offsetExtraGm_ = NUM_TWO * block_idx * this->syncOffset_;
-        this->pipe_.InitBuffer(outQueueCO2_, 1,
-            ((this->maxProcessNum_ - this->batchSize_ * NUM_TWO) * sizeof(QK_DTYPE)));
-        AscendC::LocalTensor<QK_DTYPE> cache_perloop_ub_ = outQueueCO2_.AllocTensor<QK_DTYPE>();
-        commonUbuf_ = (__ubuf__ QK_DTYPE *)cache_perloop_ub_.GetPhyAddr();
+            sliceSizeUb : this->headNum_ * headDimAlign_;
+        this->offsetExtraGm_ = NUM_TWO * this->blockIdx_ * this->syncOffset_;
+        this->pipe_->InitBuffer(outQueueCO2_, ((this->maxProcessNum_ - this->batchSize_ * NUM_TWO) * sizeof(QK_DTYPE)));
+        this->SliceCalculation(sliceSizeTmp_, sliceTimeQ_, lastSliceSizeQ_, sliceTimeK_, lastSliceSizeK_);
     }
 
-    __aicore__ inline void Process(__gm__ uint8_t *extraGm)
+    __aicore__ inline void CalcRotary(AscendC::LocalTensor<QK_DTYPE> commonUbuf_,
+                                      uint32_t repeatTimeOnce)
     {
-        if (this->tilingData_->cosFormat == 1) {
-            pipe_barrier((PIPE_ALL));
-            this->ExpandCosSin(commonUbuf_, this->cosGm_,
-                (__gm__ COS_DTYPE *)extraGm);
-            this->cosGm_ = (__gm__ COS_DTYPE *)extraGm;
-            pipe_barrier((PIPE_ALL));
-            this->ExpandCosSin(commonUbuf_, this->sinGm_,
-                (__gm__ COS_DTYPE *)extraGm + this->tilingData_->ntokens * this->tilingData_->headDim);
-            this->sinGm_ = (__gm__ COS_DTYPE *)extraGm + this->tilingData_->ntokens * this->tilingData_->headDim;
-            extraGm = extraGm + this->tilingData_->ntokens *
-                this->tilingData_->headDim * 4; // sizeof(uint8_t) * 2 = sizeof(half)
-            pipe_barrier((PIPE_ALL));
+        if (this->alignRotary_ == 0) {
+            AscendC::PipeBarrier<PIPE_V>();
+            this->CalcRopeAlign(commonUbuf_, repeatTimeOnce,
+                this->oriPos_, this->removeBefore_, this->padBefore_);
+        } else {
+            AscendC::SetFlag<HardEvent::MTE2_V>(EVENT_ID1);
+            AscendC::WaitFlag<HardEvent::MTE2_V>(EVENT_ID1);
+            this->CalcRope(commonUbuf_, repeatTimeOnce,
+                           this->oriPos_,
+                           this->removeBefore_,
+                           this->padBefore_,
+                           sinResPos_,
+                           this->padBefore_);
         }
+    }
+    __aicore__ inline void Process(__gm__ uint8_t *extra)
+    {
+        AscendC::GlobalTensor<uint8_t> extraGm;
+        extraGm.SetGlobalBuffer((__gm__ uint8_t *)extra);
 
-        this->ExpandNeg(commonUbuf_, sinResPos_, this->headNum_, this->repeatTimes_); // 根据是否对齐选择1 -1 還是 -1 0
+        AscendC::LocalTensor<QK_DTYPE> commonUbuf_ = outQueueCO2_.Get<QK_DTYPE>();
+
+        if (this->tilingData_->cosFormat == 1) {
+            AscendC::GlobalTensor<COS_DTYPE> extraGmCosDtype;
+            extraGmCosDtype.SetGlobalBuffer((__gm__ COS_DTYPE *)extra);
+            AscendC::PipeBarrier<PIPE_ALL>();
+            this->ExpandCosSin(commonUbuf_, this->cosGm_, extraGmCosDtype);
+            this->cosGm_ = extraGmCosDtype;
+            AscendC::PipeBarrier<PIPE_ALL>();
+            this->ExpandCosSin(commonUbuf_, this->sinGm_,
+                               extraGmCosDtype[this->tilingData_->ntokens * this->tilingData_->headDim]);
+            this->sinGm_ = extraGmCosDtype[this->tilingData_->ntokens * this->tilingData_->headDim];
+            extraGm = extraGm[this->tilingData_->ntokens * this->tilingData_->headDim *
+                              4]; // sizeof(uint8_t) * 2 = sizeof(half)
+            AscendC::PipeBarrier<PIPE_ALL>();
+        }
+        uint32_t headNumTempQ = this->tilingData_->hiddenSizeQ > sliceSizeTmp_ ?
+            (sliceSizeTmp_ / this->tilingData_->headDim) : this->tilingData_->headNumQ;
+        uint32_t dynamicSliceQ = this->tilingData_->hiddenSizeQ > sliceSizeTmp_ ?
+            sliceSizeTmp_ : this->tilingData_->hiddenSizeQ;
+        uint32_t headNumTempK = this->tilingData_->hiddenSizeK > sliceSizeTmp_ ?
+            (sliceSizeTmp_ / this->tilingData_->headDim) : this->tilingData_->headNumK;
+        uint32_t dynamicSliceK = this->tilingData_->hiddenSizeK > sliceSizeTmp_ ?
+            sliceSizeTmp_ : this->tilingData_->hiddenSizeK;
+        uint32_t repeatTemp = (dynamicSliceQ + this->repeatSize_ - 1) / this->repeatSize_;
+        this->ExpandNeg(commonUbuf_, sinResPos_, headNumTempQ, repeatTemp); // 根据是否对齐选择1 -1 還是 -1 0
         for (uint32_t zz = 0; zz < this->dynamicRound_; ++zz) {
-            this->CosSinBroadcast(extraGm, zz, commonUbuf_, this->tilingData_->hiddenSizeQ); // cos sin 和 QK 无关
+            this->CosSinBroadcast(extraGm, zz, commonUbuf_, dynamicSliceQ); // cos sin 和 QK 无关
+            for (uint32_t perSlice = 0; perSlice < sliceTimeQ_; ++perSlice) { // 核内每块
+                uint32_t outQOffset = block_idx * this->nlCoreRun_ *
+                    this->tilingData_->hiddenSizeQ + zz * this->tilingData_->hiddenSizeQ + perSlice * sliceSizeTmp_;
 
-            this->QkComm(this->qGm_ + block_idx * this->nlCoreRun_ * this->tilingData_->hiddenSizeQ +
-                zz * this->tilingData_->hiddenSizeQ,
-                extraGm,
-                this->tilingData_->hiddenSizeQ,
-                commonUbuf_,
-                this->tilingData_->headNumQ);
+                uint32_t dynamicSliceQTemp = (perSlice == sliceTimeQ_ - 1) ? lastSliceSizeQ_ : sliceSizeTmp_;
+                headNumTempQ = dynamicSliceQTemp / this->tilingData_->headDim;
+                uint32_t repeatTimeOnce = (dynamicSliceQTemp + this->repeatSize_ - 1) / this->repeatSize_;
+                this->QkComm(this->qGm_[outQOffset],
+                            extraGm, dynamicSliceQTemp, commonUbuf_, headNumTempQ);
+                CalcRotary(commonUbuf_, repeatTimeOnce);
+                AscendC::SetFlag<HardEvent::V_MTE3>(EVENT_ID1);
+                AscendC::WaitFlag<HardEvent::V_MTE3>(EVENT_ID1);
+                DataCopy(this->outQGm_[outQOffset],
+                        commonUbuf_[this->padBefore_],
+                        {1, static_cast<uint16_t>(dynamicSliceQTemp / ELE_NUM_FP16), 0, 0});
 
-            if (this->alignRotary_ == 0) {
-                pipe_barrier((PIPE_V));
-                this->CalcRopeAlign(commonUbuf_, this->repeatTimesQ_,
-                    this->oriPos_, this->removeBefore_, this->padBefore_);
-            } else {
-                set_flag(PIPE_MTE2, PIPE_V, EVENT_ID1);
-                wait_flag(PIPE_MTE2, PIPE_V, EVENT_ID1);
-                this->CalcRope(commonUbuf_, this->repeatTimesQ_,
-                this->oriPos_,
-                this->removeBefore_,
-                this->padBefore_,
-                sinResPos_,
-                this->padBefore_);
+                AscendC::SetFlag<HardEvent::MTE3_MTE2>(EVENT_ID1);
+                AscendC::WaitFlag<HardEvent::MTE3_MTE2>(EVENT_ID1);
             }
-            pipe_barrier((PIPE_ALL)); // 需要
-            copy_ubuf_to_gm(this->outQGm_ + block_idx * this->nlCoreRun_ *
-                this->tilingData_->hiddenSizeQ + zz * this->tilingData_->hiddenSizeQ,
-                commonUbuf_ + this->padBefore_,
-                0,
-                1,
-                this->tilingData_->hiddenSizeQ / ELE_NUM_FP16,
-                0,
-                0);
-            
-            set_flag(PIPE_MTE3, PIPE_MTE2, EVENT_ID1);
-            wait_flag(PIPE_MTE3, PIPE_MTE2, EVENT_ID1);
 
-            this->QkComm(this->kGm_ + block_idx * this->nlCoreRun_ * this->tilingData_->hiddenSizeK +
-                zz * this->tilingData_->hiddenSizeK,
-                extraGm,
-                this->tilingData_->hiddenSizeK,
-                commonUbuf_,
-                this->tilingData_->headNumK);
-            
-            if (this->alignRotary_ == 0) {
-                pipe_barrier((PIPE_V));
-                this->CalcRopeAlign(commonUbuf_, this->repeatTimesK_,
-                    this->oriPos_, this->removeBefore_, this->padBefore_);
-            } else {
-                set_flag(PIPE_MTE2, PIPE_V, EVENT_ID1);
-                wait_flag(PIPE_MTE2, PIPE_V, EVENT_ID1);
-                this->CalcRope(commonUbuf_, this->repeatTimesK_,
-                    this->oriPos_,
-                    this->removeBefore_,
-                    this->padBefore_,
-                    sinResPos_,
-                    this->padBefore_);
+            for (uint32_t perSlice = 0; perSlice < sliceTimeK_; ++perSlice) {
+                uint32_t dynamicSliceKTemp = (perSlice == sliceTimeK_ - 1) ? lastSliceSizeK_ : sliceSizeTmp_;
+                uint32_t outKOffset = block_idx * this->nlCoreRun_ * this->tilingData_->hiddenSizeK +
+                    zz * this->tilingData_->hiddenSizeK + perSlice * sliceSizeTmp_;
+                headNumTempK = dynamicSliceKTemp / this->tilingData_->headDim;
+                uint32_t repeatTimeOnce = (dynamicSliceKTemp + this->repeatSize_ - 1) / this->repeatSize_;
+                AscendC::PipeBarrier<PIPE_MTE2>();
+                this->QkComm(this->kGm_[outKOffset],
+                    extraGm,
+                    dynamicSliceKTemp,
+                    commonUbuf_,
+                    headNumTempK);
+                CalcRotary(commonUbuf_, repeatTimeOnce);
+                AscendC::SetFlag<HardEvent::V_MTE3>(EVENT_ID1);
+                AscendC::WaitFlag<HardEvent::V_MTE3>(EVENT_ID1);
+                DataCopy(this->outKGm_[outKOffset],
+                        commonUbuf_[this->padBefore_],
+                        {1, static_cast<uint16_t>(dynamicSliceKTemp / ELE_NUM_FP16), 0, 0});
+                AscendC::SetFlag<HardEvent::MTE3_MTE2>(EVENT_ID1);
+                AscendC::WaitFlag<HardEvent::MTE3_MTE2>(EVENT_ID1);
             }
-            pipe_barrier((PIPE_ALL)); // 需要
-            copy_ubuf_to_gm(this->outKGm_ + block_idx * this->nlCoreRun_ *
-                this->tilingData_->hiddenSizeK + zz * this->tilingData_->hiddenSizeK,
-                commonUbuf_ + this->padBefore_,
-                0,
-                1,
-                this->tilingData_->hiddenSizeK / ELE_NUM_FP16,
-                0,
-                0);
-            set_flag(PIPE_MTE3, PIPE_V, EVENT_ID1);
-            wait_flag(PIPE_MTE3, PIPE_V, EVENT_ID1);
         }
     }
 private:
-    AscendC::TQue<AscendC::QuePosition::VECIN, 1> outQueueCO2_;
-    __ubuf__ QK_DTYPE *commonUbuf_{nullptr};
+    AscendC::TBuf<AscendC::TPosition::VECCALC> outQueueCO2_;
     uint32_t headDimAlign_; // 对齐的headDim
     uint32_t sinResPos_{0}; // fp32的buf中0 0 0 1 1 1的位置
+    uint32_t sliceTimeQ_; // 切分块的次数
+    uint32_t lastSliceSizeQ_; // 最后一块的大小
+    uint32_t sliceTimeK_;
+    uint32_t lastSliceSizeK_;
+    uint32_t sliceSizeTmp_;
+    uint32_t ResOut_;
 };
 
 #endif
