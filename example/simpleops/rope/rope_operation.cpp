@@ -1,7 +1,7 @@
 #include <mki/base/operation_base.h>
 #include <mki/utils/log/log.h>
 #include <mki/utils/const/op_const.h>
-#include <schedule/op_register.h>
+#include <mki_loader/op_register.h>
 
 namespace SimpleOps {
 using namespace Mki;

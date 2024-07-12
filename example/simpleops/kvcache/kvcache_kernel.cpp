@@ -15,7 +15,7 @@
  */
 #include <mki/utils/assert/assert.h>
 #include <mki/utils/platform/platform_info.h>
-#include <schedule/op_register.h>
+#include <mki_loader/op_register.h>
 #include "mki/base/kernel_base.h"
 #include "params/params.h"
 #include "mki/utils/log/log.h"

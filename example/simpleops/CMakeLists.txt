@@ -88,12 +88,12 @@ add_custom_target(BINARY_SRC_TARGET ALL
 add_library(simple_ops SHARED ${BINARY_SRC_LIST})
 add_dependencies(simple_ops BINARY_SRC_TARGET)
 target_link_libraries(simple_ops PUBLIC)
-target_link_libraries(simple_ops PUBLIC "-Wl,--whole-archive" schedule "-Wl,--no-whole-archive")
+target_link_libraries(simple_ops PUBLIC "-Wl,--whole-archive" mki_loader "-Wl,--no-whole-archive")
 target_link_libraries(simple_ops PRIVATE ${ops_objects} mki)
 
 add_library(simple_ops_static STATIC ${BINARY_SRC_LIST})
 add_dependencies(simple_ops_static BINARY_SRC_TARGET)
-target_link_libraries(simple_ops_static PUBLIC "-Wl,--whole-archive" schedule "-Wl,--no-whole-archive")
+target_link_libraries(simple_ops_static PUBLIC "-Wl,--whole-archive" mki_loader "-Wl,--no-whole-archive")
 target_link_libraries(simple_ops_static PUBLIC)
 target_link_libraries(simple_ops_static PRIVATE ${ops_objects} mki)
 

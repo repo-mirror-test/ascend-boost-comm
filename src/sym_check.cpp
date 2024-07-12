@@ -13,24 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "schedule/ops.h"
-#include "op_schedule.h"
+#include "mki_loader/ops.h"
 
-namespace OpSpace {
-Ops::Ops() : opSchedule_(std::make_unique<OpSchedule>()) {}
-
-Ops::~Ops() {}
-
-Ops &Ops::Instance()
+int main()
 {
-    static Ops instance;
-    return instance;
+    // it is only used to check mki symbols
+    (void)OpSpace::Ops::Instance();
+    return 0;
 }
-
-std::vector<Operation *> Ops::GetAllOperations() const { return opSchedule_->GetAllOperations(); }
-
-Operation *Ops::GetOperationByName(const std::string &opName) const { return opSchedule_->GetOperationByName(opName); }
-
-Kernel *Ops::GetKernelInstance(const std::string &kernelName) const { return opSchedule_->GetKernelInstance(kernelName); }
-
-} // namespace OpSpace

@@ -142,7 +142,7 @@ def write_to_cpp(binary_path, header, dst_cpp_path, tactic, target_version):
     # 将数据写入到cpp文件中
     name = f'kernelBin_{tactic}_{target_version}'
     with open(dst_cpp_path, 'w') as f:
-        f.write('#include <cstdint>\n#include "schedule/op_register.h"\n')
+        f.write('#include <cstdint>\n#include "mki_loader/op_register.h"\n')
         f.write('namespace OpSpace {\nstatic const uint8_t ')
         f.write(name)
         f.write('[] = {')
@@ -255,10 +255,10 @@ def copy_tbe_device_code(args):
 
     if (args.op_type == "tbe" or args.op_type is None):
         env_code_root = os.getenv("CODE_ROOT")
-        tbe_kernel_path = os.getenv("MKI_KERNEL_PATH")
+        tbe_kernel_path = os.getenv("ASCEND_KERNEL_PATH")
         if not (env_code_root and tbe_kernel_path):
             logging.error(
-            "env CODE_ROOT | MKI_KERNEL_PATH not exist!")
+            "env CODE_ROOT | ASCEND_KERNEL_PATH not exist!")
             exit(1)
         logging.info(f"tbe_kernel_path: {tbe_kernel_path}")
         input_path = os.path.join(env_code_root, "configs/tbe_tactic_json.ini")
