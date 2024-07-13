@@ -19,7 +19,7 @@
 #include <vector>
 #include <torch/script.h>
 #include <torch/custom_class.h>
-#include "schedule/ops.h"
+#include "mki_loader/ops.h"
 #include "mki/kernel.h"
 
 class MkiTorch : public torch::CustomClassHolder {

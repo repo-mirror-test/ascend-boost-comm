@@ -37,7 +37,7 @@ HEAD = '''
 #include <functional>
 #include <map>
 #include "mki/utils/log/log.h"
-#include "schedule/ops.h"
+#include "mki_loader/ops.h"
 #include "params/params.h"
 #include "op_desc_json.h"
 '''
