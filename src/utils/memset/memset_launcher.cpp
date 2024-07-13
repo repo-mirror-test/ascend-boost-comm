@@ -19,7 +19,7 @@
 #include <memory>
 
 #include "mki/base/kernel_base.h"
-#include "schedule/op_register.h"
+#include "mki_loader/op_register.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/platform/platform_info.h"
@@ -135,8 +135,9 @@ public:
 
 static MemsetKernel *MemsetInit() 
 {
+    std::string kernelName = "MemsetKernel";
     auto &binaryMap = OpSpace::KernelBinaryRegister::GetKernelBinaryMap();
-    auto it = binaryMap.find("MemsetKernel");
+    auto it = binaryMap.find(kernelName);
     MKI_CHECK(it != binaryMap.end(), "get memset kernel binary info fail", return nullptr);
     std::string deviceVersion = PlatformInfo::Instance().GetPlatformName();
     auto &binarys = it->second;
@@ -146,7 +147,8 @@ static MemsetKernel *MemsetInit()
     }
     MKI_CHECK(binaryBasicInfo != nullptr, "get memset kernel binary info fail", return nullptr);
     static BinHandle binHandle(binaryBasicInfo);
-    return new MemsetKernel("MemsetKernel", &binHandle);
+    MKI_CHECK(binHandle.Init(kernelName), "memset init bin handle fail", return nullptr);
+    return new MemsetKernel(kernelName, &binHandle);
 }
 
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)

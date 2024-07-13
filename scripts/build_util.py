@@ -71,7 +71,7 @@ def get_header_from_file(file_path):
                   "RT_DEV_BINARY_MAGIC_ELF_AICUBE": 0x41494343}
     core_type_dict = {
         "AiCore": 0,
-        "VectorCore": 2,    # TODO: 确认是否需要
+        "VectorCore": 2,
         "MIX": 4
     }
     aling_bytes = struct.calcsize('I')
@@ -142,7 +142,7 @@ def write_to_cpp(binary_path, header, dst_cpp_path, tactic, target_version):
     # 将数据写入到cpp文件中
     name = f'kernelBin_{tactic}_{target_version}'
     with open(dst_cpp_path, 'w') as f:
-        f.write('#include <cstdint>\n#include "schedule/op_register.h"\n')
+        f.write('#include <cstdint>\n#include "mki_loader/op_register.h"\n')
         f.write('namespace OpSpace {\nstatic const uint8_t ')
         f.write(name)
         f.write('[] = {')
@@ -245,7 +245,6 @@ def copy_ascendc_code_all_version(input_paras):
             f"{target_version} has {ascendc_file_count} AscendC tactics.")
 
 
-# TODO: ascendC不依赖 ini
 def copy_tbe_device_code(args):
     env_cache_dir = os.getenv("CACHE_DIR")
     if not (env_cache_dir):

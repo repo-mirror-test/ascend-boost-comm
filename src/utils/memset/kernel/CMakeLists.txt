@@ -20,10 +20,10 @@ set(BUILD_MemsetOperation_MemsetKernel_ascend910b ON)
 set(op_name MemsetOperation)
 
 add_kernel(memset ascend310p vector
-    memset_kernel.cpp MemsetKernel)
+    memset_kernel.cc MemsetKernel)
 
 add_kernel(memset ascend910b vector
-    memset_kernel.cpp MemsetKernel)
+    memset_kernel.cc MemsetKernel)
 
 add_custom_command(
     OUTPUT ${LOCAL_BINARY_SRC_LIST}

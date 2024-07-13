@@ -16,8 +16,8 @@ set(ASCEND_DRIVER_DIR /usr/local/Ascend/driver)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/core
-    ${PROJECT_SOURCE_DIR}/core/include
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/src/include
     ${PROJECT_SOURCE_DIR}/3rdparty/metadef/inc/external
     ${PROJECT_SOURCE_DIR}/3rdparty/nlohmannJson/include
     ${ASCEND_DRIVER_DIR}/kernel/libc_sec/include
@@ -28,13 +28,12 @@ link_directories(
     $ENV{ASCEND_HOME_PATH}/lib64
 )
 
-file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/mki/*.cpp")
-list(REMOVE_ITEM SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/mki/utils/memset/kernel/memset_kernel.cpp")
+file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/*/*.cpp")
+list(FILTER SOURCE_FILES EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/src/mki_loader/.*")
 
-file(GLOB_RECURSE SCHEDULE_SOURCE_FILES "${PROJECT_SOURCE_DIR}/core/schedule/*.cpp")
-
+file(GLOB_RECURSE LOADER_SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/mki_loader/*.cpp")
 # Add memset kernel to libmki
-add_subdirectory(${PROJECT_SOURCE_DIR}/core/mki/utils/memset/kernel)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils/memset/kernel)
 
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
@@ -47,12 +46,12 @@ add_dependencies(mki binary_encode_srcs)
 target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
 target_compile_definitions(mki PRIVATE fe=MkiFe ${NAMESPACE}=Mki)
 
-add_library(schedule STATIC ${SCHEDULE_SOURCE_FILES})
-target_link_libraries(schedule PUBLIC mki dl pthread c_sec mmpa)
-target_compile_definitions(schedule PRIVATE fe=${NAMESPACE}Fe)
+add_library(mki_loader STATIC ${LOADER_SOURCE_FILES})
+target_link_libraries(mki_loader PUBLIC mki dl pthread c_sec mmpa)
+target_compile_definitions(mki_loader PRIVATE fe=${NAMESPACE}Fe)
 
-add_executable(sym_check ${PROJECT_SOURCE_DIR}/core/sym_check.cpp)
-target_link_libraries(sym_check PRIVATE schedule mki)
+add_executable(sym_check ${PROJECT_SOURCE_DIR}/src/sym_check.cpp)
+target_link_libraries(sym_check PRIVATE mki_loader mki)
 
 if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)
@@ -77,9 +76,9 @@ list(APPEND SCRIPTS_FILES
 install(FILES ${SCRIPTS_FILES} DESTINATION ./scripts)
 
 install(DIRECTORY
-    ${PROJECT_SOURCE_DIR}/core/include DESTINATION .)
+    ${PROJECT_SOURCE_DIR}/src/include DESTINATION .)
 
 # install libs
 install(TARGETS mki_static DESTINATION lib)
 install(TARGETS mki DESTINATION lib)
-install(TARGETS schedule DESTINATION lib)
+install(TARGETS mki_loader DESTINATION lib)
