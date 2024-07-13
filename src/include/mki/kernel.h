@@ -42,23 +42,21 @@ enum KernelType : int {
 class Kernel {
 public:
     Kernel() = default;
-    virtual ~Kernel() = default;
     Kernel(const Kernel &kernel) = delete;
+    virtual ~Kernel() = default;
     virtual Kernel *Clone() const = 0;
-    virtual std::string GetName() const = 0;
-    virtual KernelType GetType() const = 0;
-    virtual KernelInfo &GetKernelInfo() const = 0;
-
-    virtual void SetLaunchWithTiling(bool flag) = 0;
-    virtual bool GetLaunchWithTiling() const = 0;
-
     virtual void Reset() = 0;
+
+    virtual bool CanSupport(const LaunchParam &launchParam) const = 0;
+    virtual uint64_t GetTilingSize(const LaunchParam &launchParam) const = 0;
     virtual Status Init(const LaunchParam &launchParam) = 0;
     virtual Status Run(const LaunchParam &launchParam, RunInfo &runInfo) = 0;
 
-    virtual bool CanSupport(const LaunchParam &launchParam) const = 0;
-
-    virtual uint64_t GetTilingSize(const LaunchParam &launchParam) const = 0;
+    virtual void SetLaunchWithTiling(bool flag) = 0;
+    virtual void SetTilingHostAddr(uint8_t *addr, uint64_t len) = 0;
+    virtual std::string GetName() const = 0;
+    virtual const KernelInfo &GetKernelInfo() const = 0;
+    virtual KernelType GetType() const = 0;
 };
 } // namespace Mki
 #endif

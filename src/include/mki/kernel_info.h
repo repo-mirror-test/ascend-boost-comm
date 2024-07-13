@@ -54,7 +54,7 @@ public:
     std::string ToString() const;
 
 public:
-    void Reset(bool deleteTiling);
+    void Reset();
     // Args
     Status InitArgs(uint64_t len);
     uint8_t *GetArgs() const;
@@ -90,6 +90,10 @@ public:
     size_t GetConstTensorCount() const;
     const ConstTensorInfo &GetConstTensorInfo(size_t id) const;
 
+    // LaunchWithTiling
+    void SetLaunchWithTiling(bool flag);
+    bool GetLaunchWithTiling();
+
     // Scratch
     MiniVector<uint64_t> &GetScratchSizes();
     uint64_t GetTotalScratchSize() const;
@@ -109,6 +113,7 @@ private:
     uint8_t *args_ = nullptr;
     uint64_t argsSize_ = 0;
 
+    bool launchWithTiling_{true};
     int64_t hwsyncIdx_ = -1; // <: no hwsync, >=0: hwsync arg idx
     TilingExtInfo tilingExtInfo_;
     MiniVector<ConstTensorInfo> constTensorInfo_;

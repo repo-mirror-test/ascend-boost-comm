@@ -30,28 +30,23 @@ class KernelBase : public Kernel {
 using KernelSelfCreator = std::function<KernelBase*(void)>;
 public:
     KernelBase() = delete;
+    KernelBase(const KernelBase &) = delete;
+    KernelBase &operator=(const KernelBase &) = delete;
     KernelBase(const std::string &opName, const BinHandle *handle);
     ~KernelBase() override;
-    KernelBase(const KernelBase &) = delete;
-    KernelBase(KernelBase &&other);
-    KernelBase &operator=(const KernelBase &) = delete;
-    KernelBase &operator=(KernelBase &&other);
-
-    std::string GetName() const override;
-    KernelType GetType() const override;
-    KernelInfo &GetKernelInfo() const override;
-
-    void SetLaunchWithTiling(bool flag) override;
-    bool GetLaunchWithTiling() const override;
-
+    Kernel *Clone() const override;
     void Reset() override;
+
+    bool CanSupport(const LaunchParam &launchParam) const override;
+    uint64_t GetTilingSize(const LaunchParam &launchParam) const override;
     Status Init(const LaunchParam &launchParam) override;
     Status Run(const LaunchParam &launchParam, RunInfo &runInfo) override;
 
-    bool CanSupport(const LaunchParam &launchParam) const override;
-
-    uint64_t GetTilingSize(const LaunchParam &launchParam) const override;
-    Kernel *Clone() const override;
+    void SetLaunchWithTiling(bool flag) override;
+    void SetTilingHostAddr(uint8_t *addr, uint64_t len) override;
+    std::string GetName() const override;
+    const KernelInfo &GetKernelInfo() const override;
+    KernelType GetType() const override;
 
 protected:
     virtual Status InitImpl(const LaunchParam &launchParam);
@@ -74,9 +69,8 @@ private:
 
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
-    bool launchWithTiling_{true};
     const BinHandle *handle_{nullptr};
-    mutable KernelInfo kInfo_;
+    KernelInfo kernelInfo_;
     bool initFlag_{false};
     KernelSelfCreator creator_{nullptr};
     friend void SetKernelSelfCreator(KernelBase &kernel, KernelSelfCreator func);

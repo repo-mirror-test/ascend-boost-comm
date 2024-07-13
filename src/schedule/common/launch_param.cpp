@@ -50,19 +50,28 @@ void LaunchParam::Reset()
 
 void LaunchParam::SetParam(const Any &srcParam) { specificParam_ = srcParam; }
 
-
 void LaunchParam::AddInTensor(const Tensor &tensor) { inTensors_.push_back(tensor); }
+
 size_t LaunchParam::GetInTensorCount() const { return inTensors_.size(); }
+
 Tensor &LaunchParam::GetInTensor(size_t pos) { return inTensors_.at(pos); }
+
 const Tensor &LaunchParam::GetInTensor(size_t pos) const { return inTensors_.at(pos); }
+
 const SVector<Tensor> &LaunchParam::GetInTensors() const { return inTensors_; }
+
 SVector<Tensor> &LaunchParam::GetInTensors() { return inTensors_; }
 
 void LaunchParam::AddOutTensor(const Tensor &tensor) { outTensors_.push_back(tensor); }
+
 size_t LaunchParam::GetOutTensorCount() const { return outTensors_.size(); }
+
 Tensor &LaunchParam::GetOutTensor(size_t pos) { return outTensors_.at(pos); }
+
 const Tensor &LaunchParam::GetOutTensor(size_t pos) const { return outTensors_.at(pos); }
+
 const SVector<Tensor> &LaunchParam::GetOutTensors() const { return outTensors_; }
+
 SVector<Tensor> &LaunchParam::GetOutTensors() { return outTensors_; }
 
 std::string LaunchParam::ParamToJsonString() const

@@ -26,6 +26,9 @@ namespace Mki {
 KernelInfo::~KernelInfo()
 {
     ResetArgs();
+    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
+        delete[] tilingExtInfo_.hostTilingAddr;
+    }
 }
 
 KernelInfo &KernelInfo::operator=(KernelInfo &&other)
@@ -42,11 +45,11 @@ KernelInfo &KernelInfo::operator=(KernelInfo &&other)
     return *this;
 }
 
-void KernelInfo::Reset(bool deleteTiling)
+void KernelInfo::Reset()
 {
     hwsyncIdx_ = -1;
     ResetArgs();
-    if (deleteTiling && tilingExtInfo_.hostTilingAddr != nullptr) {
+    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
         delete[] tilingExtInfo_.hostTilingAddr;
         tilingExtInfo_.hostTilingAddr = nullptr;
         tilingExtInfo_.hostTilingSize = 0;
@@ -130,6 +133,8 @@ uint64_t KernelInfo::GetTilingUsedSize() const
 
 Status KernelInfo::AllocTilingHost(uint64_t len)
 {
+    MKI_CHECK(launchWithTiling_, "launch with tiling mode off",
+        return Status::FailStatus(-1));
     constexpr uint64_t maxTilingSize = 1024 * 1024; // 1mb
     MKI_CHECK(len > 0 && len <= maxTilingSize,
         "failed to check tiling len " << len, return Status::FailStatus(-1));
@@ -150,6 +155,7 @@ Status KernelInfo::AllocTilingHost(uint64_t len)
 
 void KernelInfo::SetTilingHostAddr(uint8_t *addr, uint64_t len)
 {
+    MKI_CHECK(!launchWithTiling_, "launch with tiling mode on", return);
     MKI_CHECK(addr != nullptr,
         "failed to set host tiling addr to nullptr ", return);
     tilingExtInfo_.hostTilingAddr = addr;
@@ -241,6 +247,16 @@ const KernelInfo::ConstTensorInfo &KernelInfo::GetConstTensorInfo(size_t id) con
     // id out of bound will throw
     return constTensorInfo_.at(id);
 }
+
+void KernelInfo::SetLaunchWithTiling(bool flag)
+{
+    if (launchWithTiling_ && !flag) {
+        Reset();
+    }
+    launchWithTiling_ = flag;
+}
+
+bool KernelInfo::GetLaunchWithTiling() { return launchWithTiling_; }
 
 MiniVector<uint64_t> &KernelInfo::GetScratchSizes()
 {
