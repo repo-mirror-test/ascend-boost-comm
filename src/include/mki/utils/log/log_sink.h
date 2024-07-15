@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_LOG_LOGSINK_H
-#define MKI_UTILS_LOG_LOGSINK_H
+#ifndef MKI_UTILS_LOG_LOG_SINK_H
+#define MKI_UTILS_LOG_LOG_SINK_H
 #include "mki/utils/log/log_entity.h"
 
 namespace Mki {

@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_OPERATION_IR_CFG_H
-#define MKI_OPERATION_IR_CFG_H
+#ifndef MKI_UTILS_OPERATIONIR_OPERATION_IR_CFG_H
+#define MKI_UTILS_OPERATIONIR_OPERATION_IR_CFG_H
 
 #include <map>
 #include "operation_ir.h"

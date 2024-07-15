@@ -24,8 +24,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MKI_UTILS_FP16_T_H
-#define MKI_UTILS_FP16_T_H
+#ifndef MKI_UTILS_FP_16_FP_16_T_H
+#define MKI_UTILS_FP_16_FP_16_T_H
 
 #include <cstdint>
 #include <cmath>
@@ -379,4 +379,4 @@ using fp16_t = Fp16T;
 std::ostream &operator<<(std::ostream &os, const Fp16T &fp);
 }; // namespace Mki
 
-#endif // MKI_UTILS_FP16_T_H
+#endif // MKI_UTILS_FP_16_FP_16_T_H

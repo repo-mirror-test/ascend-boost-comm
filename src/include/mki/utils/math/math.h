@@ -10,8 +10,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-#ifndef MKI_UTILS_MATH_H
-#define MKI_UTILS_MATH_H
+#ifndef MKI_UTILS_MATH_MATH_H
+#define MKI_UTILS_MATH_MATH_H
 
 #include <cstdint>
 
@@ -30,4 +30,4 @@ void SetRandseeds(uint32_t &randseed);
 }
 }
 
-#endif // MKI_UTILS_MATH_H
+#endif // MKI_UTILS_MATH_MATH_H

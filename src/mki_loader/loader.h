@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef CORE_LOADER_LOADER_H
-#define CORE_LOADER_LOADER_H
+#ifndef MKI_LOADER_LOADER_H
+#define MKI_LOADER_LOADER_H
 #include <unordered_map>
 #include <memory>
 #include <atomic>

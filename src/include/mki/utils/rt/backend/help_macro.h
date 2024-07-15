@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_RT_BACKEND_HELPMACRO_H
-#define MKI_UTILS_RT_BACKEND_HELPMACRO_H
+#ifndef MKI_UTILS_RT_BACKEND_HELP_MACRO_H
+#define MKI_UTILS_RT_BACKEND_HELP_MACRO_H
 
 #define CHECK_FUNC_EIXST_RETURN(func)                                                                                  \
     if ((func) == nullptr) {                                                                                           \

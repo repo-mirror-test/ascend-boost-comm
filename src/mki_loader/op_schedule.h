@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef CORE_SCHEDULE_OPSCHEDULE_H
-#define CORE_SCHEDULE_OPSCHEDULE_H
+#ifndef MKI_LOADER_OP_SCHEDULE_H
+#define MKI_LOADER_OP_SCHEDULE_H
 #include <vector>
 #include <string>
 #include <unordered_map>

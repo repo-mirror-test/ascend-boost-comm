@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_LOG_FILE_H
-#define MKI_UTILS_LOG_FILE_H
+#ifndef MKI_UTILS_LOG_LOG_SINK_FILE_H
+#define MKI_UTILS_LOG_LOG_SINK_FILE_H
 
 #include <fstream>
 #include <mutex>

@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_MKI_UTILS_STRINGS_STRREPLACE_H
-#define MKI_MKI_UTILS_STRINGS_STRREPLACE_H
+#ifndef MKI_UTILS_STRINGS_STR_REPLACE_H
+#define MKI_UTILS_STRINGS_STR_REPLACE_H
 #include <string>
 
 namespace Mki {

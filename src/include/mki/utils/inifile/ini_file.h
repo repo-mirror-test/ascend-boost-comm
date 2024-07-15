@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_INI_FILE_H
-#define MKI_INI_FILE_H
+#ifndef MKI_UTILS_INIFILE_INI_FILE_H
+#define MKI_UTILS_INIFILE_INI_FILE_H
 #include <string>
 #include <map>
 

@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_TENSORDESC_H
-#define MKI_TENSORDESC_H
+#ifndef MKI_TENSOR_DESC_H
+#define MKI_TENSOR_DESC_H
 #include "mki/types.h"
 #include "mki/utils/svector/svector.h"
 

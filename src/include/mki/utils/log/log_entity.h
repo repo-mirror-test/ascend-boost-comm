@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_LOG_LOGENTITY_H
-#define MKI_UTILS_LOG_LOGENTITY_H
+#ifndef MKI_UTILS_LOG_LOG_ENTITY_H
+#define MKI_UTILS_LOG_LOG_ENTITY_H
 #include <chrono>
 #include <string>
 

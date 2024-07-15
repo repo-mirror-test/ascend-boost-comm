@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_MEMSET_LAUNCHER_H
-#define MKI_UTILS_MEMSET_LAUNCHER_H
+#ifndef MKI_UTILS_MEMSET_MEMSET_LAUNCHER_H
+#define MKI_UTILS_MEMSET_MEMSET_LAUNCHER_H
 
 #include <cstdint>
 #include "mki/kernel_info.h"
@@ -20,4 +20,4 @@ namespace Mki {
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream);
 } // namespace Mki
 
-#endif // MKI_UTILS_MEMSET_LAUNCHER_H
+#endif // MKI_UTILS_MEMSET_MEMSET_LAUNCHER_H

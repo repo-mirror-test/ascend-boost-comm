@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_PLATFORM_INFO_H
-#define MKI_PLATFORM_INFO_H
+#ifndef MKI_UTILS_PLATFORM_PLATFORM_INFO_H
+#define MKI_UTILS_PLATFORM_PLATFORM_INFO_H
 
 #include <string>
 #include <unordered_map>

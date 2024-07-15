@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_RUNINFO_H
-#define MKI_RUNINFO_H
+#ifndef MKI_RUN_INFO_H
+#define MKI_RUN_INFO_H
 
 #include <cstdint>
 #include <string>

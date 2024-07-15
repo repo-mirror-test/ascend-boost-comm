@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_MKI_UTILS_STRINGS_STRSPLIT_H
-#define MKI_MKI_UTILS_STRINGS_STRSPLIT_H
+#ifndef MKI_UTILS_STRINGS_STR_SPLIT_H
+#define MKI_UTILS_STRINGS_STR_SPLIT_H
 #include <string>
 #include <vector>
 

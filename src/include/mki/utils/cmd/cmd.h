@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_CMD_CMD_H
-#define MKI_CMD_CMD_H
+#ifndef MKI_UTILS_CMD_CMD_H
+#define MKI_UTILS_CMD_CMD_H
 #include <vector>
 #include <functional>
 #include <map>

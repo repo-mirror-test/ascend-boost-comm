@@ -10,8 +10,8 @@
  * See the Mulan PSL v2 for more details.
  */
 
-#ifndef MKI_PLATFORM_INFOS_IMPL_H
-#define MKI_PLATFORM_INFOS_IMPL_H
+#ifndef UTILS_PLATFORM_PLATFORM_INFOS_IMPL_H
+#define UTILS_PLATFORM_PLATFORM_INFOS_IMPL_H
 
 #include <map>
 #include <string>

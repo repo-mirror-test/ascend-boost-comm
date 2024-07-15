@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_OPS_H
-#define MKI_OPS_H
+#ifndef MKI_LOADER_OPS_H
+#define MKI_LOADER_OPS_H
 #include <vector>
 #include <string>
 #include <memory>

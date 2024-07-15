@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_CHECK_TENSOR_H
-#define MKI_CHECK_TENSOR_H
+#ifndef MKI_UTILS_CHECKTENSOR_CHECK_TENSOR_H
+#define MKI_UTILS_CHECKTENSOR_CHECK_TENSOR_H
 
 #include "mki/launch_param.h"
 namespace Mki {

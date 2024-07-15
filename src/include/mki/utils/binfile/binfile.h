@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_BINFILE_BINFILE_H
-#define MKI_BINFILE_BINFILE_H
+#ifndef MKI_UTILS_BINFILE_BINFILE_H
+#define MKI_UTILS_BINFILE_BINFILE_H
 #include <string>
 #include <cstdint>
 #include <fstream>

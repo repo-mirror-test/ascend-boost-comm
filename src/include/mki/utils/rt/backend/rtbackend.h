@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_UTILS_RT_BACKEDN_RTBACKEND_H
-#define MKI_UTILS_RT_BACKEDN_RTBACKEND_H
+#ifndef MKI_UTILS_RT_BACKEND_RTBACKEND_H
+#define MKI_UTILS_RT_BACKEND_RTBACKEND_H
 #include "mki/utils/rt/backend/backend.h"
 
 #ifdef __cplusplus

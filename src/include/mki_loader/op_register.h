@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef CORE_BASE_KERNEL_REGISTER_H
-#define CORE_BASE_KERNEL_REGISTER_H
+#ifndef MKI_LOADER_OP_REGISTER_H
+#define MKI_LOADER_OP_REGISTER_H
 
 #include <map>
 #include <vector>

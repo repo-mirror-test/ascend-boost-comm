@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef CORE_BASE_OPERATIONBASE_H
-#define CORE_BASE_OPERATIONBASE_H
+#ifndef MKI_BASE_OPERATION_BASE_H
+#define MKI_BASE_OPERATION_BASE_H
 
 #include <memory>
 #include <set>

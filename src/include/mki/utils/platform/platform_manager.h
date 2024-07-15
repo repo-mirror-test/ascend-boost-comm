@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_TBE_PLATFORM_MANAGER_H
-#define MKI_TBE_PLATFORM_MANAGER_H
+#ifndef MKI_UTILS_PLATFORM_PLATFORM_MANAGER_H
+#define MKI_UTILS_PLATFORM_PLATFORM_MANAGER_H
 
 #include "platform/platform_infos_def.h" // in metadef
 
