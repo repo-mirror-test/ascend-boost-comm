@@ -69,8 +69,8 @@ foreach(SUB_DIR ${CMAKELISTS_PATHS})
 endforeach()
 
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
-message("BINARY_SRC_LIST: ${BINARY_SRC_LIST}")
-message("BINARY_TARGET_LIST: ${BINARY_TARGET_LIST}")
+# message("BINARY_SRC_LIST: ${BINARY_SRC_LIST}")
+# message("BINARY_TARGET_LIST: ${BINARY_TARGET_LIST}")
 
 add_custom_command(
     OUTPUT ${BINARY_SRC_LIST}

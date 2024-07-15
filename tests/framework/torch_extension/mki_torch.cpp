@@ -129,8 +129,6 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
-
     uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
         kernel->SetLaunchWithTiling(true);
@@ -142,7 +140,7 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
         MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
 
         uint8_t hostLaunchBuffer[launchBufferSize];
-        kernelInfo.SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
+        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
         auto status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
@@ -161,6 +159,7 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
         runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
     }
 
+    const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
     std::string resStr = AddWorkspace(kernelInfo, runInfo);
     if (resStr != "ok") {
         return resStr;
@@ -238,7 +237,6 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
 
     uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
@@ -251,7 +249,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
 
         uint8_t hostLaunchBuffer[launchBufferSize];
-        kernelInfo.SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
+        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
         status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
@@ -270,6 +268,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
     }
 
+    const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
     retStr = AddWorkspace(kernelInfo, runInfo);
     if (retStr != "ok") {
         return retStr;

@@ -53,6 +53,7 @@ protected:
     const BinHandle *GetBinHandle() const;
     void Copy(const KernelBase &other);
     uint32_t launchBufferSize_ = 0;
+    KernelInfo kernelInfo_;
 
 private:
     uint64_t GetKernelParamNum(const LaunchParam &launchParam);
@@ -70,7 +71,6 @@ private:
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
     const BinHandle *handle_{nullptr};
-    KernelInfo kernelInfo_;
     bool initFlag_{false};
     KernelSelfCreator creator_{nullptr};
     friend void SetKernelSelfCreator(KernelBase &kernel, KernelSelfCreator func);
