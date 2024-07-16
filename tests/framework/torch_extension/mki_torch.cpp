@@ -1,17 +1,13 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2023. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "mki_torch.h"
 #include <ATen/ATen.h>
@@ -129,8 +125,6 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
-
     uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
         kernel->SetLaunchWithTiling(true);
@@ -142,7 +136,7 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
         MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
 
         uint8_t hostLaunchBuffer[launchBufferSize];
-        kernelInfo.SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
+        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
         auto status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
@@ -161,6 +155,7 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
         runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
     }
 
+    const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
     std::string resStr = AddWorkspace(kernelInfo, runInfo);
     if (resStr != "ok") {
         return resStr;
@@ -238,7 +233,6 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
 
     uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
@@ -251,7 +245,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
 
         uint8_t hostLaunchBuffer[launchBufferSize];
-        kernelInfo.SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
+        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
         status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
@@ -270,6 +264,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
     }
 
+    const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
     retStr = AddWorkspace(kernelInfo, runInfo);
     if (retStr != "ok") {
         return retStr;

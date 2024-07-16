@@ -1,17 +1,13 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2024. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #ifndef MKI_KERNEL_H
 #define MKI_KERNEL_H
@@ -42,23 +38,21 @@ enum KernelType : int {
 class Kernel {
 public:
     Kernel() = default;
-    virtual ~Kernel() = default;
     Kernel(const Kernel &kernel) = delete;
+    virtual ~Kernel() = default;
     virtual Kernel *Clone() const = 0;
-    virtual std::string GetName() const = 0;
-    virtual KernelType GetType() const = 0;
-    virtual KernelInfo &GetKernelInfo() const = 0;
-
-    virtual void SetLaunchWithTiling(bool flag) = 0;
-    virtual bool GetLaunchWithTiling() const = 0;
-
     virtual void Reset() = 0;
+
+    virtual bool CanSupport(const LaunchParam &launchParam) const = 0;
+    virtual uint64_t GetTilingSize(const LaunchParam &launchParam) const = 0;
     virtual Status Init(const LaunchParam &launchParam) = 0;
     virtual Status Run(const LaunchParam &launchParam, RunInfo &runInfo) = 0;
 
-    virtual bool CanSupport(const LaunchParam &launchParam) const = 0;
-
-    virtual uint64_t GetTilingSize(const LaunchParam &launchParam) const = 0;
+    virtual void SetLaunchWithTiling(bool flag) = 0;
+    virtual void SetTilingHostAddr(uint8_t *addr, uint64_t len) = 0;
+    virtual std::string GetName() const = 0;
+    virtual const KernelInfo &GetKernelInfo() const = 0;
+    virtual KernelType GetType() const = 0;
 };
 } // namespace Mki
 #endif

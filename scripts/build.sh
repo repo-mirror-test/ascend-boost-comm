@@ -1,17 +1,13 @@
 #!/bin/bash
-# Copyright(C) 2023. Huawei Technologies Co.,Ltd. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright (c) 2024 Huawei Technologies Co., Ltd.
+# AscendOpCommonLib is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+#          http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
 
 set -e
 BUILD_DIR=$(dirname $(readlink -f $0))
@@ -392,13 +388,13 @@ function fn_main()
         --build_config=*)
             arg2=${arg2#*=}
             if [ -z $arg2 ];then
-                echo "the config file is not set. This should be set like --build_config=<configFilePath>"
+                echo "the config directory is not set. This should be set like --build_config=<configFileDir>"
             else
                 first_char=${arg2: 0: 1}
                 if [[ "$first_char" == "/" ]];then
-                    export BUILD_CONFIG_FILE=$arg2
+                    export BUILD_CONFIG_DIR=$arg2
                 else
-                    export BUILD_CONFIG_FILE=$CURRENT_DIR"/"$arg2
+                    export BUILD_CONFIG_DIR=$CURRENT_DIR"/"$arg2
                 fi
             fi
             ;;

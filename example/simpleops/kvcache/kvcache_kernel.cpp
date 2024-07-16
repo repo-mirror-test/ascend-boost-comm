@@ -147,8 +147,7 @@ public:
 
     Status InitImpl(const LaunchParam &launchParam) override
     {
-        KernelInfo &kernelInfo = GetKernelInfo();
-        return KVCacheNdTiling(launchParam, kernelInfo);
+        return KVCacheNdTiling(launchParam, kernelInfo_);
     }
 };
 REG_KERNEL_BASE(KVCacheNdKernel);
@@ -173,8 +172,7 @@ public:
 
     Status InitImpl(const LaunchParam &launchParam) override
     {
-        KernelInfo &kernelInfo = GetKernelInfo();
-        return KVCacheNzTiling(launchParam, kernelInfo);
+        return KVCacheNzTiling(launchParam, kernelInfo_);
     }
 };
 REG_KERNEL_BASE(KVCacheNzKernel);
@@ -208,14 +206,13 @@ public:
 
     Status InitImpl(const LaunchParam &launchParam) override
     {
-        KernelInfo &kernelInfo = GetKernelInfo();
-        auto status = KVCacheTiling(launchParam, kernelInfo);
+        auto status = KVCacheTiling(launchParam, kernelInfo_);
         MKI_CHECK_NO_LOG(status.Ok(), return status);
 
-        kernelInfo.SetConstTensorOffset(launchBufferSize_);
+        kernelInfo_.SetConstTensorOffset(launchBufferSize_);
 
         auto &param = AnyCast<OpParam::KVCache>(launchParam.GetParam());
-        auto ret = kernelInfo.AddConstTensorData<int32_t>(TENSOR_BATCH_STATUS_IDX, param.batchRunStatus);
+        auto ret = kernelInfo_.AddConstTensorData<int32_t>(TENSOR_BATCH_STATUS_IDX, param.batchRunStatus);
         MKI_CHECK_NO_LOG(ret, return Status::FailStatus(1));
 
         return Status::OkStatus();

@@ -1,17 +1,13 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2023. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #ifndef MKI_KERNEL_INFO_H
 #define MKI_KERNEL_INFO_H
@@ -49,12 +45,11 @@ struct MemsetInfo {
 public:
     KernelInfo() = default;
     ~KernelInfo();
-    KernelInfo &operator=(KernelInfo &&other);
     void Copy(const KernelInfo &kernelInfo);
     std::string ToString() const;
 
 public:
-    void Reset(bool deleteTiling);
+    void Reset();
     // Args
     Status InitArgs(uint64_t len);
     uint8_t *GetArgs() const;
@@ -90,9 +85,13 @@ public:
     size_t GetConstTensorCount() const;
     const ConstTensorInfo &GetConstTensorInfo(size_t id) const;
 
+    // LaunchWithTiling
+    void SetLaunchWithTiling(bool flag);
+    bool GetLaunchWithTiling();
+
     // Scratch
     MiniVector<uint64_t> &GetScratchSizes();
-    uint64_t GetTotalScratchSize() const;
+    int64_t GetTotalScratchSize() const;
 
     // Memset
     void SetMemsetInfo(uint64_t argIdx, uint64_t size);
@@ -104,12 +103,16 @@ private:
     void ResetConstTensorInfo();
     void ResetScratchSizes();
     void ResetMemsetInfo();
+    void SetInitedFlag(bool flag);
+    friend class KernelBase;
 
 private:
     uint8_t *args_ = nullptr;
     uint64_t argsSize_ = 0;
 
-    int64_t hwsyncIdx_ = -1; // <: no hwsync, >=0: hwsync arg idx
+    bool initFlag_{false};  // kernel info 线程间不共享
+    bool launchWithTiling_{true};
+    int64_t hwsyncIdx_ = -1; // < 0: no hwsync, >= 0: hwsync arg idx
     TilingExtInfo tilingExtInfo_;
     MiniVector<ConstTensorInfo> constTensorInfo_;
     MiniVector<uint64_t> scratchSizes_;

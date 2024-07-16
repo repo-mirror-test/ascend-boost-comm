@@ -190,8 +190,7 @@ public:
 
     Status InitImpl(const LaunchParam &launchParam) override
     {
-        KernelInfo &kernelInfo = GetKernelInfo();
-        return RopeTiling(launchParam, kernelInfo);
+        return RopeTiling(launchParam, kernelInfo_);
     }
 };
 

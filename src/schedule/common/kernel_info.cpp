@@ -1,17 +1,13 @@
-/**
- * Copyright (c) Huawei Technologies Co., Ltd. 2023. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "mki/kernel_info.h"
 
@@ -26,33 +22,16 @@ namespace Mki {
 KernelInfo::~KernelInfo()
 {
     ResetArgs();
+    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
+        delete[] tilingExtInfo_.hostTilingAddr;
+    }
 }
 
-KernelInfo &KernelInfo::operator=(KernelInfo &&other)
-{
-    tilingExtInfo_ = other.tilingExtInfo_;
-    other.tilingExtInfo_.hostTilingAddr = nullptr;
-    hwsyncIdx_ = other.hwsyncIdx_;
-    constTensorInfo_ = std::move(other.constTensorInfo_);
-    scratchSizes_ = std::move(other.scratchSizes_);
-    memsetInfo_ = std::move(other.memsetInfo_);
-    argsSize_ = other.argsSize_;
-    args_ = other.args_;
-    other.args_ = nullptr;
-    return *this;
-}
-
-void KernelInfo::Reset(bool deleteTiling)
+void KernelInfo::Reset()
 {
     hwsyncIdx_ = -1;
+    initFlag_ = false;
     ResetArgs();
-    if (deleteTiling && tilingExtInfo_.hostTilingAddr != nullptr) {
-        delete[] tilingExtInfo_.hostTilingAddr;
-        tilingExtInfo_.hostTilingAddr = nullptr;
-        tilingExtInfo_.hostTilingSize = 0;
-        tilingExtInfo_.constTensorOffset = 0;
-        tilingExtInfo_.usedSize = 0;
-    }
     ResetTilingInfo();
     ResetConstTensorInfo();
     ResetScratchSizes();
@@ -130,6 +109,8 @@ uint64_t KernelInfo::GetTilingUsedSize() const
 
 Status KernelInfo::AllocTilingHost(uint64_t len)
 {
+    MKI_CHECK(launchWithTiling_, "launch with tiling mode off",
+        return Status::FailStatus(-1));
     constexpr uint64_t maxTilingSize = 1024 * 1024; // 1mb
     MKI_CHECK(len > 0 && len <= maxTilingSize,
         "failed to check tiling len " << len, return Status::FailStatus(-1));
@@ -150,6 +131,7 @@ Status KernelInfo::AllocTilingHost(uint64_t len)
 
 void KernelInfo::SetTilingHostAddr(uint8_t *addr, uint64_t len)
 {
+    MKI_CHECK(!launchWithTiling_, "launch with tiling mode on", return);
     MKI_CHECK(addr != nullptr,
         "failed to set host tiling addr to nullptr ", return);
     tilingExtInfo_.hostTilingAddr = addr;
@@ -242,18 +224,31 @@ const KernelInfo::ConstTensorInfo &KernelInfo::GetConstTensorInfo(size_t id) con
     return constTensorInfo_.at(id);
 }
 
+void KernelInfo::SetLaunchWithTiling(bool flag)
+{
+    if (launchWithTiling_ == flag) {
+        return;
+    }
+    ResetTilingInfo();
+    initFlag_ = false;
+    launchWithTiling_ = flag;
+}
+
+bool KernelInfo::GetLaunchWithTiling() { return launchWithTiling_; }
+
 MiniVector<uint64_t> &KernelInfo::GetScratchSizes()
 {
     return scratchSizes_;
 }
 
-uint64_t KernelInfo::GetTotalScratchSize() const
+int64_t KernelInfo::GetTotalScratchSize() const
 {
+    MKI_CHECK(initFlag_, "kernelInfo is not inited, get scratch size fail", return -1);
     uint64_t sum = 0;
-    for (auto wkspSize : scratchSizes_) {
-        sum += wkspSize;
+    for (auto scratchSize : scratchSizes_) {
+        sum += scratchSize;
     }
-    return sum;
+    return static_cast<int64_t>(sum);
 }
 
 std::string KernelInfo::ToString() const
@@ -277,16 +272,25 @@ std::string KernelInfo::ToString() const
     return ss.str();
 }
 
-void KernelInfo::Copy(const KernelInfo &kernelInfo)
+void KernelInfo::Copy(const KernelInfo &other)
 {
-    hwsyncIdx_ = kernelInfo.hwsyncIdx_;
-    tilingExtInfo_.blockDim = kernelInfo.tilingExtInfo_.blockDim;
-    tilingExtInfo_.tilingId = kernelInfo.tilingExtInfo_.tilingId;
-    tilingExtInfo_.constTensorOffset = kernelInfo.tilingExtInfo_.constTensorOffset;
-    tilingExtInfo_.usedSize = kernelInfo.tilingExtInfo_.usedSize;
-    constTensorInfo_ = kernelInfo.constTensorInfo_;
-    scratchSizes_ = kernelInfo.scratchSizes_;
-    memsetInfo_ = kernelInfo.memsetInfo_;
+    launchWithTiling_ = other.launchWithTiling_;
+    hwsyncIdx_ = other.hwsyncIdx_;
+    if (launchWithTiling_ && other.tilingExtInfo_.hostTilingAddr != nullptr) {
+        uint64_t hostTilingSize = other.tilingExtInfo_.hostTilingSize;
+        tilingExtInfo_.hostTilingAddr = new (std::nothrow) uint8_t[hostTilingSize];
+        MKI_CHECK(tilingExtInfo_.hostTilingAddr != nullptr,
+            "failed to copy tiling, len " << hostTilingSize, return);
+        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, hostTilingSize,
+                            other.tilingExtInfo_.hostTilingAddr, hostTilingSize);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info", return);
+    }
+    // args_ 不需要 copy
+    tilingExtInfo_ = other.tilingExtInfo_;
+    constTensorInfo_ = other.constTensorInfo_;
+    scratchSizes_ = other.scratchSizes_;
+    memsetInfo_ = other.memsetInfo_;
+    initFlag_ = other.initFlag_;
 }
 
 void KernelInfo::ResetArgs()
@@ -301,8 +305,15 @@ void KernelInfo::ResetArgs()
 void KernelInfo::ResetTilingInfo()
 {
     // No checking return value is ok
+    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
+        delete[] tilingExtInfo_.hostTilingAddr;
+    }
     tilingExtInfo_.blockDim = 0;
     tilingExtInfo_.tilingId = 0;
+    tilingExtInfo_.hostTilingAddr = nullptr;
+    tilingExtInfo_.hostTilingSize = 0;
+    tilingExtInfo_.constTensorOffset = 0;
+    tilingExtInfo_.usedSize = 0;
 }
 
 void KernelInfo::ResetConstTensorInfo()
@@ -318,6 +329,11 @@ void KernelInfo::ResetScratchSizes()
 void KernelInfo::ResetMemsetInfo()
 {
     memsetInfo_.clear();
+}
+
+void KernelInfo::SetInitedFlag(bool flag)
+{
+    initFlag_ = flag;
 }
 
 template bool KernelInfo::AddConstTensorData<int32_t>(uint64_t, const SVector<int32_t> &);
