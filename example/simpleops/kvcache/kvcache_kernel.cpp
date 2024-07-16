@@ -209,10 +209,10 @@ public:
         auto status = KVCacheTiling(launchParam, kernelInfo_);
         MKI_CHECK_NO_LOG(status.Ok(), return status);
 
-        kernelInfo.SetConstTensorOffset(launchBufferSize_);
+        kernelInfo_.SetConstTensorOffset(launchBufferSize_);
 
         auto &param = AnyCast<OpParam::KVCache>(launchParam.GetParam());
-        auto ret = kernelInfo.AddConstTensorData<int32_t>(TENSOR_BATCH_STATUS_IDX, param.batchRunStatus);
+        auto ret = kernelInfo_.AddConstTensorData<int32_t>(TENSOR_BATCH_STATUS_IDX, param.batchRunStatus);
         MKI_CHECK_NO_LOG(ret, return Status::FailStatus(1));
 
         return Status::OkStatus();

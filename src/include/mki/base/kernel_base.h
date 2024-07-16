@@ -68,7 +68,6 @@ private:
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
     const BinHandle *handle_{nullptr};
-    bool initFlag_{false};
     KernelSelfCreator creator_{nullptr};
     friend void SetKernelSelfCreator(KernelBase &kernel, KernelSelfCreator func);
 };

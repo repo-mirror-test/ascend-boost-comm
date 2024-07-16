@@ -27,31 +27,11 @@ KernelInfo::~KernelInfo()
     }
 }
 
-KernelInfo &KernelInfo::operator=(KernelInfo &&other)
-{
-    tilingExtInfo_ = other.tilingExtInfo_;
-    other.tilingExtInfo_.hostTilingAddr = nullptr;
-    hwsyncIdx_ = other.hwsyncIdx_;
-    constTensorInfo_ = std::move(other.constTensorInfo_);
-    scratchSizes_ = std::move(other.scratchSizes_);
-    memsetInfo_ = std::move(other.memsetInfo_);
-    argsSize_ = other.argsSize_;
-    args_ = other.args_;
-    other.args_ = nullptr;
-    return *this;
-}
-
 void KernelInfo::Reset()
 {
     hwsyncIdx_ = -1;
+    initFlag_ = false;
     ResetArgs();
-    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
-        delete[] tilingExtInfo_.hostTilingAddr;
-        tilingExtInfo_.hostTilingAddr = nullptr;
-        tilingExtInfo_.hostTilingSize = 0;
-        tilingExtInfo_.constTensorOffset = 0;
-        tilingExtInfo_.usedSize = 0;
-    }
     ResetTilingInfo();
     ResetConstTensorInfo();
     ResetScratchSizes();
@@ -246,9 +226,11 @@ const KernelInfo::ConstTensorInfo &KernelInfo::GetConstTensorInfo(size_t id) con
 
 void KernelInfo::SetLaunchWithTiling(bool flag)
 {
-    if (launchWithTiling_ && !flag) {
-        Reset();
+    if (launchWithTiling_ == flag) {
+        return;
     }
+    ResetTilingInfo();
+    initFlag_ = false;
     launchWithTiling_ = flag;
 }
 
@@ -259,13 +241,14 @@ MiniVector<uint64_t> &KernelInfo::GetScratchSizes()
     return scratchSizes_;
 }
 
-uint64_t KernelInfo::GetTotalScratchSize() const
+int64_t KernelInfo::GetTotalScratchSize() const
 {
+    MKI_CHECK(initFlag_, "kernelInfo is not inited, get scratch size fail", return -1);
     uint64_t sum = 0;
-    for (auto wkspSize : scratchSizes_) {
-        sum += wkspSize;
+    for (auto scratchSize : scratchSizes_) {
+        sum += scratchSize;
     }
-    return sum;
+    return static_cast<int64_t>(sum);
 }
 
 std::string KernelInfo::ToString() const
@@ -289,16 +272,25 @@ std::string KernelInfo::ToString() const
     return ss.str();
 }
 
-void KernelInfo::Copy(const KernelInfo &kernelInfo)
+void KernelInfo::Copy(const KernelInfo &other)
 {
-    hwsyncIdx_ = kernelInfo.hwsyncIdx_;
-    tilingExtInfo_.blockDim = kernelInfo.tilingExtInfo_.blockDim;
-    tilingExtInfo_.tilingId = kernelInfo.tilingExtInfo_.tilingId;
-    tilingExtInfo_.constTensorOffset = kernelInfo.tilingExtInfo_.constTensorOffset;
-    tilingExtInfo_.usedSize = kernelInfo.tilingExtInfo_.usedSize;
-    constTensorInfo_ = kernelInfo.constTensorInfo_;
-    scratchSizes_ = kernelInfo.scratchSizes_;
-    memsetInfo_ = kernelInfo.memsetInfo_;
+    launchWithTiling_ = other.launchWithTiling_;
+    hwsyncIdx_ = other.hwsyncIdx_;
+    if (launchWithTiling_ && other.tilingExtInfo_.hostTilingAddr != nullptr) {
+        uint64_t hostTilingSize = other.tilingExtInfo_.hostTilingSize;
+        tilingExtInfo_.hostTilingAddr = new (std::nothrow) uint8_t[hostTilingSize];
+        MKI_CHECK(tilingExtInfo_.hostTilingAddr != nullptr,
+            "failed to copy tiling, len " << hostTilingSize, return);
+        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, hostTilingSize,
+                            other.tilingExtInfo_.hostTilingAddr, hostTilingSize);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info", return);
+    }
+    // args_ 不需要 copy
+    tilingExtInfo_ = other.tilingExtInfo_;
+    constTensorInfo_ = other.constTensorInfo_;
+    scratchSizes_ = other.scratchSizes_;
+    memsetInfo_ = other.memsetInfo_;
+    initFlag_ = other.initFlag_;
 }
 
 void KernelInfo::ResetArgs()
@@ -313,8 +305,15 @@ void KernelInfo::ResetArgs()
 void KernelInfo::ResetTilingInfo()
 {
     // No checking return value is ok
+    if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
+        delete[] tilingExtInfo_.hostTilingAddr;
+    }
     tilingExtInfo_.blockDim = 0;
     tilingExtInfo_.tilingId = 0;
+    tilingExtInfo_.hostTilingAddr = nullptr;
+    tilingExtInfo_.hostTilingSize = 0;
+    tilingExtInfo_.constTensorOffset = 0;
+    tilingExtInfo_.usedSize = 0;
 }
 
 void KernelInfo::ResetConstTensorInfo()
@@ -330,6 +329,11 @@ void KernelInfo::ResetScratchSizes()
 void KernelInfo::ResetMemsetInfo()
 {
     memsetInfo_.clear();
+}
+
+void KernelInfo::SetInitedFlag(bool flag)
+{
+    initFlag_ = flag;
 }
 
 template bool KernelInfo::AddConstTensorData<int32_t>(uint64_t, const SVector<int32_t> &);

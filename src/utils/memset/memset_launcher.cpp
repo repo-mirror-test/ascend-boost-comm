@@ -10,10 +10,9 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/memset/memset_launcher.h"
-
 #include <securec.h>
 #include <memory>
-
+#include <atomic>
 #include "mki/base/kernel_base.h"
 #include "mki_loader/op_register.h"
 #include "mki/utils/assert/assert.h"
@@ -149,7 +148,7 @@ static MemsetKernel *MemsetInit()
 
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)
 {
-    static bool initedFlag = false;
+    static std::atomic_bool initedFlag = false;
     static MemsetKernel* memsetKernel = nullptr;
     if (!initedFlag) {
         initedFlag = true;

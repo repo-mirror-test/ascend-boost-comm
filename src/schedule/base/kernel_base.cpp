@@ -54,7 +54,10 @@ void KernelBase::SetLaunchWithTiling(bool flag) { kernelInfo_.SetLaunchWithTilin
 
 void KernelBase::SetTilingHostAddr(uint8_t *addr, uint64_t len) { kernelInfo_.SetTilingHostAddr(addr, len); }
 
-void KernelBase::Reset() { initFlag_ = false; }
+void KernelBase::Reset()
+{
+    kernelInfo_.Reset();
+}
 
 Status KernelBase::Init(const LaunchParam &launchParam)
 {
@@ -71,6 +74,7 @@ Status KernelBase::Init(const LaunchParam &launchParam)
 
     auto status = InitImpl(launchParam);
     MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(), return status);
+    kernelInfo_.SetInitedFlag(true);
 
     auto kernelParamNum = GetKernelParamNum(launchParam);
     uint64_t baseSize = kernelParamNum * sizeof(void *);
@@ -172,7 +176,6 @@ void KernelBase::Copy(const KernelBase &other)
     launchBufferSize_ = other.launchBufferSize_;
     handle_ = other.handle_;
     kernelType_ = other.kernelType_;
-    initFlag_ = other.initFlag_;
     creator_ = other.creator_;
     kernelInfo_.Copy(other.kernelInfo_);
 }

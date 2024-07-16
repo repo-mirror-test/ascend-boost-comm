@@ -33,9 +33,9 @@ private:
     bool LoadKernelBinarys();
     void CreateOperations();
     void CreateKernels();
-    std::atomic_bool loadSuccess_{false};
 
 private:
+    std::atomic_bool loadSuccess_{false};
     std::unordered_map<std::string, Operation *> opMap_;
     std::unordered_map<std::string, KernelMap> opKernelMap_;
     std::unordered_map<std::string, BinHandle> binHandles_;

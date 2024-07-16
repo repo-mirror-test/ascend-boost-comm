@@ -45,7 +45,6 @@ struct MemsetInfo {
 public:
     KernelInfo() = default;
     ~KernelInfo();
-    KernelInfo &operator=(KernelInfo &&other);
     void Copy(const KernelInfo &kernelInfo);
     std::string ToString() const;
 
@@ -92,7 +91,7 @@ public:
 
     // Scratch
     MiniVector<uint64_t> &GetScratchSizes();
-    uint64_t GetTotalScratchSize() const;
+    int64_t GetTotalScratchSize() const;
 
     // Memset
     void SetMemsetInfo(uint64_t argIdx, uint64_t size);
@@ -104,13 +103,16 @@ private:
     void ResetConstTensorInfo();
     void ResetScratchSizes();
     void ResetMemsetInfo();
+    void SetInitedFlag(bool flag);
+    friend class KernelBase;
 
 private:
     uint8_t *args_ = nullptr;
     uint64_t argsSize_ = 0;
 
+    bool initFlag_{false};  // kernel info 线程间不共享
     bool launchWithTiling_{true};
-    int64_t hwsyncIdx_ = -1; // <: no hwsync, >=0: hwsync arg idx
+    int64_t hwsyncIdx_ = -1; // < 0: no hwsync, >= 0: hwsync arg idx
     TilingExtInfo tilingExtInfo_;
     MiniVector<ConstTensorInfo> constTensorInfo_;
     MiniVector<uint64_t> scratchSizes_;
