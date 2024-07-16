@@ -22,13 +22,13 @@ import argparse
 
 # sycl-target --show-targets
 def get_build_target_list():
-    usr_config_file_path = os.getenv("BUILD_CONFIG_FILE", '')
-    if usr_config_file_path == '':
+    usr_config_file_dir = os.getenv("BUILD_CONFIG_DIR", '')
+    if usr_config_file_dir == '':
         script_file_path = os.path.realpath(__file__)
         build_config_json_file_path = os.path.join(os.path.dirname(
             script_file_path), "../configs/build_config.json")
     else:
-        build_config_json_file_path = usr_config_file_path
+        build_config_json_file_path = os.path.join(usr_config_file_dir, "build_config.json")
     device_list = []
     try:
         with open(build_config_json_file_path) as conf_file:

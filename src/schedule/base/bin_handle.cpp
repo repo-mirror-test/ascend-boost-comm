@@ -20,14 +20,14 @@ constexpr uint32_t HEADER_LENGTH = 128;
 constexpr uint32_t UINT32_TYPE_LENGTH = sizeof(uint32_t);
 
 struct KernelHeaderInfo {
-    uint32_t version;
-    uint32_t magic;
-    uint32_t tilingSize;
-    uint32_t coreType;
-    uint32_t kernelNum;
-    uint32_t kernelNameOffset;
-    uint32_t compileInfoOffset;
-    uint32_t kernelBinOffset;
+    uint32_t version = 0;;
+    uint32_t magic = 0;
+    uint32_t tilingSize = 0;
+    uint32_t coreType = 0;
+    uint32_t kernelNum = 0;
+    uint32_t kernelNameOffset = 0;
+    uint32_t compileInfoOffset = 0;
+    uint32_t kernelBinOffset = 0;
 };
 
 BinHandle::BinHandle(const BinaryBasicInfo *binInfo) : basicInfo_(binInfo) {}
@@ -48,10 +48,12 @@ bool BinHandle::CheckKernelInfo(const std::string &kernelName) const
 {
     MKI_CHECK(!metaInfo_.kernelList.empty(), "Get Binary Kernel Num empty, kernel: " << kernelName, return false);
     MKI_CHECK(metaInfo_.magic != 0, "Get Magic empt, kernel: " << kernelName, return false);
+#ifdef _DEBUG
     for (const std::string &kernel : metaInfo_.kernelList) {
         MKI_LOG(DEBUG) << kernelName << ".kernelName: " << kernel;
     }
     MKI_LOG(DEBUG) << kernelName << ".devicecodeBufLen: " << metaInfo_.codeBufLen;
+#endif
     return true;
 }
 

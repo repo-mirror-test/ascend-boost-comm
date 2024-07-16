@@ -37,7 +37,7 @@ public:
 
     std::string ToString() const;
 
-    void CopyTo(RunInfo &runInfo) const;
+    void Copy(const RunInfo &runInfo);
 
 private:
     // used by User

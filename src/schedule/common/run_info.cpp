@@ -65,11 +65,10 @@ std::string RunInfo::ToString() const
     return ss.str();
 }
 
-void RunInfo::CopyTo(RunInfo &runInfo) const
+void RunInfo::Copy(const RunInfo &runInfo)
 {
-    runInfo.Reset();
-    runInfo.stream_ = stream_;
-    runInfo.scratchAddr_ = scratchAddr_;
-    runInfo.tilingDeviceAddr_ = tilingDeviceAddr_;
+    stream_ = runInfo.stream_;
+    scratchAddr_ = runInfo.scratchAddr_;
+    tilingDeviceAddr_ = runInfo.tilingDeviceAddr_;
 }
 } // namespace Mki

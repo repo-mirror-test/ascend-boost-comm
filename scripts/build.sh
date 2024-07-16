@@ -368,13 +368,13 @@ function fn_main()
         --build_config=*)
             arg2=${arg2#*=}
             if [ -z $arg2 ];then
-                echo "the config file is not set. This should be set like --build_config=<configFilePath>"
+                echo "the config directory is not set. This should be set like --build_config=<configFileDir>"
             else
                 first_char=${arg2: 0: 1}
                 if [[ "$first_char" == "/" ]];then
-                    export BUILD_CONFIG_FILE=$arg2
+                    export BUILD_CONFIG_DIR=$arg2
                 else
-                    export BUILD_CONFIG_FILE=$CURRENT_DIR"/"$arg2
+                    export BUILD_CONFIG_DIR=$CURRENT_DIR"/"$arg2
                 fi
             fi
             ;;

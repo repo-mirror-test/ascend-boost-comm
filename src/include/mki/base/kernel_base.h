@@ -48,13 +48,13 @@ protected:
     virtual Status InitImpl(const LaunchParam &launchParam);
     const BinHandle *GetBinHandle() const;
     void Copy(const KernelBase &other);
+
+protected:
     uint32_t launchBufferSize_ = 0;
     KernelInfo kernelInfo_;
 
 private:
     uint64_t GetKernelParamNum(const LaunchParam &launchParam);
-
-    void UpdateKernelType();
     Status UpdateHwsyncArgs(void **args, uint64_t argsNum);
     Status UpdateConstTensorArgs(void **args, uint64_t argsNum,
                                  RtHostInputInfoT *info, uint64_t infoNum);
@@ -64,6 +64,7 @@ private:
     Status UpdateTilingArgs(void **args, uint64_t argsNum, RunInfo &runInfo) const;
     Status MemsetTensorArgs(void **args, uint64_t argsNum, const RunInfo &runInfo);
 
+private:
     std::string kernelName_;
     KernelType kernelType_{KernelType::KERNEL_TYPE_INVALID};
     const BinHandle *handle_{nullptr};

@@ -24,10 +24,18 @@
 namespace Mki {
 KernelBase::KernelBase(const std::string &opName, const BinHandle *handle) : kernelName_(opName), handle_(handle)
 {
-    if (handle_ != nullptr) {
-        launchBufferSize_ = handle_->GetKernelTilingSize();
+    MKI_CHECK(handle_ != nullptr, "Kernel " << kernelName_ << " handle is nullptr", return);
+    launchBufferSize_ = handle_->GetKernelTilingSize();
+    int32_t coreType = handle_->GetKernelCoreType();
+    switch (coreType) {
+        case -1: MKI_LOG(ERROR) << "Failed to get core type!"; break;
+        case 0: kernelType_ = KernelType::KERNEL_TYPE_AI_CORE; break;
+        case 2: kernelType_ = KernelType::KERNEL_TYPE_AIV; break;
+        case 4: kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC; break;
+        default:
+            MKI_LOG(WARN) << "Unexpected core type, use AIC as default!";
+            kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC;
     }
-    UpdateKernelType();
     MKI_LOG(DEBUG) << "Create kernel " << kernelName_ << ", launch buffer size " << launchBufferSize_
                    << ", coreType: " << kernelType_;
 }
@@ -190,22 +198,6 @@ uint64_t KernelBase::GetKernelParamNum(const LaunchParam &launchParam)
     MKI_LOG(DEBUG) << "kernel param: " << inputOutputNum << " in/out, " << constInputNum << " const in, "
                   << workspaceNum << " workspaces, " << hwsyncNum << " hwsync";
     return inputOutputNum + constInputNum + workspaceNum + hwsyncNum + 1; // 1 is tiling
-}
-
-void KernelBase::UpdateKernelType()
-{
-    MKI_CHECK(handle_ != nullptr, "Kernel " << kernelName_ << " handle is nullptr", return);
-    int32_t coreType = handle_->GetKernelCoreType();
-    switch (coreType) {
-        case -1: MKI_LOG(ERROR) << "Failed to get core type!"; return;
-        case 0: kernelType_ = KernelType::KERNEL_TYPE_AI_CORE; return;
-        case 2: kernelType_ = KernelType::KERNEL_TYPE_AIV; return;
-        case 4: kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC; return;
-        default:
-            MKI_LOG(WARN) << "Unexpected core type, use AIC as default!";
-            kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC;
-            return;
-    }
 }
 
 Status KernelBase::UpdateHwsyncArgs(void **args, uint64_t argsNum)

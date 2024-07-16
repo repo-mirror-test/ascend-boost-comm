@@ -29,9 +29,9 @@ struct BinaryBasicInfo {
 struct KernelMetaInfo {
     std::vector<std::string> kernelList;
     std::string compileInfo;
-    uint32_t version;
+    uint32_t version = 0;
     uint32_t tilingSize = 0;
-    uint32_t coreType;
+    uint32_t coreType = 0;
     uint32_t magic = 0x41494343U;
     void *codeBuf = nullptr;
     uint32_t codeBufLen = 0;

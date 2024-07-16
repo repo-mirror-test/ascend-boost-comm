@@ -12,6 +12,7 @@ import os
 import re
 import logging
 import argparse
+import build_util
 
 pattern_operation = r"add_operation\(.+?\)"
 pattern_kernel = r"add_kernel\(.+?\)"
@@ -35,6 +36,7 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
     if os.path.exists(dst_yaml_path):
         os.remove(dst_yaml_path)
     op_kernel_list = {}
+    device_list = build_util.get_build_target_list()
     for path, _, file_list in os.walk(ops_src_root_dir):
         for file in file_list:
             if file == 'CMakeLists.txt':
@@ -46,16 +48,17 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
                         break
                     add_operation_text = match_operation.group()
                     match_kernel_text_list = re.findall(pattern_kernel, context)
-                    if len(match_kernel_text_list) == 0:
-                        break
                     op_name = parse_operation(add_operation_text)
-                    op_kernel_list[op_name] = {}
+                    kernel_list = {}
                     for add_kernel_text in match_kernel_text_list:
                         kernel_name, soc = parse_kernel(add_kernel_text)
-                        if kernel_name in op_kernel_list[op_name]:
-                            op_kernel_list[op_name][kernel_name][soc] = True
+                        if soc not in device_list:
+                            continue
+                        if kernel_name in kernel_list:
+                            kernel_list[kernel_name][soc] = True
                         else:
-                            op_kernel_list[op_name][kernel_name] = {soc: True}
+                            kernel_list[kernel_name] = {soc: True}
+                    op_kernel_list[op_name] = kernel_list if kernel_list else None
 
     with open(dst_yaml_path, 'w') as yf:
         logging.debug(yaml.dump(op_kernel_list))
@@ -87,7 +90,10 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
             op_kernel_list = yaml.load(f, Loader=yaml.Loader)
             for op_name in op_kernel_list:
                 assert op_name.endswith('Operation'), f'{op_name} is an invalid operation name'
+                option_list.append(f'set(BUILD_{op_name} ON)')
                 kernel_list = op_kernel_list[op_name]
+                if not kernel_list:
+                    continue
                 kernel_built_count = 0
                 for kernel_name in kernel_list:
                     assert kernel_name.endswith('Kernel'), f'{kernel_name} is an invalid kernel name'
@@ -100,8 +106,7 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
                         option_list.append(f'set({option_name} {op_switch})')
                         if soc_list[soc]:
                             kernel_built_count += 1
-                operation_switch = 'ON' if kernel_built_count > 0 else 'OFF'
-                option_list.append(f'set(BUILD_{op_name} {operation_switch})')
+                logging.debug(f'{op_name} has {kernel_built_count} ascendc kernels built')
 
     except FileExistsError:
         logging.error(f'can not open yaml file, {yaml_file_path} do not exist')
