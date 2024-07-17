@@ -16,7 +16,6 @@ import build_util
 
 pattern_operation = r"add_operation\(.+?\)"
 pattern_kernel = r"add_kernel\(.+?\)"
-SOC_LIST = ['ascend310b', 'ascend310p', 'ascend910b']
 
 
 def parse_operation(add_operation_text):
@@ -36,7 +35,6 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
     if os.path.exists(dst_yaml_path):
         os.remove(dst_yaml_path)
     op_kernel_list = {}
-    device_list = build_util.get_build_target_list()
     for path, _, file_list in os.walk(ops_src_root_dir):
         for file in file_list:
             if file == 'CMakeLists.txt':
@@ -49,12 +47,12 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
                     add_operation_text = match_operation.group()
                     match_kernel_text_list = re.findall(pattern_kernel, context)
                     op_name = parse_operation(add_operation_text)
+                    assert op_name not in op_kernel_list, f"operation {op_name} is duplicate"
                     kernel_list = {}
                     for add_kernel_text in match_kernel_text_list:
                         kernel_name, soc = parse_kernel(add_kernel_text)
-                        if soc not in device_list:
-                            continue
                         if kernel_name in kernel_list:
+                            assert soc not in kernel_list[kernel_name], f"{op_name}: kernel {kernel_name}-{soc} is duplicate"
                             kernel_list[kernel_name][soc] = True
                         else:
                             kernel_list[kernel_name] = {soc: True}
@@ -86,6 +84,7 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
         logging.error(f'{os.path.dirname(cmake_option_path)} do not exist')
         exit(1)
     option_list = []
+    built_device_list, all_device_list = build_util.get_build_target_list(with_all=True)
     try:
         with open(yaml_file_path) as f:
             op_kernel_list = yaml.load(f, Loader=yaml.Loader)
@@ -101,9 +100,9 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
                     assert kernel_name.endswith('Kernel'), f'{kernel_name} is an invalid kernel name'
                     soc_list = kernel_list[kernel_name]
                     for soc in soc_list:
-                        assert soc in SOC_LIST, f'{soc} is an invalid soc type'
+                        assert soc in all_device_list, f'{soc} is an invalid soc type'
                         assert isinstance(soc_list[soc], bool), f'{soc_list[soc]} is not bool type'
-                        op_switch = 'ON' if soc_list[soc] else 'OFF'
+                        op_switch = 'ON' if soc_list[soc] and soc in built_device_list else 'OFF'
                         option_name = f'BUILD_{op_name}_{kernel_name}_{soc}'
                         option_list.append(f'set({option_name} {op_switch})')
                         if soc_list[soc]:

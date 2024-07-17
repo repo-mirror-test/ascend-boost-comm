@@ -413,6 +413,7 @@ function fn_main()
             [[ -d "$CACHE_DIR" ]] && rm -rf $CACHE_DIR
             [[ -d "$OUTPUT_DIR" ]] && rm -rf $OUTPUT_DIR
             [[ -d $THIRD_PARTY_DIR ]] && rm -rf $THIRD_PARTY_DIR
+            [[ -f $BUILD_CONFIG_DIR/op_list.yaml ]] && rm -f $BUILD_CONFIG_DIR/op_list.yaml
             echo "clear all build history."
             ;;
         *)

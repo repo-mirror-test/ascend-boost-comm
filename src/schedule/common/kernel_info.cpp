@@ -288,7 +288,7 @@ void KernelInfo::Copy(const KernelInfo &other)
         ret = memcpy_s(args_, argsSize_, other.args_, other.argsSize_);
         MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret, return);
     } else {
-        SetTilingHostAddr(tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
+        SetTilingHostAddr(other.tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
     }
     hwsyncIdx_ = other.hwsyncIdx_;
     tilingExtInfo_.blockDim = other.tilingExtInfo_.blockDim;
