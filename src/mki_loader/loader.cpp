@@ -42,17 +42,19 @@ bool Loader::IsValid() const
     return loadSuccess_;
 }
 
-void Loader::CreateOperations()
+bool Loader::CreateOperations()
 {
     auto &operationCreators = OperationRegister::GetOperationCreators();
     for (const auto &opCreator : operationCreators) {
         Operation *operation = opCreator();
+        MKI_CHECK(operation != nullptr, "create operation fail", return false);
         opMap_[operation->GetName()] = operation;
         MKI_LOG(DEBUG) << "Create operation " << operation->GetName();
     }
+    return true;
 }
 
-void Loader::CreateKernels()
+bool Loader::CreateKernels()
 {
     auto &kernelCreators = KernelRegister::GetKernelCreators();
     for (const auto &creatorInfo : kernelCreators) {
@@ -68,12 +70,13 @@ void Loader::CreateKernels()
         auto kernelCreator = creatorInfo.func;
         MKI_CHECK(kernelCreator, kernelName << " creator function is null", continue);
         const Kernel *kernel = kernelCreator(&handle);
-        MKI_CHECK(kernel != nullptr, "Invalid kernel found in op: " << kernelName, return);
+        MKI_CHECK(kernel != nullptr, "Invalid kernel found in op: " << kernelName, return false);
 
         const auto &opName = creatorInfo.opName;
         auto &opKernel = opKernelMap_[opName];
         opKernel[kernelName] = kernel;
     }
+    return true;
 }
 
 bool Loader::LoadKernelBinarys()
@@ -96,17 +99,12 @@ bool Loader::LoadKernelBinarys()
     return true;
 }
 
-void Loader::Load()
+bool Loader::OpBaseAddKernels()
 {
-    loadSuccess_ = false;
-
-    MKI_CHECK(LoadKernelBinarys(), "Load kernel binarys fail", return);
-    CreateOperations();
-    CreateKernels();
     for (const auto &[opName, op] : opMap_) {
         MKI_LOG(DEBUG) << "mki load operation: " << opName;
         OperationBase *opBase = dynamic_cast<OperationBase *>(op);
-        MKI_CHECK(opBase != nullptr, opName << ": opBase is nullptr", return);
+        MKI_CHECK(opBase != nullptr, opName << ": opBase is nullptr", return false);
         auto it = opKernelMap_.find(opName);
         if (it == opKernelMap_.end()) {
             MKI_LOG(WARN) << opName << ": find kernels map fail ";
@@ -117,6 +115,18 @@ void Loader::Load()
             opBase->AddKernel(kernelName, kernel);
         }
     }
+    return true;
+}
+
+void Loader::Load()
+{
+    loadSuccess_ = false;
+
+    MKI_CHECK(LoadKernelBinarys(), "Load kernel binarys fail", return);
+    MKI_CHECK(CreateOperations(), "Load operations fail", return);
+    MKI_CHECK(CreateKernels(), "Load kernels fail", return);
+    MKI_CHECK(OpBaseAddKernels(), "OpBase add kernels fail", return);
+
     loadSuccess_ = true;
 }
 } // namespace OpSpace

@@ -27,5 +27,7 @@ namespace Utils {
         handleExpr;                                                                                                    \
     }
 }
+
+#define UNUSED_VALUE(x) (void)(x)
 } // namespace Mki
 #endif

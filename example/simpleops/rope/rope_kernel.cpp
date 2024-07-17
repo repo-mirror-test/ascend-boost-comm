@@ -184,7 +184,7 @@ public:
 
     uint64_t GetTilingSize(const LaunchParam &launchParam) const override
     {
-        (void)launchParam;
+        UNUSED_VALUE(launchParam);
         return sizeof(RopeTilingData);
     }
 

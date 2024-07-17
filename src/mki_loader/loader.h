@@ -28,11 +28,13 @@ public:
     void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
     void GetOpKernels(const std::string &opName, KernelMap &kernels) const;
     bool IsValid() const;
+
 private:
     void Load();
     bool LoadKernelBinarys();
-    void CreateOperations();
-    void CreateKernels();
+    bool CreateOperations();
+    bool CreateKernels();
+    bool OpBaseAddKernels();
 
 private:
     std::atomic_bool loadSuccess_{false};

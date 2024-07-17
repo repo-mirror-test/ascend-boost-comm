@@ -42,13 +42,15 @@ Status OperationBase::InferShape(LaunchParam &launchParam) const
 
 int64_t OperationBase::GetInputNum(const Any &specificParam) const
 {
-    (void)specificParam;
+    UNUSED_VALUE(specificParam);
+    MKI_LOG(WARN) << opName_ << " use default GetInputNum function, input num: 1";
     return 1;
 }
 
 int64_t OperationBase::GetOutputNum(const Any &specificParam) const
 {
-    (void)specificParam;
+    UNUSED_VALUE(specificParam);
+    MKI_LOG(WARN) << opName_ << " use default GetOutputNum function, output num: 1";
     return 1;
 }
 

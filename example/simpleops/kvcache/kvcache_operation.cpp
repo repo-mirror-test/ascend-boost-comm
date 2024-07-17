@@ -11,13 +11,13 @@ public:
 
     int64_t GetInputNum(const Any &specificParam) const override
     {
-        (void)specificParam;
+        UNUSED_VALUE(specificParam);
         return 5;
     }
 
     int64_t GetOutputNum(const Any &specificParam) const override
     {
-        (void)specificParam;
+        UNUSED_VALUE(specificParam);
         return 1;
     }
 

@@ -28,10 +28,9 @@ OpSchedule::~OpSchedule() {}
 std::vector<Operation *> OpSchedule::GetAllOperations() const
 {
     std::vector<Operation *> ops;
-    for (const auto &[opName, op] : opMap_) {
-        (void)opName;
-        if (op != nullptr) {
-            ops.push_back(op);
+    for (const auto &it : opMap_) {
+        if (it.second != nullptr) {
+            ops.push_back(it.second);
         }
     }
     return ops;

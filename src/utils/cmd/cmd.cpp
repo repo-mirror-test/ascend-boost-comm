@@ -10,6 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/cmd/cmd.h"
+#include "mki/utils/assert/assert.h"
 #include <iostream>
 
 namespace Mki {
@@ -45,7 +46,7 @@ Status Cmd::Run(int argc, const char *argv[])
 
 Status Cmd::DoHelp(const std::vector<std::string> &args) const
 {
-    (void)args;
+    UNUSED_VALUE(args);
     for (const auto &it : cmdMap_) {
         if (it.first == CMD_HELP) {
             continue;

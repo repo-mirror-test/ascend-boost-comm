@@ -19,25 +19,26 @@
 #include "mki/utils/singleton/singleton.h"
 #include "mki/utils/memset/memset_launcher.h"
 
-#define UNUSED_VALUE(x) (void)(x)
-
 namespace Mki {
 KernelBase::KernelBase(const std::string &opName, const BinHandle *handle) : kernelName_(opName), handle_(handle)
 {
-    MKI_CHECK(handle_ != nullptr, "Kernel " << kernelName_ << " handle is nullptr", return);
-    launchBufferSize_ = handle_->GetKernelTilingSize();
-    int32_t coreType = handle_->GetKernelCoreType();
-    switch (coreType) {
-        case -1: MKI_LOG(ERROR) << "Failed to get core type!"; break;
-        case 0: kernelType_ = KernelType::KERNEL_TYPE_AI_CORE; break;
-        case 2: kernelType_ = KernelType::KERNEL_TYPE_AIV; break;
-        case 4: kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC; break;
-        default:
-            MKI_LOG(WARN) << "Unexpected core type, use AIC as default!";
-            kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC;
+    if (handle_ != nullptr) {
+        launchBufferSize_ = handle_->GetKernelTilingSize();
+        int32_t coreType = handle_->GetKernelCoreType();
+        switch (coreType) {
+            case -1: MKI_LOG(ERROR) << "Failed to get core type!"; break;
+            case 0: kernelType_ = KernelType::KERNEL_TYPE_AI_CORE; break;
+            case 2: kernelType_ = KernelType::KERNEL_TYPE_AIV; break;
+            case 4: kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC; break;
+            default:
+                MKI_LOG(WARN) << "Unexpected core type, use AIC as default!";
+                kernelType_ = KernelType::KERNEL_TYPE_MIX_AIC;
+        }
+        MKI_LOG(DEBUG) << "Create kernel " << kernelName_ << ", launch buffer size " << launchBufferSize_
+                       << ", coreType: " << kernelType_;
+    } else {
+        MKI_LOG(ERROR) << "Kernel " << kernelName_ << " handle is nullptr";
     }
-    MKI_LOG(DEBUG) << "Create kernel " << kernelName_ << ", launch buffer size " << launchBufferSize_
-                   << ", coreType: " << kernelType_;
 }
 
 KernelBase::~KernelBase() {}
@@ -69,7 +70,8 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     auto tilingSize = GetTilingSize(launchParam);
     bool launchWithTiling = kernelInfo_.GetLaunchWithTiling();
     if (launchWithTiling) {
-        kernelInfo_.AllocTilingHost(tilingSize);
+        auto st = kernelInfo_.AllocTilingHost(tilingSize);
+        MKI_CHECK(st.Ok(), "Failed to alloc host tiling buffer " << st.ToString(), return st);
     }
 
     auto status = InitImpl(launchParam);
@@ -182,7 +184,7 @@ void KernelBase::Copy(const KernelBase &other)
 
 uint64_t KernelBase::GetTilingSize(const LaunchParam &launchParam) const
 {
-    (void)launchParam;
+    UNUSED_VALUE(launchParam);
     return launchBufferSize_;
 }
 

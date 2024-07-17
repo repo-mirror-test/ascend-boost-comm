@@ -32,7 +32,7 @@ struct KernelMetaInfo {
     uint32_t version = 0;
     uint32_t tilingSize = 0;
     uint32_t coreType = 0;
-    uint32_t magic = 0x41494343U;
+    uint32_t magic = MKIRT_DEV_BINARY_MAGIC_ELF_AICUBE;
     void *codeBuf = nullptr;
     uint32_t codeBufLen = 0;
 };
