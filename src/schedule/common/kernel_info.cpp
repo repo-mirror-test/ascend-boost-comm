@@ -275,22 +275,30 @@ std::string KernelInfo::ToString() const
 void KernelInfo::Copy(const KernelInfo &other)
 {
     launchWithTiling_ = other.launchWithTiling_;
-    hwsyncIdx_ = other.hwsyncIdx_;
-    if (launchWithTiling_ && other.tilingExtInfo_.hostTilingAddr != nullptr) {
-        uint64_t hostTilingSize = other.tilingExtInfo_.hostTilingSize;
-        tilingExtInfo_.hostTilingAddr = new (std::nothrow) uint8_t[hostTilingSize];
-        MKI_CHECK(tilingExtInfo_.hostTilingAddr != nullptr,
-            "failed to copy tiling, len " << hostTilingSize, return);
-        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, hostTilingSize,
-                            other.tilingExtInfo_.hostTilingAddr, hostTilingSize);
-        MKI_CHECK(ret == EOK, "failed to copy kernel info", return);
+    tilingExtInfo_.hostTilingSize = other.tilingExtInfo_.hostTilingSize;
+    argsSize_ = other.argsSize_;
+    Status st = InitArgs(argsSize_);
+    MKI_CHECK(st.Ok(), "failed to init args size, len " << argsSize_, return);
+    if (launchWithTiling_) {
+        st = AllocTilingHost(tilingExtInfo_.hostTilingSize);
+        MKI_CHECK(st.Ok(), "failed to alloc tiling buffer, len " << tilingExtInfo_.hostTilingSize, return);
+        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize,
+                            other.tilingExtInfo_.hostTilingAddr, other.tilingExtInfo_.hostTilingSize);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info tiling, errorCode: " << ret, return);
+        ret = memcpy_s(args_, argsSize_, other.args_, other.argsSize_);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret, return);
+    } else {
+        SetTilingHostAddr(tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
     }
-    // args_ 不需要 copy
-    tilingExtInfo_ = other.tilingExtInfo_;
+    hwsyncIdx_ = other.hwsyncIdx_;
+    tilingExtInfo_.blockDim = other.tilingExtInfo_.blockDim;
+    tilingExtInfo_.tilingId = other.tilingExtInfo_.tilingId;
+    tilingExtInfo_.constTensorOffset = other.tilingExtInfo_.constTensorOffset;
+    tilingExtInfo_.usedSize = other.tilingExtInfo_.usedSize;
     constTensorInfo_ = other.constTensorInfo_;
     scratchSizes_ = other.scratchSizes_;
     memsetInfo_ = other.memsetInfo_;
-    initFlag_ = other.initFlag_;
+    initFlag_ = other.initFlag_;    // initFlag_ is the last item copied
 }
 
 void KernelInfo::ResetArgs()

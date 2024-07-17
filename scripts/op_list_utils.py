@@ -58,11 +58,12 @@ def build_op_list(ops_src_root_dir, dst_yaml_path):
                             kernel_list[kernel_name][soc] = True
                         else:
                             kernel_list[kernel_name] = {soc: True}
-                    op_kernel_list[op_name] = kernel_list if kernel_list else None
+                    op_kernel_list[op_name] = kernel_list if kernel_list else 'host-only'
 
     with open(dst_yaml_path, 'w') as yf:
-        logging.debug(yaml.dump(op_kernel_list))
-        yf.write(yaml.dump(op_kernel_list, indent=4))
+        yaml_context = yaml.dump(op_kernel_list, indent=4)
+        yf.write(yaml_context)
+        logging.debug(yaml_context)
         logging.info(f'op list is build at {dst_yaml_path}')
 
 
@@ -92,7 +93,8 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
                 assert op_name.endswith('Operation'), f'{op_name} is an invalid operation name'
                 option_list.append(f'set(BUILD_{op_name} ON)')
                 kernel_list = op_kernel_list[op_name]
-                if not kernel_list:
+                if isinstance(kernel_list, str):
+                    assert kernel_list == 'host-only', f'{op_name} kernel parse fail, invalid string: {kernel_list}'
                     continue
                 kernel_built_count = 0
                 for kernel_name in kernel_list:
@@ -120,6 +122,9 @@ def build_cmake_options(yaml_file_path, cmake_option_path):
         exit(1)
     except AssertionError as e:
         logging.error(e.args[0])
+        exit(1)
+    except TypeError as e:
+        logging.error(f'{op_name} get invalid value type, error info: {e.args[0]}')
         exit(1)
 
     with open(cmake_option_path, 'w') as cmake_file:
