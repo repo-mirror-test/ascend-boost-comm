@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -31,7 +31,7 @@ LaunchParam &LaunchParam::operator=(const LaunchParam &other)
     for (size_t i = 0; i < other.outTensors_.size(); ++i) {
         outTensors_[i] = other.outTensors_[i];
     }
-    
+
     return *this;
 }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -14,13 +14,11 @@
 
 #include <cstdint>
 
-#include "mki/utils/noncopyable/noncopyable.h"
+#include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/utils/status/status.h"
 #include "mki/utils/svector/svector.h"
 
 namespace Mki {
-template <typename T> using MiniVector = SVector<T, 8>; // 8 小容量SVECTOR
-
 class KernelInfo : public NonCopyable {
 public:
 struct ConstTensorInfo {

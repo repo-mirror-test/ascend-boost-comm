@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -18,12 +18,14 @@
     }
 
 #define CHECK_STATUS_RETURN(fun)                                                                                       \
-    int ret = (fun);                                                                                                   \
-    if (ret == 0) {                                                                                                    \
-        return MKIRT_SUCCESS;                                                                                          \
-    } else {                                                                                                           \
-        return ret;                                                                                                    \
-    }
+    do {                                                                                                               \
+        int ret = (fun);                                                                                               \
+        if (ret == 0) {                                                                                                \
+            return MKIRT_SUCCESS;                                                                                      \
+        } else {                                                                                                       \
+            return ret;                                                                                                \
+        }                                                                                                              \
+    } while (0)
 
 #define CHECK_STATUS_WITH_DESC_RETURN(ret, funcName)                                                                   \
     if ((ret) == 0) {                                                                                                  \

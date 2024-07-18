@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -168,7 +168,7 @@ bool BinHandle::RegisterBinWithSingleKernel(const std::string &kernelName, MkiRt
 bool BinHandle::RegisterBinWithMultiKernel(const std::string &kernelName, MkiRtModuleInfo &moduleInfo)
 {
     MKI_LOG(DEBUG) << "MultiKernel RegisterBin start, opName:" << kernelName;
-    int st = AstRtRegisterAllFunction(&moduleInfo, &handle_);
+    int st = MkiRtRegisterAllFunction(&moduleInfo, &handle_);
     MKI_CHECK(st == MKIRT_SUCCESS, kernelName << " Mki RtRegister AllFunction fail, error:" << st, return false);
 
     MKI_CHECK(handle_ != nullptr, kernelName << " Mki RtRegister AllFunction fail,"
