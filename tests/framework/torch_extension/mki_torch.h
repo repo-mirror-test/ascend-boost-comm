@@ -31,7 +31,7 @@ private:
     std::string RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::Tensor> &inTensors,
                           std::vector<Mki::Tensor> &outTensors, int runTimes);
     std::string ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vector<at::Tensor> &atOutTensors);
-    void *GetCurrentStream();
+    void *GetCurrentStream() const;
     Mki::Tensor AtTensor2MkiTensor(const at::Tensor &atTensor);
     void ContiguousAtTensor(std::vector<at::Tensor> &atTensors);
 

@@ -12,8 +12,8 @@ import os
 import argparse
 import re
 import argparse
-    
- 
+
+
 def FilterCommentsStringMacro(codeLine):
     regMacro = r'\s*#.*$'
     regComments = r'/\*.*?\*/|//.*$'
@@ -24,7 +24,7 @@ def FilterCommentsStringMacro(codeLine):
     codeLine = re.sub(regString1, "", codeLine)
     codeLine = re.sub(regString2, "", codeLine)
     return codeLine
- 
+
 def FilterTemplates(codeLine):
     regPrefix = r'\b(const|volatile|typename)\b'
     codeLine = re.sub(regPrefix, "", codeLine)
@@ -39,7 +39,7 @@ def FilterTemplates(codeLine):
     regSpecial = r'(->|>>|<<|::)'
     codeLine = re.sub(regSpecial, "", codeLine)
     return codeLine
- 
+
 def WhetherConditionals(codeLine):
     regulation = r'([?|!~><]|&&|==|!=|\b(if|switch|case|while|for)\b)'
     newCodeLine = re.sub(regulation, "", codeLine)
@@ -47,7 +47,7 @@ def WhetherConditionals(codeLine):
         return True
     else:
         return False
- 
+
 class BranchFilter:
     def __init__(self, debug):
         self.iter_ = 0
@@ -57,16 +57,16 @@ class BranchFilter:
         self.dirDirtyWords = ['/llt/', '/ai/', '/vector/',
                               '/x86/', '/sve/dev/operators/', 
                               '/test/', '/adapter/']
- 
+
     def DEBUG_LOG(self, args):
         if self.debugSwitch:
             print('[DEBUG] ', args)
- 
+
     def LoadFile(self, cppFile):
         with open(cppFile) as fw:
             fileLineList = fw.readlines()
             return fileLineList
- 
+
     def FindAllMacros(self, codeLines):
         for line in codeLines:
             line = line[0:-1]
@@ -79,12 +79,12 @@ class BranchFilter:
                 newLine = re.sub(regBraces, "", newLine)
                 self.DEBUG_LOG(newLine)
                 self.macroList.append(newLine)
- 
+
     def FindAllCodeFiles(self, path):
         for root,dirs,files in os.walk(path):
             for file in files:
                 file_path = os.path.join(root, file)
- 
+
                 escapeFlag = False
                 for key in self.dirDirtyWords:
                     if key in file_path:
@@ -92,32 +92,32 @@ class BranchFilter:
                         escapeFlag = True
                 if escapeFlag:
                     continue
- 
+
                 splitFile = file.split('.')
                 if len(splitFile) < 1:
                     continue
- 
+
                 fix = splitFile[len(splitFile) - 1]
                 if fix == 'cpp' or fix == 'h' or fix == 'hpp':
                     self.DEBUG_LOG(file_path)
                     codeLines = self.LoadFile(file_path)
                     self.FindAllMacros(codeLines)
- 
- 
+
+
     def WhetherCounterNewFile(self, line):
         prefix = line[0:3]
         if prefix == 'SF:':
             return True
         else:
             return False
- 
+
     def GetBranchInfo(self, currentLine):
         branchInfo = currentLine.split(':')[1]
         branchInfo = branchInfo.split(',')
         cppLineNumber = int(branchInfo[0])
         return cppLineNumber
- 
- 
+
+
     def GetCppDistanceBetweenBranches(self, i, infoLines):
         currentLine = infoLines[i][0:-1]
         currentCppLineNumber = self.GetBranchInfo(currentLine)
@@ -127,15 +127,15 @@ class BranchFilter:
             cppLineNumber = self.GetBranchInfo(infoLines[i][0:-1])
         limit = cppLineNumber - currentCppLineNumber
         return abs(limit)
- 
- 
+
+
     def CheckMacrosInRef(self, line):
         flag = False
         for key in self.macroList:
             if key in line:
                 flag = True
         return flag
- 
+
     def ProcessOneLine(self, infoLines, cppLines, newInfoData):
         currentLine = infoLines[self.iter_][0:-1]
         currentCppLineNumber = self.GetBranchInfo(currentLine)
@@ -174,16 +174,16 @@ class BranchFilter:
                 newInfoData += infoLines[self.iter_]
             self.iter_ += 1
             cppLineNumber = self.GetBranchInfo(infoLines[self.iter_][0:-1])
-            
+
         return newInfoData
- 
+
     def ProcessOneFile(self, infoLines, line, newInfoData):
         '''
         load the cpp file and delete some branches in info file
         '''
         fileAbsPath = line[3:-1]
         cppLines = self.LoadFile(fileAbsPath)
- 
+
         deletedNum = 0
         while infoLines[self.iter_][0:13] != 'end_of_record':
             prefix = infoLines[self.iter_][0:4]
@@ -194,10 +194,10 @@ class BranchFilter:
                 newInfoData += infoLines[self.iter_]
                 self.iter_ += 1
         return newInfoData
- 
+
     def MainLoopInfo(self, infoLines, newInfoFile):
         newInfoData = ""
- 
+
         while self.iter_ < len(infoLines):
             line = infoLines[self.iter_]
             if self.WhetherCounterNewFile(line):
@@ -206,17 +206,17 @@ class BranchFilter:
             else:
                 self.iter_ += 1
                 newInfoData += line
- 
+
         with open(newInfoFile, 'w') as fw:
             fw.write(newInfoData)
- 
- 
+
+
     def Filter(self, inputFile, outFile, rootDir):
         self.FindAllCodeFiles(rootDir)
         infoLines = self.LoadFile(inputFile)
         self.MainLoopInfo(infoLines, outFile)
- 
-            
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', help='11')
@@ -224,17 +224,17 @@ def main():
     parser.add_argument('--root', help='11')
     parser.add_argument('--debug', help='11')
     args = parser.parse_args()
- 
+
     inputFile = args.input
     outFile = args.output
     rootDir = args.root
     debug = args.debug
- 
+
     bf = BranchFilter(debug)
     bf.Filter(inputFile, outFile, rootDir)
     print("[INFO] DONE")
     #'/home/zz/workspace/ads_develop/iads/common/operator/sve/dev/operators_online/Core/Ops/resize/')
- 
- 
- 
+
+
+
 main()

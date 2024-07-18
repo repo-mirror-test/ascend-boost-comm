@@ -13,9 +13,7 @@
 #define MKI_UTILS_MATH_TENSOR_UTILS_H
 
 #include <type_traits>
-
 #include "securec.h"
-
 #include "mki/tensor.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/svector/svector.h"

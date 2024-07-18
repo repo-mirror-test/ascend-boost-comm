@@ -41,20 +41,20 @@ private:
     char *rep_{nullptr};
 };
 
-#define OP_TILING_CHECK_STATUS_RETURN(ret)                                                                             \
-    do {                                                                                                               \
-        if (!(ret).Ok()) {                                                                                             \
-            MKI_LOG_ERROR << (ret).ToString();                                                                         \
-            return ret;                                                                                                \
-        }                                                                                                              \
+#define OP_TILING_CHECK_STATUS_RETURN(ret)                                                                         \
+    do {                                                                                                           \
+        if (!(ret).Ok()) {                                                                                         \
+            MKI_LOG_ERROR << (ret).ToString();                                                                     \
+            return ret;                                                                                            \
+        }                                                                                                          \
     } while (0)
 
-#define OP_TILING_CHECK_STATUS_RETURN_VOID(ret)                                                                        \
-    do {                                                                                                               \
-        if (!(ret).Ok()) {                                                                                             \
-            MKI_LOG_ERROR << (ret).ToString();                                                                         \
-            return;                                                                                                    \
-        }                                                                                                              \
+#define OP_TILING_CHECK_STATUS_RETURN_VOID(ret)                                                                    \
+    do {                                                                                                           \
+        if (!(ret).Ok()) {                                                                                         \
+            MKI_LOG_ERROR << (ret).ToString();                                                                     \
+            return;                                                                                                \
+        }                                                                                                          \
     } while (0)
 } // namespace Mki
 #endif

@@ -14,9 +14,9 @@
 #include <string>
 #include "mki/utils/rt/backend/backend_factory.h"
 
-#define ERROR_ITEM(item)                                                                                               \
-    {                                                                                                                  \
-        item, "##item"                                                                                                 \
+#define ERROR_ITEM(item)   \
+    {                      \
+        item, "##item"     \
     }
 namespace Mki {
 constexpr int VERSION_MAJOR = 1;

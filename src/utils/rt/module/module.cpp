@@ -30,7 +30,7 @@ int MkiRtModuleBindFunction(MkiRtModule module, const char *funcName, void *func
     return BackendFactory::GetBackend()->ModuleBindFunction(module, funcName, func);
 }
 
-int AstRtRegisterAllFunction(MkiRtModuleInfo *moduleInfo, void **handle)
+int MkiRtRegisterAllFunction(MkiRtModuleInfo *moduleInfo, void **handle)
 {
     return BackendFactory::GetBackend()->RegisterAllFunction(moduleInfo, handle);
 }

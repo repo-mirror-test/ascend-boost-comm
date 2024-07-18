@@ -22,7 +22,7 @@ int MkiRtModuleCreate(MkiRtModuleInfo *moduleInfo, MkiRtModule *module);
 int MkiRtModuleCreateFromFile(const char *moduleFilePath, MkiRtModuleType type, int version, MkiRtModule *module);
 int MkiRtModuleDestory(MkiRtModule *module);
 int MkiRtModuleBindFunction(MkiRtModule module, const char *funcName, void *func);
-int AstRtRegisterAllFunction(MkiRtModuleInfo *moduleInfo, void **handle);
+int MkiRtRegisterAllFunction(MkiRtModuleInfo *moduleInfo, void **handle);
 int MkiRtFunctionLaunch(const void *func, const MkiRtKernelParam *launchParam, MkiRtStream stream);
 int MkiRtFunctionLaunchWithHandle(void *handle, const MkiRtKernelParam *launchParam, MkiRtStream stream,
     const RtTaskCfgInfoT *cfgInfo);

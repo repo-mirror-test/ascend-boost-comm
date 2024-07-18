@@ -17,7 +17,7 @@
 #include "mki/utils/log/log.h"
 #include "mki_loader/op_register.h"
 #include "mki/utils/singleton/singleton.h"
-#include <mki/utils/platform/platform_info.h>
+#include "mki/utils/platform/platform_info.h"
 
 namespace OpSpace {
 Loader::Loader() { Load(); }
@@ -99,7 +99,7 @@ bool Loader::LoadKernelBinarys()
     return true;
 }
 
-bool Loader::OpBaseAddKernels()
+bool Loader::OpBaseAddKernels() const
 {
     for (const auto &[opName, op] : opMap_) {
         MKI_LOG(DEBUG) << "mki load operation: " << opName;

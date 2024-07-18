@@ -13,7 +13,6 @@
 #define MKI_KERNELTEST_EXTENSION_H
 
 #include <cstdint>
-
 #include "mki/types.h"
 
 extern "C" uint32_t PrintAscendKernel(const void *stream,

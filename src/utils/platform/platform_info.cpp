@@ -11,7 +11,6 @@
  */
 
 #include "mki/utils/platform/platform_info.h"
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/file_system/file_system.h"
 #include "mki/utils/log/log.h"

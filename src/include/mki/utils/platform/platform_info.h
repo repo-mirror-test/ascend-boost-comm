@@ -14,7 +14,6 @@
 
 #include <string>
 #include <unordered_map>
-
 #include "mki/utils/platform/platform_manager.h"
 
 namespace Mki {

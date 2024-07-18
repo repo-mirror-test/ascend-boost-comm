@@ -41,7 +41,7 @@ TORCH_LIBRARY(MkiTorch, m)
 }
 }
 
-void *MkiTorch::GetCurrentStream()
+void *MkiTorch::GetCurrentStream() const
 {
     int32_t devId = 0;
     Mki::MkiRtDeviceGetCurrent(&devId);
@@ -166,12 +166,12 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
 
     status = kernel->Run(launchParam, runInfo);
     MKI_LOG_IF(!status.Ok(), ERROR) << kernel->GetName() << " run fail, error:" << status.ToString();
-    if (!status.Ok()){
+    if (!status.Ok()) {
         return "kernel run fail";
     }
     int ret = Mki::MkiRtStreamSynchronize(runInfo.GetStream());
     MKI_LOG_IF(ret != 0, ERROR) << "MkiRtStreamSynchronize fail";
-    if (ret != 0){
+    if (ret != 0) {
         return "MkiRtStreamSynchronize fail";
     }
 
@@ -269,7 +269,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     if (retStr != "ok") {
         return retStr;
     }
-    
+
     MKI_LOG(INFO) << kernel->GetName() << " run start, runInfo:\n" << runInfo.ToString();
 
     for (int runIdx = 0; runIdx < runTimes; runIdx++) {
@@ -285,7 +285,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
         }
         status = kernel->Run(launchParam, runInfo);
         MKI_LOG_IF(!status.Ok(), ERROR) << kernel->GetName() << " run fail, error:" << status.ToString();
-        if (!status.Ok()){
+        if (!status.Ok()) {
             if (deviceLaunchBuffer != nullptr) {
                 Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
             }
@@ -295,7 +295,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     }
     int ret = Mki::MkiRtStreamSynchronize(runInfo.GetStream());
     MKI_LOG_IF(ret != 0, ERROR) << "MkiRtStreamSynchronize fail";
-    if (ret != 0){
+    if (ret != 0) {
         return "MkiRtStreamSynchronize fail";
     }
 
@@ -390,7 +390,7 @@ std::string MkiTorch::ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vec
     } else if (perfFlag == 1) {
         retStr = RunOpPerf(launchParam, mkiInTensors, mkiOutTensors, runTimes);
     }
-    
+
     return retStr;
 }
 

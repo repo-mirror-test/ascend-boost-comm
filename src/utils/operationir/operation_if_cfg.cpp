@@ -10,11 +10,9 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/operationir/operation_ir_cfg.h"
-
 #include <fstream>
 #include <algorithm>
 #include <string>
-
 #include "mki/types.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/assert/assert.h"

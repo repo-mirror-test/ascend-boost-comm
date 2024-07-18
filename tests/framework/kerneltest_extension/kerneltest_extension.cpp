@@ -10,15 +10,11 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "kerneltest_extension.h"
-
 #include <fstream>
 #include <random>
 #include <sstream>
-
 #include <nlohmann/json.hpp>
-
 #include "acl/acl.h"
-
 #include "mki/ops.h"
 #include "mki/utils/fp16/fp16_t.h"
 #include "mki/utils/log/log.h"

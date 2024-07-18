@@ -17,14 +17,14 @@
 namespace Mki {
 namespace Utils {
 #define MKI_CHECK(condition, logExpr, handleExpr)                                                                   \
-    if (!(condition)) {                                                                                                \
-        MKI_LOG(ERROR) << logExpr;                                                                                     \
-        handleExpr;                                                                                                    \
+    if (!(condition)) {                                                                                             \
+        MKI_LOG(ERROR) << logExpr;                                                                                  \
+        handleExpr;                                                                                                 \
     }
 
 #define MKI_CHECK_NO_LOG(condition, handleExpr)                                                                     \
-    if (!(condition)) {                                                                                                \
-        handleExpr;                                                                                                    \
+    if (!(condition)) {                                                                                             \
+        handleExpr;                                                                                                 \
     }
 }
 

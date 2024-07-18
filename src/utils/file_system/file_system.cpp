@@ -10,7 +10,6 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/file_system/file_system.h"
-
 #include <cstring>
 #include <cstdlib>
 #include <climits>
@@ -165,7 +164,10 @@ bool FileSystem::WriteFile(const void *codeBuf, uint64_t codeLen, const std::str
     return true;
 }
 
-void FileSystem::DeleteFile(const std::string &filePath) { remove(filePath.c_str()); }
+void FileSystem::DeleteFile(const std::string &filePath)
+{
+    (void)remove(filePath.c_str());
+}
 
 bool FileSystem::Rename(const std::string &filePath, const std::string &newFilePath)
 {

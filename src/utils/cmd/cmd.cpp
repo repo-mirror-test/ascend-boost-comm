@@ -10,8 +10,8 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/cmd/cmd.h"
-#include "mki/utils/assert/assert.h"
 #include <iostream>
+#include "mki/utils/assert/assert.h"
 
 namespace Mki {
 constexpr int ERROR_INVALID_ARG = 1;

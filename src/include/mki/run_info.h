@@ -14,7 +14,6 @@
 
 #include <cstdint>
 #include <string>
-
 #include "mki/utils/non_copyable/non_copyable.h"
 
 namespace Mki {

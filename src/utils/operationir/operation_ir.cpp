@@ -10,9 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/operationir/operation_ir.h"
-
 #include <string>
-
 #include "mki/types.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/assert/assert.h"
@@ -253,7 +251,8 @@ bool OperationIr::SetSupportedFormats(SVector<TensorInfoIr> &tensorInfoIrs, cons
     return true;
 }
 
-bool OperationIr::SetIsOptional(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index, const bool &isOptional) const
+bool OperationIr::SetIsOptional(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index,
+                                const bool &isOptional) const
 {
     if (index >= tensorInfoIrs.size()) {
         tensorInfoIrs.resize(index + 1);

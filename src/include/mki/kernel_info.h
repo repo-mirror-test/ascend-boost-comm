@@ -13,7 +13,6 @@
 #define MKI_KERNEL_INFO_H
 
 #include <cstdint>
-
 #include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/utils/status/status.h"
 #include "mki/utils/svector/svector.h"

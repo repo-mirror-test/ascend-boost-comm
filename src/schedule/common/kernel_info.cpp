@@ -10,9 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/kernel_info.h"
-
 #include <securec.h>
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/fp16/fp16_t.h"
 #include "mki/utils/log/log.h"

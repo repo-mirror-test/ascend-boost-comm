@@ -17,9 +17,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include <securec.h>
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/file_system/file_system.h"
 #include "mki/utils/log/log.h"

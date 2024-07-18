@@ -10,7 +10,6 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "golden.h"
-
 #include "mki/utils/fp16/fp16_t.h"
 #include "float_util.h"
 

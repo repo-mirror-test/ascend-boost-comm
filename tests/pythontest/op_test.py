@@ -50,7 +50,7 @@ class OpTest(unittest.TestCase):
             "specificParam": op_param}
         self.mki = torch.classes.MkiTorch.MkiTorch(json.dumps(
             self.op_desc))
-    
+
     def set_param_perf(self, op_type, op_name, run_times, op_param):
         self.op_desc = {
             "opType": op_type,

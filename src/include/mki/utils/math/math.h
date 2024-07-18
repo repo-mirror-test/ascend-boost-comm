@@ -14,7 +14,6 @@
 #define MKI_UTILS_MATH_MATH_H
 
 #include <cstdint>
-
 #include "mki/utils/log/log.h"
 
 namespace Mki {

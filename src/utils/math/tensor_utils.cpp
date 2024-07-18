@@ -10,7 +10,6 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/math/tensor_utils.h"
-
 #include "mki/utils/math/math.h"
 
 namespace Mki {

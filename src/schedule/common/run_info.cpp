@@ -10,9 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/run_info.h"
-
 #include "securec.h"
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 

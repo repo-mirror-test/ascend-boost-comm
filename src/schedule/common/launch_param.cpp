@@ -9,9 +9,9 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+#include "mki/launch_param.h"
 #include <functional>
 #include <map>
-#include "mki/launch_param.h"
 #include "mki/utils/log/log.h"
 
 namespace Mki {

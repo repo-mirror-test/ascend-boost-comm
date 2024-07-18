@@ -34,7 +34,7 @@ private:
     bool LoadKernelBinarys();
     bool CreateOperations();
     bool CreateKernels();
-    bool OpBaseAddKernels();
+    bool OpBaseAddKernels() const;
 
 private:
     std::atomic_bool loadSuccess_{false};

@@ -46,13 +46,13 @@ LogStream::LogStream(const char *filePath, int line, const char *funcName, LogLe
     }
 
     constexpr int microSecond = 1000000;
-    int us =
-        std::chrono::duration_cast<std::chrono::microseconds>(logEntity_.time.time_since_epoch()).count() % microSecond;
+    int us = std::chrono::duration_cast<std::chrono::microseconds>(
+        logEntity_.time.time_since_epoch()).count() % microSecond;
     std::time_t tmpTime = std::chrono::system_clock::to_time_t(logEntity_.time);
     struct tm timeinfo;
     localtime_r(&tmpTime, &timeinfo);
     char timeStr[64] = {0}; // 64 日志buffer长度
-    strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", &timeinfo);
+    (void)strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", &timeinfo);
 
     stream_.str("");
     stream_ << "[" << timeStr << "." << us << "] [" << LogLevelToString(logEntity_.level) << "] ["

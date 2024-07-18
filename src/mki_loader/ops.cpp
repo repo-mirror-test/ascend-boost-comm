@@ -23,10 +23,19 @@ Ops &Ops::Instance()
     return instance;
 }
 
-std::vector<Operation *> Ops::GetAllOperations() const { return opSchedule_->GetAllOperations(); }
+std::vector<Operation *> Ops::GetAllOperations() const
+{
+    return opSchedule_->GetAllOperations();
+}
 
-Operation *Ops::GetOperationByName(const std::string &opName) const { return opSchedule_->GetOperationByName(opName); }
+Operation *Ops::GetOperationByName(const std::string &opName) const
+{
+    return opSchedule_->GetOperationByName(opName);
+}
 
-Kernel *Ops::GetKernelInstance(const std::string &kernelName) const { return opSchedule_->GetKernelInstance(kernelName); }
+Kernel *Ops::GetKernelInstance(const std::string &kernelName) const
+{
+    return opSchedule_->GetKernelInstance(kernelName);
+}
 
 } // namespace OpSpace

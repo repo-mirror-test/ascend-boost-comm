@@ -19,7 +19,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
 #include "mki/launch_param.h"
 #include "mki/base/kernel_base.h"
 #include "mki/run_info.h"

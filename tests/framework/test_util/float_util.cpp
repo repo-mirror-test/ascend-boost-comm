@@ -9,10 +9,9 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+
 #include "float_util.h"
-
 #include <random>
-
 #include "mki/utils/fp16/fp16_t.h"
 #include "mki/utils/log/log.h"
 

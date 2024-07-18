@@ -34,9 +34,8 @@ typename std::enable_if<std::is_trivially_destructible<T>::value>::type Construc
 }
 
 template <class T, class... Args>
-typename std::enable_if<!std::is_trivially_destructible<T>::value>::type ConstructInPlace(
-    T *ptr, Args &&...args) noexcept(std::is_nothrow_destructible<T>::value && noexcept(T(std::forward<Args>(args)...)))
-
+typename std::enable_if<!std::is_trivially_destructible<T>::value>::type ConstructInPlace(T *ptr, Args &&...args)
+    noexcept(std::is_nothrow_destructible<T>::value && noexcept(T(std::forward<Args>(args)...)))
 {
     if (ptr != nullptr) {
         ptr->~T();

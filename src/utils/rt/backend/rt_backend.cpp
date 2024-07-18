@@ -10,14 +10,12 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/rt/backend/rt_backend.h"
-
 #include <cstdlib>
 #include <dlfcn.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/file_system/file_system.h"
