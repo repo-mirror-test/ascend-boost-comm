@@ -432,7 +432,7 @@ function fn_main()
         *)
             echo "build.sh testframework|example|dev|debug|release|clean"\
             "--incremental|--force_clean|--output=<dir>|--cache=<dir>|--use_cxx11_abi=0"\
-            "|--use_cxx11_abi=1|--build_config=<path>|--skip_build|--no_werror|--namespace=<namespace>"
+            "|--use_cxx11_abi=1|--build_config=<dir>|--skip_build|--no_werror|--namespace=<namespace>"
             ;;
     esac
 }
