@@ -76,7 +76,6 @@ Status KernelBase::Init(const LaunchParam &launchParam)
 
     auto status = InitImpl(launchParam);
     MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(), return status);
-    kernelInfo_.SetInitedFlag(true);
 
     auto kernelParamNum = GetKernelParamNum(launchParam);
     uint64_t baseSize = kernelParamNum * sizeof(void *);

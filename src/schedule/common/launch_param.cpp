@@ -72,8 +72,8 @@ SVector<Tensor> &LaunchParam::GetOutTensors() { return outTensors_; }
 
 std::string LaunchParam::ParamToJsonString() const
 {
-    MKI_LOG(WARN) << "LaunchParam can not print param " << specificParam_.Type().name();
-    return "";
+    //: 实现打印 specific param
+    return std::string("LaunchParam can not print param ") + specificParam_.Type().name();
 }
 
 std::string LaunchParam::ToString() const

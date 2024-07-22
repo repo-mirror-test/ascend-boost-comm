@@ -84,7 +84,7 @@ public:
 
     // LaunchWithTiling
     void SetLaunchWithTiling(bool flag);
-    bool GetLaunchWithTiling();
+    bool GetLaunchWithTiling() const;
 
     // Scratch
     MiniVector<uint64_t> &GetScratchSizes();
@@ -100,13 +100,10 @@ private:
     void ResetConstTensorInfo();
     void ResetScratchSizes();
     void ResetMemsetInfo();
-    void SetInitedFlag(bool flag);
-    friend class KernelBase;
 
 private:
     uint8_t *args_ = nullptr;
     uint64_t argsSize_ = 0;
-
     bool initFlag_{false};  // kernel info 线程间不共享
     bool launchWithTiling_{true};
     int64_t hwsyncIdx_ = -1; // < 0: no hwsync, >= 0: hwsync arg idx

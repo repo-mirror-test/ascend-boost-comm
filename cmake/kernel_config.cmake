@@ -53,3 +53,9 @@ macro(add_kernel_bin tac soc)
         DEPENDS ${${tac}_${soc}_output}
     )
 endmacro()
+
+macro(return_value_check return_value msg)
+    if(NOT return_value EQUAL 0)
+        message(FATAL_ERROR ${msg})
+    endif()
+endmacro()

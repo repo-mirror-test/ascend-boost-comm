@@ -9,6 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
+
 #include "mki/kernel_info.h"
 #include <securec.h>
 #include "mki/utils/assert/assert.h"
@@ -39,7 +40,7 @@ void KernelInfo::Reset()
 Status KernelInfo::InitArgs(uint64_t len)
 {
     constexpr uint64_t maxArgsSize = 1024 * 1024; // 1mb
-    MKI_CHECK(len <= maxArgsSize, "failed to check args len " << len, return Status::FailStatus(-1));
+    MKI_CHECK(len > 0 && len <= maxArgsSize, "failed to check args len " << len, return Status::FailStatus(-1));
 
     args_ = new (std::nothrow) uint8_t[len];
     MKI_CHECK(args_ != nullptr, "failed to new args, len " << len, return Status::FailStatus(-1));
@@ -48,6 +49,7 @@ Status KernelInfo::InitArgs(uint64_t len)
     argsSize_ = len;
     MKI_LOG(INFO) << "args inited successfully, len " << len;
 
+    initFlag_ = true;
     return Status::OkStatus();
 }
 
@@ -232,7 +234,7 @@ void KernelInfo::SetLaunchWithTiling(bool flag)
     launchWithTiling_ = flag;
 }
 
-bool KernelInfo::GetLaunchWithTiling() { return launchWithTiling_; }
+bool KernelInfo::GetLaunchWithTiling() const { return launchWithTiling_; }
 
 MiniVector<uint64_t> &KernelInfo::GetScratchSizes()
 {
@@ -273,20 +275,32 @@ std::string KernelInfo::ToString() const
 void KernelInfo::Copy(const KernelInfo &other)
 {
     launchWithTiling_ = other.launchWithTiling_;
+    if (!other.initFlag_) {
+        MKI_LOG(WARN) << "copy blank kernel info";
+        initFlag_ = false;
+        return;
+    }
+
     tilingExtInfo_.hostTilingSize = other.tilingExtInfo_.hostTilingSize;
     argsSize_ = other.argsSize_;
-    Status st = InitArgs(argsSize_);
-    MKI_CHECK(st.Ok(), "failed to init args size, len " << argsSize_, return);
     if (launchWithTiling_) {
-        st = AllocTilingHost(tilingExtInfo_.hostTilingSize);
+        Status st = AllocTilingHost(tilingExtInfo_.hostTilingSize);
         MKI_CHECK(st.Ok(), "failed to alloc tiling buffer, len " << tilingExtInfo_.hostTilingSize, return);
         auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize,
                             other.tilingExtInfo_.hostTilingAddr, other.tilingExtInfo_.hostTilingSize);
-        MKI_CHECK(ret == EOK, "failed to copy kernel info tiling, errorCode: " << ret, return);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info tiling, errorCode: " << ret <<
+                              ", tilingExtInfo_.hostTilingSize: " << tilingExtInfo_.hostTilingSize <<
+                              ", other.tilingExtInfo_.hostTilingSize: " << other.tilingExtInfo_.hostTilingSize
+                              , return);
+        MKI_CHECK(InitArgs(argsSize_).Ok(), "failed to init args size, len " << argsSize_, return);
         ret = memcpy_s(args_, argsSize_, other.args_, other.argsSize_);
-        MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret, return);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret <<
+                              ", argsSize_: " << argsSize_ <<
+                              ", other.argsSize_: " << other.argsSize_
+                              , return);
     } else {
         SetTilingHostAddr(other.tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
+        MKI_CHECK(InitArgs(argsSize_).Ok(), "failed to init args size, len " << argsSize_, return);
     }
     hwsyncIdx_ = other.hwsyncIdx_;
     tilingExtInfo_.blockDim = other.tilingExtInfo_.blockDim;
@@ -313,13 +327,13 @@ void KernelInfo::ResetTilingInfo()
     // No checking return value is ok
     if (launchWithTiling_ && tilingExtInfo_.hostTilingAddr != nullptr) {
         delete[] tilingExtInfo_.hostTilingAddr;
+        tilingExtInfo_.hostTilingAddr = nullptr;
+        tilingExtInfo_.hostTilingSize = 0;
+        tilingExtInfo_.constTensorOffset = 0;
+        tilingExtInfo_.usedSize = 0;
     }
     tilingExtInfo_.blockDim = 0;
     tilingExtInfo_.tilingId = 0;
-    tilingExtInfo_.hostTilingAddr = nullptr;
-    tilingExtInfo_.hostTilingSize = 0;
-    tilingExtInfo_.constTensorOffset = 0;
-    tilingExtInfo_.usedSize = 0;
 }
 
 void KernelInfo::ResetConstTensorInfo()
@@ -335,11 +349,6 @@ void KernelInfo::ResetScratchSizes()
 void KernelInfo::ResetMemsetInfo()
 {
     memsetInfo_.clear();
-}
-
-void KernelInfo::SetInitedFlag(bool flag)
-{
-    initFlag_ = flag;
 }
 
 template bool KernelInfo::AddConstTensorData<int32_t>(uint64_t, const SVector<int32_t> &);
