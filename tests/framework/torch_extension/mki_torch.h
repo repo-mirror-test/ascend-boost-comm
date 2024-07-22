@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -31,7 +31,7 @@ private:
     std::string RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::Tensor> &inTensors,
                           std::vector<Mki::Tensor> &outTensors, int runTimes);
     std::string ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vector<at::Tensor> &atOutTensors);
-    void *GetCurrentStream();
+    void *GetCurrentStream() const;
     Mki::Tensor AtTensor2MkiTensor(const at::Tensor &atTensor);
     void ContiguousAtTensor(std::vector<at::Tensor> &atTensors);
 

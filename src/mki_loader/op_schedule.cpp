@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -11,11 +11,7 @@
  */
 #include "op_schedule.h"
 #include <fstream>
-#include <tuple>
-#include <type_traits>
 #include "mki/utils/log/log.h"
-#include "mki/utils/rt/rt.h"
-#include "mki/utils/filesystem/filesystem.h"
 #include "mki/base/kernel_base.h"
 #include "mki/utils/singleton/singleton.h"
 #include "loader.h"
@@ -28,10 +24,9 @@ OpSchedule::~OpSchedule() {}
 std::vector<Operation *> OpSchedule::GetAllOperations() const
 {
     std::vector<Operation *> ops;
-    for (const auto &[opName, op] : opMap_) {
-        (void)opName;
-        if (op != nullptr) {
-            ops.push_back(op);
+    for (const auto &it : opMap_) {
+        if (it.second != nullptr) {
+            ops.push_back(it.second);
         }
     }
     return ops;

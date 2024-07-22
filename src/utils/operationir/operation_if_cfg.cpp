@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -10,15 +10,13 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/utils/operationir/operation_ir_cfg.h"
-
 #include <fstream>
 #include <algorithm>
 #include <string>
-
 #include "mki/types.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/assert/assert.h"
-#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/file_system/file_system.h"
 #include "mki/utils/inifile/ini_file.h"
 
 namespace Mki {

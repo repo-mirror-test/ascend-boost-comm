@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -23,10 +23,19 @@ Ops &Ops::Instance()
     return instance;
 }
 
-std::vector<Operation *> Ops::GetAllOperations() const { return opSchedule_->GetAllOperations(); }
+std::vector<Operation *> Ops::GetAllOperations() const
+{
+    return opSchedule_->GetAllOperations();
+}
 
-Operation *Ops::GetOperationByName(const std::string &opName) const { return opSchedule_->GetOperationByName(opName); }
+Operation *Ops::GetOperationByName(const std::string &opName) const
+{
+    return opSchedule_->GetOperationByName(opName);
+}
 
-Kernel *Ops::GetKernelInstance(const std::string &kernelName) const { return opSchedule_->GetKernelInstance(kernelName); }
+Kernel *Ops::GetKernelInstance(const std::string &kernelName) const
+{
+    return opSchedule_->GetKernelInstance(kernelName);
+}
 
 } // namespace OpSpace

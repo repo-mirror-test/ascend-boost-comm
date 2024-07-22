@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -41,20 +41,20 @@ private:
     char *rep_{nullptr};
 };
 
-#define OP_TILING_CHECK_STATUS_RETURN(ret)                                                                             \
-    do {                                                                                                               \
-        if (!(ret).Ok()) {                                                                                             \
-            MKI_LOG_ERROR << (ret).ToString();                                                                         \
-            return ret;                                                                                                \
-        }                                                                                                              \
+#define OP_TILING_CHECK_STATUS_RETURN(ret)                                                                         \
+    do {                                                                                                           \
+        if (!(ret).Ok()) {                                                                                         \
+            MKI_LOG_ERROR << (ret).ToString();                                                                     \
+            return ret;                                                                                            \
+        }                                                                                                          \
     } while (0)
 
-#define OP_TILING_CHECK_STATUS_RETURN_VOID(ret)                                                                        \
-    do {                                                                                                               \
-        if (!(ret).Ok()) {                                                                                             \
-            MKI_LOG_ERROR << (ret).ToString();                                                                         \
-            return;                                                                                                    \
-        }                                                                                                              \
+#define OP_TILING_CHECK_STATUS_RETURN_VOID(ret)                                                                    \
+    do {                                                                                                           \
+        if (!(ret).Ok()) {                                                                                         \
+            MKI_LOG_ERROR << (ret).ToString();                                                                     \
+            return;                                                                                                \
+        }                                                                                                          \
     } while (0)
 } // namespace Mki
 #endif

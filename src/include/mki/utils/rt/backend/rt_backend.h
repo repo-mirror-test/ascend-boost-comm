@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -61,8 +61,8 @@ using RtDevBinaryUnRegisterFunc = int (*)(void *hdl);
 using RtFunctionRegisterFunc = int (*)(void *binHandle, const void *subFunc, const char *stubName,
                                    const void *kernelInfoExt, uint32_t funcMode);
 using RtRegisterAllKernelFunc = int (*)(const RtDevBinaryT *bin, void **hdl);
-using RtKernelLaunchFunc = int (*)(const void *stubFunc, uint32_t blockDim, void *args, uint32_t argsSize, void *smDesc,
-                               rtStream_t sm);
+using RtKernelLaunchFunc = int (*)(const void *stubFunc, uint32_t blockDim, void *args, uint32_t argsSize,
+                                   void *smDesc, rtStream_t sm);
 using RtKernelLaunchWithHandleFunc = int(*)(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
                                         RtArgsExT *argsInfo, void *smDesc, rtStream_t sm,
                                         const RtTaskCfgInfoT *cfgInfo);

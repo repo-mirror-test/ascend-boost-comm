@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,7 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#include "mki/utils/binfile/binfile.h"
+#include "mki/utils/bin_file/bin_file.h"
 #include <securec.h>
 #include <cstring>
 #include <fcntl.h>
@@ -19,8 +19,9 @@
 #include "mki/utils/strings/str_split.h"
 #include "mki/utils/strings/str_replace.h"
 #include "mki/utils/strings/match.h"
-#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/file_system/file_system.h"
 #include "mki/utils/strings/str_checker.h"
+
 namespace Mki {
 constexpr uint32_t MAX_FILE_OPERATE_NUM = 1000;
 constexpr uint32_t PER_OPERATE_LINE_NUM = 8;
@@ -156,7 +157,7 @@ Status BinFile::Read(const std::string &filePath)
     if (fileSize < 0 || fileSize > MAX_FILE_SIZE) {
         return Status::FailStatus(1, "File size is invalid");
     }
-    
+
     std::ifstream fd(realPath.c_str());
     if (!fd) {
         return Status::FailStatus(1, "open " + FileSystem::BaseName(filePath) + " for read fail");

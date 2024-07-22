@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -17,22 +17,20 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include <securec.h>
-
 #include "mki/utils/assert/assert.h"
-#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/file_system/file_system.h"
 #include "mki/utils/log/log.h"
-#include "mki/utils/rt/backend/rtbackend.h"
+#include "mki/utils/rt/backend/rt_backend.h"
 #include "mki/utils/rt/backend/help_macro.h"
 #include "mki/utils/rt/module/module.h"
 #include "mki/utils/rt/rt.h"
 
 namespace {
 const std::vector<uint32_t> MAGIC_LIST = {
-    0x43554245U,    // RT_DEV_BINARY_MAGIC_ELF
-    0x41415246U,    // RT_DEV_BINARY_MAGIC_ELF_AIVEC
-    0x41494343U     // RT_DEV_BINARY_MAGIC_ELF_AICUBE
+    MKIRT_DEV_BINARY_MAGIC_ELF,
+    MKIRT_DEV_BINARY_MAGIC_ELF_AIVEC,
+    MKIRT_DEV_BINARY_MAGIC_ELF_AICUBE
 };
 }
 namespace Mki {

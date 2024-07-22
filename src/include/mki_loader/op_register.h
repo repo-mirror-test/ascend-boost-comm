@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -14,7 +14,6 @@
 
 #include <map>
 #include <vector>
-
 #include "mki/base/kernel_base.h"
 #include "mki/base/operation_base.h"
 #include "mki/utils/assert/assert.h"
@@ -88,25 +87,26 @@ public:
     }
 };
 
-#define REG_OPERATION(opName)                                                                                          \
-    Operation *GetOperation##opName()                                                                                  \
-    {                                                                                                                  \
-        static opName op##opName(#opName);                                                                             \
-        return &op##opName;                                                                                            \
-    }                                                                                                                  \
+#define REG_OPERATION(opName)                                                                                      \
+    Operation *GetOperation##opName()                                                                              \
+    {                                                                                                              \
+        static opName op##opName(#opName);                                                                         \
+        return &op##opName;                                                                                        \
+    }                                                                                                              \
     static OperationRegister op##opName##register = OperationRegister(#opName, GetOperation##opName)
 
-#define REG_KERNEL_BASE(kerName)                                                                                       \
-    Kernel const *GetKernel##kerName(const BinHandle *binHandle)                                                       \
-    {                                                                                                                  \
-        static kerName ker##kerName(#kerName, binHandle);                                                              \
-        SetKernelSelfCreator(ker##kerName, [=](){ return new kerName(#kerName, binHandle); });                         \
-        return &ker##kerName;                                                                                          \
-    }                                                                                                                  \
+#define REG_KERNEL_BASE(kerName)                                                                                   \
+    Kernel const *GetKernel##kerName(const BinHandle *binHandle)                                                   \
+    {                                                                                                              \
+        static kerName ker##kerName(#kerName, binHandle);                                                          \
+        SetKernelSelfCreator(ker##kerName, [=](){ return new kerName(#kerName, binHandle); });                     \
+        return &ker##kerName;                                                                                      \
+    }                                                                                                              \
     static KernelRegister ker##kerName##register = KernelRegister(OperationPlaceHolder, #kerName, GetKernel##kerName)
 
-#define REG_KERNEL(soc, kerName, binary)                                                                               \
-    static KernelBinaryRegister bin##kerName##soc##register = KernelBinaryRegister(#soc, #kerName, binary, sizeof(binary))
+#define REG_KERNEL(soc, kerName, binary)                                                                           \
+    static KernelBinaryRegister bin##kerName##soc##register =                                                      \
+           KernelBinaryRegister(#soc, #kerName, binary, sizeof(binary))
 } // namespace OpSpace
 
 #endif

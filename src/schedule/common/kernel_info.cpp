@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -10,9 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include "mki/kernel_info.h"
-
 #include <securec.h>
-
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/fp16/fp16_t.h"
 #include "mki/utils/log/log.h"
@@ -275,22 +273,30 @@ std::string KernelInfo::ToString() const
 void KernelInfo::Copy(const KernelInfo &other)
 {
     launchWithTiling_ = other.launchWithTiling_;
-    hwsyncIdx_ = other.hwsyncIdx_;
-    if (launchWithTiling_ && other.tilingExtInfo_.hostTilingAddr != nullptr) {
-        uint64_t hostTilingSize = other.tilingExtInfo_.hostTilingSize;
-        tilingExtInfo_.hostTilingAddr = new (std::nothrow) uint8_t[hostTilingSize];
-        MKI_CHECK(tilingExtInfo_.hostTilingAddr != nullptr,
-            "failed to copy tiling, len " << hostTilingSize, return);
-        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, hostTilingSize,
-                            other.tilingExtInfo_.hostTilingAddr, hostTilingSize);
-        MKI_CHECK(ret == EOK, "failed to copy kernel info", return);
+    tilingExtInfo_.hostTilingSize = other.tilingExtInfo_.hostTilingSize;
+    argsSize_ = other.argsSize_;
+    Status st = InitArgs(argsSize_);
+    MKI_CHECK(st.Ok(), "failed to init args size, len " << argsSize_, return);
+    if (launchWithTiling_) {
+        st = AllocTilingHost(tilingExtInfo_.hostTilingSize);
+        MKI_CHECK(st.Ok(), "failed to alloc tiling buffer, len " << tilingExtInfo_.hostTilingSize, return);
+        auto ret = memcpy_s(tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize,
+                            other.tilingExtInfo_.hostTilingAddr, other.tilingExtInfo_.hostTilingSize);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info tiling, errorCode: " << ret, return);
+        ret = memcpy_s(args_, argsSize_, other.args_, other.argsSize_);
+        MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret, return);
+    } else {
+        SetTilingHostAddr(other.tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
     }
-    // args_ 不需要 copy
-    tilingExtInfo_ = other.tilingExtInfo_;
+    hwsyncIdx_ = other.hwsyncIdx_;
+    tilingExtInfo_.blockDim = other.tilingExtInfo_.blockDim;
+    tilingExtInfo_.tilingId = other.tilingExtInfo_.tilingId;
+    tilingExtInfo_.constTensorOffset = other.tilingExtInfo_.constTensorOffset;
+    tilingExtInfo_.usedSize = other.tilingExtInfo_.usedSize;
     constTensorInfo_ = other.constTensorInfo_;
     scratchSizes_ = other.scratchSizes_;
     memsetInfo_ = other.memsetInfo_;
-    initFlag_ = other.initFlag_;
+    initFlag_ = other.initFlag_;    // initFlag_ is the last item copied
 }
 
 void KernelInfo::ResetArgs()

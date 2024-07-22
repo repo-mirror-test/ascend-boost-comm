@@ -45,7 +45,7 @@ macro(add_kernel_bin tac soc)
         COMMAND xxd -r -ps
             ${CMAKE_CURRENT_LIST_DIR}/kernel/${tac}_${soc}.txt
             ${${tac}_${soc}_output}
-        COMMAND cp 
+        COMMAND cp
             ${CMAKE_CURRENT_LIST_DIR}/kernel/${tac}_${soc}.json
             ${${tac}_${soc}_dir}/${tac}.json
     )

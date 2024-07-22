@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,8 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#include "mki/utils/filesystem/filesystem.h"
-
+#include "mki/utils/file_system/file_system.h"
 #include <cstring>
 #include <cstdlib>
 #include <climits>
@@ -165,7 +164,10 @@ bool FileSystem::WriteFile(const void *codeBuf, uint64_t codeLen, const std::str
     return true;
 }
 
-void FileSystem::DeleteFile(const std::string &filePath) { remove(filePath.c_str()); }
+void FileSystem::DeleteFile(const std::string &filePath)
+{
+    (void)remove(filePath.c_str());
+}
 
 bool FileSystem::Rename(const std::string &filePath, const std::string &newFilePath)
 {
@@ -255,13 +257,13 @@ std::string FileSystem::PathCheckAndRegular(const std::string &path, bool symlin
         MKI_LOG(ERROR) << "path string is NULL";
         return "";
     }
- 
+
     // 2. check the length of "path"
     if (path.size() >= PATH_MAX) {
         MKI_LOG(ERROR) << "file path " << path.c_str() << " is too long!";
         return "";
     }
- 
+
     // 3. check if is symbolic link
     if (symlinkCheck) {
         if (IsSymLink(path)) {
@@ -273,7 +275,7 @@ std::string FileSystem::PathCheckAndRegular(const std::string &path, bool symlin
     // 4. get the real path
     char resolvedPath[PATH_MAX] = {0};
     std::string res = "";
- 
+
     if (realpath(path.c_str(), resolvedPath) != nullptr) {
         res = resolvedPath;
     } else {

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -15,7 +15,7 @@
 #include <atomic>
 #include "mki/tensor_desc.h"
 #include "mki/utils/rt/base/base.h"
-#include "mki/utils/noncopyable/noncopyable.h"
+#include "mki/utils/non_copyable/non_copyable.h"
 
 namespace Mki {
 using KernelHandle = void *const *;
@@ -32,7 +32,7 @@ struct KernelMetaInfo {
     uint32_t version = 0;
     uint32_t tilingSize = 0;
     uint32_t coreType = 0;
-    uint32_t magic = 0x41494343U;
+    uint32_t magic = MKIRT_DEV_BINARY_MAGIC_ELF_AICUBE;
     void *codeBuf = nullptr;
     uint32_t codeBufLen = 0;
 };

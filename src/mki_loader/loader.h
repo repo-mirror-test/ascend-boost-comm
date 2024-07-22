@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <memory>
 #include <atomic>
-#include "mki/utils/noncopyable/noncopyable.h"
+#include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/operation.h"
 #include "mki/kernel.h"
 #include "mki/bin_handle.h"
@@ -28,11 +28,13 @@ public:
     void GetAllOperations(std::unordered_map<std::string, Operation *> &ops) const;
     void GetOpKernels(const std::string &opName, KernelMap &kernels) const;
     bool IsValid() const;
+
 private:
     void Load();
     bool LoadKernelBinarys();
-    void CreateOperations();
-    void CreateKernels();
+    bool CreateOperations();
+    bool CreateKernels();
+    bool OpBaseAddKernels() const;
 
 private:
     std::atomic_bool loadSuccess_{false};

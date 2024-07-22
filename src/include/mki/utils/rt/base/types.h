@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -20,6 +20,12 @@ extern "C" {
 
 typedef void *MkiDevice;
 typedef void *MkiRtStream;
+
+enum MkiRtDevBinaryMagic : uint32_t {
+    MKIRT_DEV_BINARY_MAGIC_ELF = 0x43554245U,
+    MKIRT_DEV_BINARY_MAGIC_ELF_AIVEC = 0x41415246U,
+    MKIRT_DEV_BINARY_MAGIC_ELF_AICUBE = 0x41494343U,
+};
 
 typedef enum {
     MKIRT_SUCCESS = 0,
@@ -73,7 +79,7 @@ typedef struct {
     uint32_t version = 0;
     const void *data = nullptr;
     uint64_t dataLen = 0;
-    uint32_t magic = 0x41494343U;
+    uint32_t magic = MKIRT_DEV_BINARY_MAGIC_ELF_AICUBE;
 } MkiRtModuleInfo;
 
 typedef struct {

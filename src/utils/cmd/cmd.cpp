@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -11,6 +11,7 @@
  */
 #include "mki/utils/cmd/cmd.h"
 #include <iostream>
+#include "mki/utils/assert/assert.h"
 
 namespace Mki {
 constexpr int ERROR_INVALID_ARG = 1;
@@ -45,7 +46,7 @@ Status Cmd::Run(int argc, const char *argv[])
 
 Status Cmd::DoHelp(const std::vector<std::string> &args) const
 {
-    (void)args;
+    UNUSED_VALUE(args);
     for (const auto &it : cmdMap_) {
         if (it.first == CMD_HELP) {
             continue;

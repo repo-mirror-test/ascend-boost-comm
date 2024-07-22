@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -14,9 +14,9 @@
 #include <string>
 #include "mki/utils/rt/backend/backend_factory.h"
 
-#define ERROR_ITEM(item)                                                                                               \
-    {                                                                                                                  \
-        item, "##item"                                                                                                 \
+#define ERROR_ITEM(item)   \
+    {                      \
+        item, "##item"     \
     }
 namespace Mki {
 constexpr int VERSION_MAJOR = 1;

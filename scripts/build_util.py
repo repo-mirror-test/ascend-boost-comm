@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (c) 2024 Huawei Technologies Co., Ltd.
-# AscendOpCommonLib is licensed under Mulan PSL v2.
+# MindKernelInfra is licensed under Mulan PSL v2.
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
 # You may obtain a copy of Mulan PSL v2 at:
 #          http://license.coscl.org.cn/MulanPSL2
@@ -21,7 +21,7 @@ import argparse
 
 
 # sycl-target --show-targets
-def get_build_target_list():
+def get_build_target_list(with_all: bool=False):
     usr_config_file_dir = os.getenv("BUILD_CONFIG_DIR", '')
     if usr_config_file_dir == '':
         script_file_path = os.path.realpath(__file__)
@@ -29,14 +29,16 @@ def get_build_target_list():
             script_file_path), "../configs/build_config.json")
     else:
         build_config_json_file_path = os.path.join(usr_config_file_dir, "build_config.json")
-    device_list = []
+    built_device_set = set()
+    all_device_set = set()
     try:
         with open(build_config_json_file_path) as conf_file:
             conf = json.load(conf_file)
             target_option = conf['targets']
             for target, switch in target_option.items():
-                if switch is True:
-                    device_list.append(target)
+                all_device_set.add(target)
+                if switch:
+                    built_device_set.add(target)
     except FileNotFoundError:
         logging.error("file %s is not found!", build_config_json_file_path)
         exit(1)
@@ -47,12 +49,14 @@ def get_build_target_list():
         logging.error("key 'targets' is not found in %s!", build_config_json_file_path)
         exit(1)
 
-    if len(device_list) == 0:
+    if len(built_device_set) == 0:
         logging.error("no target device is set")
         exit(1)
 
-    device_list = list(set(device_list))
-    return device_list
+    if with_all:
+        return list(built_device_set), list(all_device_set)
+    else:
+        return list(built_device_set)
 
 
 def aligned_string(s:str, align:int) -> str:
