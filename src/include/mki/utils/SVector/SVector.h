@@ -288,16 +288,16 @@ private:
 template <typename T> using MiniVector = SVector<T, 8>; // 8 小容量SVECTOR
 
 template <class T, std::size_t MAX_SIZE>
-std::ostream &operator<<(std::ostream &os, const SVector<T, MAX_SIZE> &svector)
+std::ostream &operator<<(std::ostream &os, const SVector<T, MAX_SIZE> &SVector)
 {
-    if (svector.size() == 0) {
+    if (SVector.size() == 0) {
         return os;
     }
 
     std::string str = ",";
-    for (size_t i = 0; i < svector.size(); ++i) {
-        os << svector.at(i);
-        if (i != svector.size() - 1) {
+    for (size_t i = 0; i < SVector.size(); ++i) {
+        os << SVector.at(i);
+        if (i != SVector.size() - 1) {
             os << str;
         }
     }

@@ -81,6 +81,7 @@ public:
                 MKI_LOG(INFO) << "Memset tiling " << i << " single core, size " << size;
                 continue;
             }
+            MKI_CHECK(coreNum > 0, "coreNum is zero", return 0);
             uint64_t sizeBlock = (size + coreNum - 1) / coreNum;
             uint64_t sizeBlockAligned = (sizeBlock + BLOCK_BYTES - 1) / BLOCK_BYTES * BLOCK_BYTES;
             uint64_t usedCore = (size + sizeBlockAligned - 1) / sizeBlockAligned;

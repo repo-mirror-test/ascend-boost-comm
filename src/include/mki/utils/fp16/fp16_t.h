@@ -41,19 +41,19 @@ public:
      * @brief   Constructor with all type
      */
     template <typename T>
-    explicit Fp16T(const T& value) { *this = value; }
+    explicit Fp16T(const T &value) { *this = value; }
 
     /**
      * @ingroup Fp16T constructor
      * @brief   Constructor with an uint16_t value
      */
-    explicit Fp16T(const uint16_t& uiVal) : val(uiVal) {}
+    explicit Fp16T(const uint16_t &uiVal) : val(uiVal) {}
 
     /**
      * @ingroup Fp16T constructor
      * @brief   Constructor with a Fp16T object(copy constructor)
      */
-    Fp16T(const Fp16T& fp) : val(fp.val) {}
+    Fp16T(const Fp16T &fp) : val(fp.val) {}
 
     /**
      * @ingroup Fp16T math operator
@@ -125,7 +125,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T if-equal comparison
      * @return  Return boolean result of if-equal comparison of this and fp.
      */
-    bool operator==(const Fp16T& fp) const;
+    bool operator==(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math compare operator
@@ -133,7 +133,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T not-equal comparison
      * @return  Return boolean result of not-equal comparison of this and fp.
      */
-    bool operator!=(const Fp16T& fp) const;
+    bool operator!=(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math compare operator
@@ -141,7 +141,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T greater-than comparison
      * @return  Return boolean result of greater-than comparison of this and fp.
      */
-    bool operator>(const Fp16T& fp) const;
+    bool operator>(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math compare operator
@@ -149,7 +149,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T greater-equal comparison
      * @return  Return boolean result of greater-equal comparison of this and fp.
      */
-    bool operator>=(const Fp16T& fp) const;
+    bool operator>=(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math compare operator
@@ -157,7 +157,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T less-than comparison
      * @return  Return boolean result of less-than comparison of this and fp.
      */
-    bool operator<(const Fp16T& fp) const;
+    bool operator<(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math compare operator
@@ -165,7 +165,7 @@ public:
      * @brief   Override basic comparison operator to performing Fp16T less-equal comparison
      * @return  Return boolean result of less-equal comparison of this and fp.
      */
-    bool operator<=(const Fp16T& fp) const;
+    bool operator<=(const Fp16T &fp) const;
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -173,7 +173,7 @@ public:
      * @brief   Override basic evaluation operator to copy Fp16T to a new Fp16T
      * @return  Return Fp16T result from fp
      */
-    Fp16T& operator=(const Fp16T& fp);
+    Fp16T &operator=(const Fp16T &fp);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -181,7 +181,7 @@ public:
      * @brief   Override basic evaluation operator to convert float to Fp16T
      * @return  Return Fp16T result from fVal
      */
-    Fp16T& operator=(const float& fVal);
+    Fp16T &operator=(const float &fVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -189,7 +189,7 @@ public:
      * @brief   Override basic evaluation operator to convert double to Fp16T
      * @return  Return Fp16T result from dVal
      */
-    Fp16T& operator=(const double& dVal);
+    Fp16T &operator=(const double &dVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -197,7 +197,7 @@ public:
      * @brief   Override basic evaluation operator to convert float to Fp16T
      * @return  Return Fp16T result from iVal
      */
-    Fp16T& operator=(const int8_t& iVal);
+    Fp16T &operator=(const int8_t &iVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -205,7 +205,7 @@ public:
      * @brief   Override basic evaluation operator to convert uint8_t to Fp16T
      * @return  Return Fp16T result from uiVal
      */
-    Fp16T& operator=(const uint8_t& uiVal);
+    Fp16T &operator=(const uint8_t &uiVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -213,7 +213,7 @@ public:
      * @brief   Override basic evaluation operator to convert int16_t to Fp16T
      * @return  Return Fp16T result from iVal
      */
-    Fp16T& operator=(const int16_t& iVal);
+    Fp16T &operator=(const int16_t &iVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -221,7 +221,7 @@ public:
      * @brief   Override basic evaluation operator to convert uint16_t to Fp16T
      * @return  Return Fp16T result from uiVal
      */
-    Fp16T& operator=(const uint16_t& uiVal);
+    Fp16T &operator=(const uint16_t &uiVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -229,7 +229,7 @@ public:
      * @brief   Override basic evaluation operator to convert int32_t to Fp16T
      * @return  Return Fp16T result from iVal
      */
-    Fp16T& operator=(const int32_t& iVal);
+    Fp16T &operator=(const int32_t &iVal);
 
     /**
      * @ingroup Fp16T math evaluation operator
@@ -237,7 +237,7 @@ public:
      * @brief   Override basic evaluation operator to convert uint32_t to Fp16T
      * @return  Return Fp16T result from uiVal
      */
-    Fp16T& operator=(const uint32_t& uiVal);
+    Fp16T &operator=(const uint32_t &uiVal);
 
     /**
      * @ingroup Fp16T math conversion

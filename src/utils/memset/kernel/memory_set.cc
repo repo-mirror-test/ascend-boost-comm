@@ -12,11 +12,12 @@
 
 #include "kernel_operator.h"
 
+namespace {
 constexpr uint32_t TILING_LEN = 4 * 8; // 4 * 8 uint32 list
 
-class MemsetKernel {
+class Memset {
 public:
-    __aicore__ inline MemsetKernel() {}
+    __aicore__ inline Memset() {}
 
     __aicore__ inline void Init(__gm__ uint8_t *tiling)
     {
@@ -63,12 +64,13 @@ private:
     AscendC::LocalTensor<uint32_t> tilingTensor_;
     AscendC::LocalTensor<uint16_t> zeroTensor_;
 };
+}
 
-extern "C" __global__ __aicore__ void memset(GM_ADDR tensor0, GM_ADDR tensor1, GM_ADDR tensor2, GM_ADDR tensor3,
+extern "C" __global__ __aicore__ void memory_set(GM_ADDR tensor0, GM_ADDR tensor1, GM_ADDR tensor2, GM_ADDR tensor3,
                                              GM_ADDR tensor4, GM_ADDR tensor5, GM_ADDR tensor6, GM_ADDR tensor7,
                                              GM_ADDR tiling)
 {
-    MemsetKernel kernel;
+    Memset kernel;
     kernel.Init(tiling);
     uint32_t idx = 0;
     kernel.CleanTensor(idx++, tensor0, tiling);

@@ -38,7 +38,7 @@ private:
     const char *GetMsg() const;
 
 private:
-    char *rep_{nullptr};
+    uint8_t *rep_{nullptr};
 };
 
 #define OP_TILING_CHECK_STATUS_RETURN(ret)                                                                         \

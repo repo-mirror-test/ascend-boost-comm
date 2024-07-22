@@ -57,7 +57,8 @@ bool CheckInTensors(const LaunchParam &launchParam)
 
 bool CheckEmptyTensor(const Tensor &tensor)
 {
-    return (tensor.desc.Numel() == 0 && tensor.data == nullptr && tensor.hostData == nullptr && tensor.dataSize == 0);
+    return (tensor.desc.Numel() == 0 && tensor.deviceData == nullptr &&
+            tensor.hostData == nullptr && tensor.dataSize == 0);
 }
 
 bool TensorsEqual(const SVector<Tensor> &lhs, const SVector<Tensor> &rhs)

@@ -13,7 +13,7 @@
 #define MKI_BIN_HANDLE_H
 #include <string>
 #include <atomic>
-#include "mki/tensor_desc.h"
+#include "mki/tensor.h"
 #include "mki/utils/rt/base/base.h"
 #include "mki/utils/non_copyable/non_copyable.h"
 

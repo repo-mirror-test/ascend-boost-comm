@@ -290,14 +290,14 @@ void KernelInfo::Copy(const KernelInfo &other)
                             other.tilingExtInfo_.hostTilingAddr, other.tilingExtInfo_.hostTilingSize);
         MKI_CHECK(ret == EOK, "failed to copy kernel info tiling, errorCode: " << ret <<
                               ", tilingExtInfo_.hostTilingSize: " << tilingExtInfo_.hostTilingSize <<
-                              ", other.tilingExtInfo_.hostTilingSize: " << other.tilingExtInfo_.hostTilingSize
-                              , return);
+                              ", other.tilingExtInfo_.hostTilingSize: " << other.tilingExtInfo_.hostTilingSize,
+                              return);
         MKI_CHECK(InitArgs(argsSize_).Ok(), "failed to init args size, len " << argsSize_, return);
         ret = memcpy_s(args_, argsSize_, other.args_, other.argsSize_);
         MKI_CHECK(ret == EOK, "failed to copy kernel info args, errorCode: " << ret <<
                               ", argsSize_: " << argsSize_ <<
-                              ", other.argsSize_: " << other.argsSize_
-                              , return);
+                              ", other.argsSize_: " << other.argsSize_,
+                              return);
     } else {
         SetTilingHostAddr(other.tilingExtInfo_.hostTilingAddr, tilingExtInfo_.hostTilingSize);
         MKI_CHECK(InitArgs(argsSize_).Ok(), "failed to init args size, len " << argsSize_, return);
@@ -310,7 +310,6 @@ void KernelInfo::Copy(const KernelInfo &other)
     constTensorInfo_ = other.constTensorInfo_;
     scratchSizes_ = other.scratchSizes_;
     memsetInfo_ = other.memsetInfo_;
-    initFlag_ = other.initFlag_;    // initFlag_ is the last item copied
 }
 
 void KernelInfo::ResetArgs()

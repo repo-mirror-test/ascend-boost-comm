@@ -118,7 +118,7 @@ std::string FileSystem::DirName(const std::string &path)
     return path.substr(0, static_cast<uint32_t>(idx) + 1);
 }
 
-bool FileSystem::ReadFile(const std::string &filePath, char *buffer, uint64_t bufferSize)
+bool FileSystem::ReadFile(const std::string &filePath, uint8_t *buffer, uint64_t bufferSize)
 {
     std::string realPath = FileSystem::PathCheckAndRegular(filePath);
     MKI_CHECK(!realPath.empty(), "File path is invalid", return false);
@@ -138,7 +138,7 @@ bool FileSystem::ReadFile(const std::string &filePath, char *buffer, uint64_t bu
                        << " bufferSize : , " << bufferSize << " fileSize : , " << fileSize;
         return false;
     }
-    fd.read(buffer, bufferSize);
+    fd.read(reinterpret_cast<char *>(buffer), bufferSize);
     return true;
 }
 

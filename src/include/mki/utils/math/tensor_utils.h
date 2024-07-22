@@ -16,7 +16,7 @@
 #include "securec.h"
 #include "mki/tensor.h"
 #include "mki/utils/log/log.h"
-#include "mki/utils/svector/svector.h"
+#include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
 namespace Utils {

@@ -11,7 +11,6 @@
  */
 #include "mki/utils/operationir/operation_ir.h"
 #include <string>
-#include "mki/types.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/assert/assert.h"
 
@@ -198,12 +197,12 @@ size_t OperationIr::GetSupportSize() const
     return supportSize_;
 }
 
-std::vector<int> OperationIr::GetParsedDTypes(const std::string &dTypeStrLine) const
+std::vector<TensorDType> OperationIr::GetParsedDTypes(const std::string &dTypeStrLine) const
 {
     std::stringstream ss(dTypeStrLine);
     std::string dTypeStr;
-    std::vector<int> supportedDtypes;
-    int dType;
+    std::vector<TensorDType> supportedDtypes;
+    TensorDType dType;
     while (getline(ss, dTypeStr, ',')) {
         dType = GetDTypeWithStr(dTypeStr);
         MKI_CHECK(dType != TENSOR_DTYPE_UNDEFINED, "GetDTypeWithStr failed: " << dTypeStr, return {});
@@ -212,12 +211,12 @@ std::vector<int> OperationIr::GetParsedDTypes(const std::string &dTypeStrLine) c
     return supportedDtypes;
 }
 
-std::vector<int> OperationIr::GetParseFormats(const std::string &formatStrLine) const
+std::vector<TensorFormat> OperationIr::GetParseFormats(const std::string &formatStrLine) const
 {
     std::stringstream ss(formatStrLine);
     std::string formatStr;
-    int format;
-    std::vector<int> supportedFormats;
+    TensorFormat format;
+    std::vector<TensorFormat> supportedFormats;
     while (getline(ss, formatStr, ',')) {
         format = GetFormatWithStr(formatStr);
         MKI_CHECK(format != TENSOR_FORMAT_UNDEFINED, "GetFormatWithStr failed: " << formatStr, return {});
@@ -228,7 +227,7 @@ std::vector<int> OperationIr::GetParseFormats(const std::string &formatStrLine) 
 
 
 bool OperationIr::SetSupportedDtypes(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index,
-    const std::vector<int> &supportedDtypes) const
+    const std::vector<TensorDType> &supportedDtypes) const
 {
     MKI_CHECK(supportedDtypes.size() > 0, "supportedDtypes invalid.", return false);
 
@@ -240,7 +239,7 @@ bool OperationIr::SetSupportedDtypes(SVector<TensorInfoIr> &tensorInfoIrs, const
 }
 
 bool OperationIr::SetSupportedFormats(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index,
-    const std::vector<int> &supportedFormats) const
+    const std::vector<TensorFormat> &supportedFormats) const
 {
     MKI_CHECK(supportedFormats.size() > 0, "supportedFormats invalid.", return false);
 

@@ -34,7 +34,7 @@ Status::Status(const Status &other)
     if (len > MAX_LOG_STRING_SIZE) {
         return;
     }
-    rep_ = new char[len];
+    rep_ = new uint8_t[len];
     auto ret = memcpy_s(rep_, len, other.rep_, len);
     MKI_LOG_IF(ret != EOK, ERROR) << "memcpy failed";
 }
@@ -55,7 +55,7 @@ Status &Status::operator=(const Status &other)
         if (len > MAX_LOG_STRING_SIZE) {
             return *this;
         }
-        rep_ = new char[len];
+        rep_ = new uint8_t[len];
         auto ret = memcpy_s(rep_, len, other.rep_, len);
         MKI_LOG_IF(ret != EOK, ERROR) << "memcpy failed";
     }
@@ -108,12 +108,12 @@ Status::Status(int code, const std::string &msg)
         return;
     }
     int len = static_cast<int>(sizeof(int) + sizeof(int) + msg.size() + 1);
-    rep_ = new char[len];
+    rep_ = new uint8_t[len];
     int *lenPtr = reinterpret_cast<int *>(rep_);
     *lenPtr = len;
     int *codePtr = reinterpret_cast<int *>(rep_ + sizeof(int));
     *codePtr = code;
-    char *msgPtr = rep_ + sizeof(int) + sizeof(int);
+    char *msgPtr = reinterpret_cast<char *>(rep_ + sizeof(int) + sizeof(int));
     auto ret = memcpy_s(msgPtr, len - sizeof(int) - sizeof(int), msg.data(), msg.size());
     MKI_LOG_IF(ret != EOK, ERROR) << "memcpy failed";
     rep_[len - 1] = 0;
@@ -145,7 +145,7 @@ int Status::GetCode() const
 
 const char *Status::GetMsg() const
 {
-    char *msgPtr = rep_ + sizeof(int) + sizeof(int);
+    char *msgPtr = reinterpret_cast<char *>(rep_ + sizeof(int) + sizeof(int));
     return msgPtr;
 }
 } // namespace Mki

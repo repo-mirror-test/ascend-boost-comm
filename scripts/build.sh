@@ -257,7 +257,7 @@ function fn_build()
 function fn_build_example()
 {
     cd $CODE_ROOT/example
-    bash $SCRIPT_DIR/build_ops.sh --mkidir=$OUTPUT_DIR/mki
+    bash $SCRIPT_DIR/build_ops.sh --mkidir=$OUTPUT_DIR/mki --build_config=$CODE_ROOT/configs
 }
 
 function fn_make_tar_package()

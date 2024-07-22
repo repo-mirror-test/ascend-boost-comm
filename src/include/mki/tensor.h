@@ -12,12 +12,22 @@
 #ifndef MKI_TENSOR_H
 #define MKI_TENSOR_H
 #include <string>
-#include "mki/tensor_desc.h"
+#include "mki/types.h"
+#include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
+struct TensorDesc {
+    TensorDType dtype = TENSOR_DTYPE_UNDEFINED;
+    TensorFormat format = TENSOR_FORMAT_UNDEFINED;
+    Mki::SVector<int64_t> dims;
+    int64_t Numel() const;
+    void View(const Mki::SVector<int64_t> &newDims);
+    std::string ToString() const;
+};
+
 struct Tensor {
     TensorDesc desc;
-    void *data = nullptr;
+    void *deviceData = nullptr;
     size_t dataSize = 0;
     void *hostData = nullptr;
     int64_t Numel() const;

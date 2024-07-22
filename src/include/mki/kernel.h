@@ -13,8 +13,6 @@
 #define MKI_KERNEL_H
 
 #include <string>
-#include <vector>
-#include <cstddef>
 #include "mki/launch_param.h"
 #include "mki/run_info.h"
 #include "mki/kernel_info.h"
@@ -22,7 +20,8 @@
 
 namespace Mki {
 enum KernelType : int {
-    KERNEL_TYPE_AI_CORE = 0,
+    KERNEL_TYPE_INVALID = -1,
+    KERNEL_TYPE_AI_CORE,
     KERNEL_TYPE_AI_CPU,
     KERNEL_TYPE_AIV,
     KERNEL_TYPE_WRITE_BACK,
@@ -32,7 +31,6 @@ enum KernelType : int {
     KERNEL_TYPE_DSA,
     KERNEL_TYPE_DVPP,
     KERNEL_TYPE_HCCL,
-    KERNEL_TYPE_INVALID
 };
 
 class Kernel {

@@ -15,13 +15,14 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "mki/utils/svector/svector.h"
+#include "mki/types.h"
+#include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
 // OperationIr中每个TensorInfoIr的supportedDtypes和supportedFormats的元素个数应该相等
 struct TensorInfoIr {
-    std::vector<int> supportedDtypes;
-    std::vector<int> supportedFormats;
+    std::vector<TensorDType> supportedDtypes;
+    std::vector<TensorFormat> supportedFormats;
     bool isOptional = false;
     std::string ToString() const;
 };
@@ -43,13 +44,13 @@ private:
     bool ParseKeyValue(const std::string &key, const std::string &value);
     bool ParseValueToInfoIrs(const std::string &tensorKey, SVector<TensorInfoIr> &tensorInfoIrs,
         const size_t &tensorIndex, const std::string &value) const;
-    std::vector<int> GetParsedDTypes(const std::string &dTypeStrLine) const;
-    std::vector<int> GetParseFormats(const std::string &formatStrLine) const;
+    std::vector<TensorDType> GetParsedDTypes(const std::string &dTypeStrLine) const;
+    std::vector<TensorFormat> GetParseFormats(const std::string &formatStrLine) const;
 
     bool SetSupportedDtypes(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index,
-        const std::vector<int> &supportedDtypes) const;
+        const std::vector<TensorDType> &supportedDtypes) const;
     bool SetSupportedFormats(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index,
-        const std::vector<int> &supportedFormats) const;
+        const std::vector<TensorFormat> &supportedFormats) const;
     bool SetIsOptional(SVector<TensorInfoIr> &tensorInfoIrs, const size_t &index, const bool &isOptional) const;
     void InitIsValid();
 

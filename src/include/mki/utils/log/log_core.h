@@ -15,7 +15,7 @@
 #include <vector>
 #include "mki/utils/log/log_entity.h"
 #include "mki/utils/log/log_sink.h"
-#include "mki/utils/svector/svector.h"
+#include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
 class LogCore {

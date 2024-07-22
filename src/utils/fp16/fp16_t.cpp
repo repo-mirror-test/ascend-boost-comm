@@ -77,7 +77,7 @@ const Fp16RoundMode FP16_ROUND_MODE = Fp16RoundMode::ROUND_TO_NEAREST;
 }
 
 namespace Mki {
-void ExtractFP16(const uint16_t& val, uint16_t* s, int16_t* e, uint16_t* m)
+void ExtractFP16(const uint16_t &val, uint16_t* s, int16_t* e, uint16_t* m)
 {
     // 1.Extract
     *s = FP16_EXTRAC_SIGN(val);
@@ -175,7 +175,7 @@ static bool IsRoundOne(uint64_t man, uint16_t truncLen)
  * @brief   normalize Fp16T value
  * @return
  */
-static void Fp16Normalize(int16_t& exp, uint16_t& man)
+static void Fp16Normalize(int16_t &exp, uint16_t &man)
 {
     if (exp >= FP16_MAX_EXP) {
         exp = FP16_MAX_EXP - 1;
@@ -192,7 +192,7 @@ static void Fp16Normalize(int16_t& exp, uint16_t& man)
  * @brief   Convert Fp16T to float/fp32
  * @return  Return float/fp32 value of fpVal which is the value of Fp16T object
  */
-static float Fp16ToFloat(const uint16_t& fpVal)
+static float Fp16ToFloat(const uint16_t &fpVal)
 {
     float ret;
 
@@ -232,7 +232,7 @@ static float Fp16ToFloat(const uint16_t& fpVal)
  * @brief   Convert Fp16T to double/fp64
  * @return  Return double/fp64 value of fpVal which is the value of Fp16T object
  */
-static double Fp16ToDouble(const uint16_t& fpVal)
+static double Fp16ToDouble(const uint16_t &fpVal)
 {
     double ret;
 
@@ -273,7 +273,7 @@ static double Fp16ToDouble(const uint16_t& fpVal)
  * @brief   Convert Fp16T to int8_t
  * @return  Return int8_t value of fpVal which is the value of Fp16T object
  */
-static int8_t Fp16ToInt8(const uint16_t& fpVal)
+static int8_t Fp16ToInt8(const uint16_t &fpVal)
 {
     int8_t ret = 0;
     uint8_t retV = 0;
@@ -350,7 +350,7 @@ static int8_t Fp16ToInt8(const uint16_t& fpVal)
  * @brief   Convert Fp16T to uint8_t
  * @return  Return uint8_t value of fpVal which is the value of Fp16T object
  */
-static uint8_t Fp16ToUInt8(const uint16_t& fpVal)
+static uint8_t Fp16ToUInt8(const uint16_t &fpVal)
 {
     uint8_t ret = 0;
     uint8_t sRet = 0;
@@ -415,7 +415,7 @@ static uint8_t Fp16ToUInt8(const uint16_t& fpVal)
  * @brief   Convert Fp16T to int16_t
  * @return  Return int16_t value of fpVal which is the value of Fp16T object
  */
-static int16_t Fp16ToInt16(const uint16_t& fpVal)
+static int16_t Fp16ToInt16(const uint16_t &fpVal)
 {
     // 1.get sRet and shift it to bit0.
     uint16_t sRet = FP16_EXTRAC_SIGN(fpVal);
@@ -487,7 +487,7 @@ static int16_t Fp16ToInt16(const uint16_t& fpVal)
  * @brief   Convert Fp16T to uint16_t
  * @return  Return uint16_t value of fpVal which is the value of Fp16T object
  */
-static uint16_t Fp16ToUInt16(const uint16_t& fpVal)
+static uint16_t Fp16ToUInt16(const uint16_t &fpVal)
 {
     uint16_t ret = 0;
     uint16_t sRet = 0;
@@ -543,7 +543,7 @@ static uint16_t Fp16ToUInt16(const uint16_t& fpVal)
  * @brief   Convert Fp16T to int32_t
  * @return  Return int32_t value of fpVal which is the value of Fp16T object
  */
-static int32_t Fp16ToInt32(const uint16_t& fpVal)
+static int32_t Fp16ToInt32(const uint16_t &fpVal)
 {
     int32_t ret = 0;
     uint32_t retV = 0;
@@ -599,7 +599,7 @@ static int32_t Fp16ToInt32(const uint16_t& fpVal)
  * @brief   Convert Fp16T to uint32_t
  * @return  Return uint32_t value of fpVal which is the value of Fp16T object
  */
-static uint32_t Fp16ToUInt32(const uint16_t& fpVal)
+static uint32_t Fp16ToUInt32(const uint16_t &fpVal)
 {
     uint32_t ret = 0;
     uint32_t sRet = 0;
@@ -943,7 +943,7 @@ Fp16T Fp16T::operator/=(const Fp16T fp)
 }
 
 // compare
-bool Fp16T::operator==(const Fp16T& fp) const
+bool Fp16T::operator==(const Fp16T &fp) const
 {
     if (FP16_IS_ZERO(val) && FP16_IS_ZERO(fp.val)) {
         return true;
@@ -952,7 +952,7 @@ bool Fp16T::operator==(const Fp16T& fp) const
     }
 }
 
-bool Fp16T::operator!=(const Fp16T& fp) const
+bool Fp16T::operator!=(const Fp16T &fp) const
 {
     if (FP16_IS_ZERO(val) && FP16_IS_ZERO(fp.val)) {
         return false;
@@ -961,7 +961,7 @@ bool Fp16T::operator!=(const Fp16T& fp) const
     }
 }
 
-bool Fp16T::operator>(const Fp16T& fp) const
+bool Fp16T::operator>(const Fp16T &fp) const
 {
     uint16_t sA = 0;
     uint16_t sB = 0;
@@ -1003,7 +1003,7 @@ bool Fp16T::operator>(const Fp16T& fp) const
     }
 }
 
-bool Fp16T::operator>=(const Fp16T& fp) const
+bool Fp16T::operator>=(const Fp16T &fp) const
 {
     if ((*this) > fp) {
         return true;
@@ -1014,7 +1014,7 @@ bool Fp16T::operator>=(const Fp16T& fp) const
     }
 }
 
-bool Fp16T::operator<(const Fp16T& fp) const
+bool Fp16T::operator<(const Fp16T &fp) const
 {
     if ((*this) >= fp) {
         return false;
@@ -1023,7 +1023,7 @@ bool Fp16T::operator<(const Fp16T& fp) const
     }
 }
 
-bool Fp16T::operator<=(const Fp16T& fp) const
+bool Fp16T::operator<=(const Fp16T &fp) const
 {
     if ((*this) > fp) {
         return false;
@@ -1033,7 +1033,7 @@ bool Fp16T::operator<=(const Fp16T& fp) const
 }
 
 // evaluation
-Fp16T& Fp16T::operator=(const Fp16T& fp)
+Fp16T &Fp16T::operator=(const Fp16T &fp)
 {
     if (this == &fp) {
         return *this;
@@ -1042,7 +1042,7 @@ Fp16T& Fp16T::operator=(const Fp16T& fp)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const float& fVal)
+Fp16T &Fp16T::operator=(const float &fVal)
 {
     uint16_t sRet = 0;
     uint16_t mRet = 0;
@@ -1096,7 +1096,7 @@ Fp16T& Fp16T::operator=(const float& fVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const int8_t& iVal)
+Fp16T &Fp16T::operator=(const int8_t &iVal)
 {
     uint16_t sRet = 0;
     uint16_t eRet = 0;
@@ -1124,7 +1124,7 @@ Fp16T& Fp16T::operator=(const int8_t& iVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const uint8_t& uiVal)
+Fp16T &Fp16T::operator=(const uint8_t &uiVal)
 {
     uint16_t sRet = 0;
     uint16_t eRet = 0;
@@ -1142,7 +1142,7 @@ Fp16T& Fp16T::operator=(const uint8_t& uiVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const int16_t& iVal)
+Fp16T &Fp16T::operator=(const int16_t &iVal)
 {
     if (iVal == 0) {
         val = 0;
@@ -1199,7 +1199,7 @@ Fp16T& Fp16T::operator=(const int16_t& iVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const uint16_t& uiVal)
+Fp16T &Fp16T::operator=(const uint16_t &uiVal)
 {
     if (uiVal == 0) {
         val = 0;
@@ -1248,7 +1248,7 @@ Fp16T& Fp16T::operator=(const uint16_t& uiVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const int32_t& iVal)
+Fp16T &Fp16T::operator=(const int32_t &iVal)
 {
     if (iVal == 0) {
         val = 0;
@@ -1304,7 +1304,7 @@ Fp16T& Fp16T::operator=(const int32_t& iVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const uint32_t& uiVal)
+Fp16T &Fp16T::operator=(const uint32_t &uiVal)
 {
     if (uiVal == 0) {
         val = 0;
@@ -1355,7 +1355,7 @@ Fp16T& Fp16T::operator=(const uint32_t& uiVal)
     return *this;
 }
 
-Fp16T& Fp16T::operator=(const double& dVal)
+Fp16T &Fp16T::operator=(const double &dVal)
 {
     uint16_t sRet = 0;
     uint16_t mRet = 0;

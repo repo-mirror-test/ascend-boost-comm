@@ -220,7 +220,7 @@ Status KernelBase::UpdateHwsyncArgs(void **args, uint64_t argsNum)
 }
 
 Status KernelBase::UpdateConstTensorArgs(void **args, uint64_t argsNum,
-                                        RtHostInputInfoT *info, uint64_t infoNum)
+                                         RtHostInputInfoT *info, uint64_t infoNum)
 {
     uint64_t offset = Utils::GetTensorAlignedSize(kernelInfo_.GetTilingUsedSize()) + argsNum * sizeof(void *);
     for (uint64_t i = 0; i < infoNum; i++) {
@@ -258,7 +258,7 @@ Status KernelBase::UpdateInOutWkspArgs(void **args, uint64_t argsNum,
             continue;
         }
         MKI_LOG(DEBUG) << "args info: input tensor " << idx;
-        args[idx] = launchParam.GetInTensor(i++).data;
+        args[idx] = launchParam.GetInTensor(i++).deviceData;
     }
     size_t outputNum = launchParam.GetOutTensorCount();
     for (size_t i = 0; i < outputNum && idx < argsNum; idx++) {
@@ -266,7 +266,7 @@ Status KernelBase::UpdateInOutWkspArgs(void **args, uint64_t argsNum,
             continue;
         }
         MKI_LOG(DEBUG) << "args info: output tensor " << idx;
-        args[idx] = launchParam.GetOutTensor(i++).data;
+        args[idx] = launchParam.GetOutTensor(i++).deviceData;
     }
     auto workspaceAddr = runInfo.GetScratchDeviceAddr();
     auto &workspaces = kernelInfo_.GetScratchSizes();

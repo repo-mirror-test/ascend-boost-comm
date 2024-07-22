@@ -63,7 +63,7 @@ static const std::map<std::string, TensorDType> MAP_STRING_TO_DTYPE = {
     { "bf16", TENSOR_DTYPE_BF16 },
 };
 
-int GetDTypeWithStr(const std::string &typeStr)
+TensorDType GetDTypeWithStr(const std::string &typeStr)
 {
     std::map<std::string, TensorDType>::const_iterator it = MAP_STRING_TO_DTYPE.find(typeStr);
     if (it != MAP_STRING_TO_DTYPE.end()) {
@@ -91,7 +91,7 @@ static const std::map<int, std::string> MAP_DTYPE_TO_STRING = {
     { TENSOR_DTYPE_BF16, "bf16" },
 };
 
-const std::string& GetStrWithDType(const int &dType)
+const std::string &GetStrWithDType(TensorDType dType)
 {
     auto it = MAP_DTYPE_TO_STRING.find(dType);
     if (it != MAP_DTYPE_TO_STRING.end()) {
@@ -115,7 +115,7 @@ static const std::map<std::string, TensorFormat> MAP_STRING_TO_FORMAT = {
     { "fractal_z_3d", TENSOR_FORMAT_FRACTAL_Z_3D },
 };
 
-int GetFormatWithStr(const std::string &formatStr)
+TensorFormat GetFormatWithStr(const std::string &formatStr)
 {
     std::map<std::string, TensorFormat>::const_iterator it = MAP_STRING_TO_FORMAT.find(formatStr);
     if (it != MAP_STRING_TO_FORMAT.end()) {
@@ -139,7 +139,7 @@ static const std::map<int, std::string> MAP_FORMAT_TO_STRING = {
     { TENSOR_FORMAT_FRACTAL_Z_3D, "fractal_z_3d" },
 };
 
-const std::string& GetStrWithFormat(const int &format)
+const std::string &GetStrWithFormat(TensorFormat format)
 {
     auto it = MAP_FORMAT_TO_STRING.find(format);
     if (it != MAP_FORMAT_TO_STRING.end()) {

@@ -29,7 +29,7 @@ public:
     static int64_t FileSize(const std::string &filePath);
     static std::string BaseName(const std::string &filePath);
     static std::string DirName(const std::string &path);
-    static bool ReadFile(const std::string &filePath, char *buffer, uint64_t bufferSize);
+    static bool ReadFile(const std::string &filePath, uint8_t *buffer, uint64_t bufferSize);
     static bool WriteFile(const void *codeBuf, uint64_t codeLen, const std::string &filePath,
                           const mode_t mode = FILE_MODE);
     static void DeleteFile(const std::string &filePath);
@@ -39,7 +39,7 @@ public:
     static std::string PathCheckAndRegular(const std::string &path, bool symlinkCheck = true);
 
 private:
-    static bool IsSymLink(const std::string& filePath);
+    static bool IsSymLink(const std::string &filePath);
     static void GetDirChildItemsImpl(const std::string &dirPath, bool matchFile, bool matchDir,
                                      std::vector<std::string> &itemPaths);
 };

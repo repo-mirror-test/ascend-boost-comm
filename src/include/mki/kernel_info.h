@@ -15,7 +15,7 @@
 #include <cstdint>
 #include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/utils/status/status.h"
-#include "mki/utils/svector/svector.h"
+#include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
 class KernelInfo : public NonCopyable {
