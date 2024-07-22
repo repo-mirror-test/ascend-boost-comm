@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+#include <gtest/gtest.h>
+#include <cstring>
+#include <cstdlib>
+#include <securec.h>
+#include <string>
+#include <iostream>
+#include "mki/loader/device_bin/device_code_loader.h"
+#include "mki/utils/rt/base/types.h"
+#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/rt/device/device.h"
+#include "mki/utils/singleton/singleton.h"
+#include "mki/utils/log/log.h"
+
+using namespace Mki;
+
+const char *ENV_MKI_HOME = "MKI_HOME_PATH";
+const char *DEVICE_DIR_NAME = "device";
+const char *BIN_DIR_NAME = "bin";
+const std::unordered_map<std::string, std::string> DEVICE_VERSION_MAP{
+    {"Ascend910A", "ascend910"},   {"Ascend910B", "ascend910"},   {"Ascend310", "ascend310p"},
+    {"Ascend310P", "ascend310p"},  {"Ascend910B1", "ascend910b"}, {"Ascend910B2", "ascend910b"},
+    {"Ascend910B3", "ascend910b"}, {"Ascend910B4", "ascend910b"}, {"Ascend310P3", "ascend310p"}};
+
+void CreateTestBinFile(std::string &testBinFilePath)
+{
+    const uint32_t deviceVersionLen = 100;
+    char deviceVersion[deviceVersionLen];
+    int ret = MkiRtDeviceGetSocVersion(deviceVersion, deviceVersionLen);
+    if (ret != 0) {
+        MKI_LOG(ERROR) << "Get device version failed!";
+        return;
+    }
+    std::string socVersion(deviceVersion);
+    const auto item = DEVICE_VERSION_MAP.find(deviceVersion);
+    if (item == DEVICE_VERSION_MAP.end()) {
+        MKI_LOG(ERROR) << "Unrecognized device version: " << socVersion;
+        return;
+    }
+    std::string deviceKernelVersion = item->second;
+    const char *mkiHome = std::getenv(ENV_MKI_HOME);
+    if (!mkiHome) {
+        MKI_LOG(ERROR) << "env " << ENV_MKI_HOME << " not exist!";
+        return;
+    }
+    std::string deviceBinPath =
+        Mki::FileSystem::Join({mkiHome, DEVICE_DIR_NAME, deviceKernelVersion, BIN_DIR_NAME});
+    testBinFilePath = Mki::FileSystem::Join({deviceBinPath, "test.bin"});
+    std::string binData;
+    binData.append("$Version=1.0\n");
+    binData.append("$Object.Count=1\n");
+    binData.append("$Object.Length=3\n");
+    binData.append("DeviceKernelVersion=").append(deviceKernelVersion + "\n");
+    binData.append("Tactic1.OpName=Operation\n");
+    binData.append("Tactic1.KernelList=kernel1,kernel2,kernel3\n");
+    binData.append("Tactic1.FileName=Tactic1.o\n");
+    binData.append("$Object.Tactic1=0,3\n");
+    binData.append("Tactic1.CompileInfo=111\n");
+    binData.append("Tactic1.TilingSize=0\n");
+    binData.append("Tactic1.CoreType=0\n");
+    binData.append("Tactic1.Magic=0\n");
+    binData.append("$End=1\n");
+    binData.append("abc");
+    if (!Mki::FileSystem::WriteFile(binData.data(), binData.size(), testBinFilePath)) {
+        MKI_LOG(ERROR) << "write test.bin failed";
+    }
+}
+
+TEST(DeviceCodeLoader, DeviceCodeLoaderTest)
+{
+    std::string testBinFilePath;
+    CreateTestBinFile(testBinFilePath);
+    Mki::DeviceCodeLoader deviceCodeLoader;
+    std::vector<std::string> kernelList;
+    int status = deviceCodeLoader.GetTacticKernelList("Tactic1", kernelList);
+    std::vector<std::string> expectList{"kernel1", "kernel2", "kernel3"};
+    EXPECT_EQ(status, MKIRT_SUCCESS);
+    EXPECT_EQ(kernelList, expectList);
+
+    size_t kernelNum = deviceCodeLoader.GetTacticKernelNum("Tactic1");
+    EXPECT_EQ(kernelNum, 3);
+
+    void *deviceCode;
+    uint32_t codeLen = 0;
+    status = deviceCodeLoader.GetTacticDeviceCode("Tactic1", deviceCode, codeLen);
+    EXPECT_EQ(status, MKIRT_SUCCESS);
+    EXPECT_EQ(codeLen, 3);
+    uint32_t bufferSize = codeLen + 1;
+    std::vector<char> codeBuf(bufferSize, 0);
+    auto ret = memcpy_s(codeBuf.data(), bufferSize, deviceCode, codeLen);
+    EXPECT_EQ(ret, EOK);
+    EXPECT_EQ(strcmp(codeBuf.data(), "abc"), 0);
+    Mki::FileSystem::DeleteFile(testBinFilePath);
+}
+
+TEST(DeviceCodeLoader, CompileInfoTest)
+{
+    Mki::DeviceCodeLoader deviceCodeLoader;
+    const char *jsonStr = nullptr;
+    jsonStr = deviceCodeLoader.GetTacticCompileInfo("SoftmaxF16Kernel");
+    EXPECT_NE(jsonStr, nullptr);
+    std::string ptrStr = jsonStr;
+    MKI_LOG(INFO) << ptrStr;
+}

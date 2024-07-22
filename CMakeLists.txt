@@ -3,10 +3,10 @@ project("mki")
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_TEST_FRAMEWORK "BUILD_TEST_FRAMEWORK" OFF)
-option(USE_PYTHON_TEST "USE_PYTHON_TEST" OFF)
+option(BUILD_SELF_TEST "BUILD_SELF_TEST" OFF)
 option(USE_CXX11_ABI "USE_CXX11_ABI" ON)
 message(STATUS "BUILD_TEST_FRAMEWORK:${BUILD_TEST_FRAMEWORK}")
-message(STATUS "USE_PYTHON_TEST:${USE_PYTHON_TEST}")
+message(STATUS "BUILD_SELF_TEST:${BUILD_SELF_TEST}")
 message(STATUS "USE_CXX11_ABI:${USE_CXX11_ABI}")
 
 include(${PROJECT_SOURCE_DIR}/cmake/host_config.cmake)
@@ -36,16 +36,16 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils/memset/kernel)
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki_static binary_encode_srcs)
-target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa)
+target_link_libraries(mki_static PUBLIC dl pthread c_sec)
 target_compile_definitions(mki_static PRIVATE fe=MkiFe ${NAMESPACE}=Mki)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki binary_encode_srcs)
-target_link_libraries(mki PUBLIC dl pthread c_sec mmpa)
+target_link_libraries(mki PUBLIC dl pthread c_sec)
 target_compile_definitions(mki PRIVATE fe=MkiFe ${NAMESPACE}=Mki)
 
 add_library(mki_loader STATIC ${LOADER_SOURCE_FILES})
-target_link_libraries(mki_loader PUBLIC mki dl pthread c_sec mmpa)
+target_link_libraries(mki_loader PUBLIC mki dl pthread c_sec)
 target_compile_definitions(mki_loader PRIVATE fe=${NAMESPACE}Fe)
 
 add_executable(sym_check ${PROJECT_SOURCE_DIR}/src/sym_check.cpp)
@@ -53,6 +53,10 @@ target_link_libraries(sym_check PRIVATE mki_loader mki)
 
 if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)
+endif()
+
+if(BUILD_SELF_TEST)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/tests/selftest)
 endif()
 
 # cmake install stage
