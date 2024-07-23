@@ -69,8 +69,8 @@ enum ErrorType : int {
 size_t GetTensorElementSize(const TensorDType dtype);
 TensorDType GetDTypeWithStr(const std::string &typeStr);
 TensorFormat GetFormatWithStr(const std::string &formatStr);
-const std::string &GetStrWithDType(TensorDType dType);
-const std::string &GetStrWithFormat(TensorFormat format);
+const std::string &GetStrWithDType(int dType);
+const std::string &GetStrWithFormat(int format);
 } // namespace Mki
 
 #endif

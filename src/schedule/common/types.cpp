@@ -91,7 +91,7 @@ static const std::map<int, std::string> MAP_DTYPE_TO_STRING = {
     { TENSOR_DTYPE_BF16, "bf16" },
 };
 
-const std::string &GetStrWithDType(TensorDType dType)
+const std::string &GetStrWithDType(int dType)
 {
     auto it = MAP_DTYPE_TO_STRING.find(dType);
     if (it != MAP_DTYPE_TO_STRING.end()) {
@@ -139,7 +139,7 @@ static const std::map<int, std::string> MAP_FORMAT_TO_STRING = {
     { TENSOR_FORMAT_FRACTAL_Z_3D, "fractal_z_3d" },
 };
 
-const std::string &GetStrWithFormat(TensorFormat format)
+const std::string &GetStrWithFormat(int format)
 {
     auto it = MAP_FORMAT_TO_STRING.find(format);
     if (it != MAP_FORMAT_TO_STRING.end()) {
