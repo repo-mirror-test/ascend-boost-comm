@@ -87,7 +87,7 @@ std::string Tensor::ToString() const
 #ifdef _DEBUG
     ss << ", data:" << deviceData;
 #else
-    ss << ", data:" << (data != nullptr);
+    ss << ", data:" << (deviceData != nullptr);
 #endif
     return ss.str();
 }

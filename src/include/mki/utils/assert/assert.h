@@ -17,15 +17,19 @@
 namespace Mki {
 namespace Utils {
 #define MKI_CHECK(condition, logExpr, handleExpr)                                                                   \
+do {                                                                                                                \
     if (!(condition)) {                                                                                             \
         MKI_LOG(ERROR) << logExpr;                                                                                  \
         handleExpr;                                                                                                 \
-    }
+    }                                                                                                               \
+} while (0)
 
 #define MKI_CHECK_NO_LOG(condition, handleExpr)                                                                     \
+do {                                                                                                                \
     if (!(condition)) {                                                                                             \
         handleExpr;                                                                                                 \
-    }
+    }                                                                                                               \
+} while (0)
 }
 
 #define UNUSED_VALUE(x) (void)(x)
