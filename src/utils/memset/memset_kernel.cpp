@@ -9,10 +9,10 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#include "mki/utils/memset/clear_tensors.h"
 #include <securec.h>
 #include <memory>
 #include <atomic>
+#include "mki/utils/memset/clear_tensors.h"
 #include "mki/base/kernel_base.h"
 #include "mki_loader/op_register.h"
 #include "mki/utils/assert/assert.h"
