@@ -21,10 +21,8 @@
 #define MKI_FLOG(level, format, ...) MKI_FLOG_##level(format, __VA_ARGS__)
 
 #define MKI_LOG_IF(condition, level)                                                                             \
-    do {                                                                                                         \
-        if (condition)                                                                                           \
-        MKI_LOG(level)                                                                                           \
-    } while (0)
+    if (condition)                                                                                               \
+    MKI_LOG(level)
 
 #define MKI_LOG_TRACE                                                                                            \
     if (Mki::LogLevel::TRACE >= Mki::LogCore::Instance().GetLogLevel())                                          \
