@@ -67,12 +67,16 @@ const uint16_t INT16_T_MAX = 0x7FFF;
 const uint16_t BIT_LEN16_MAX = 0xFFFF;
 const uint32_t INT32_T_MAX = 0x7FFFFFFFu;
 const uint32_t BIT_LEN32_MAX = 0xFFFFFFFFu;
+const int TRANS_TYPE_INT8 = 0;
+const int TRANS_TYPE_INT16 = 1;
+const int TRANS_TYPE_NUM = 2;
 
 enum class Fp16RoundMode {
     ROUND_TO_NEAREST = 0, /**< round to nearest even */
     ROUND_BY_TRUNCATED,   /**< round by Truncated    */
     ROUND_MODE_RESERVED,
 };
+
 const Fp16RoundMode FP16_ROUND_MODE = Fp16RoundMode::ROUND_TO_NEAREST;
 }
 
@@ -92,10 +96,10 @@ void ExtractFP16(const uint16_t &val, uint16_t *sVal, int16_t *eVal, uint16_t *m
 }
 
 template <typename T>
-void ReverseMan(bool negative, T* manVal)
+static void ReverseMan(bool negative, T &manVal)
 {
     if (negative) {
-        *manVal = (~(*manVal)) + 1;
+        manVal = (~(manVal)) + 1;
     }
 }
 
@@ -246,13 +250,15 @@ static double Fp16ToDouble(const uint16_t &fpValue)
     return ret;
 }
 
-static uint8_t FP16CheckIntOverflow(uint16_t sVal, uint16_t &hfExp, uint64_t &longIntM, uint16_t &shiftOut, uint8_t type)
+static uint8_t FP16CheckIntOverflow(uint16_t sVal, uint16_t &hfExp, uint64_t &longIntM,
+                                    uint16_t &shiftOut, uint8_t type)
 {
-    uint64_t MaxValueMap[2][2] = {   // 2 types, type 0: int8, type 1: int16;
+    uint64_t MaxValueMap[TRANS_TYPE_NUM][2] = {  // 2: negative and positive
         {0x20000u,    0x1FFFFu},    // MAX negative/positive int8, 0x20000u: 0x1FFFFu
         {0x2000000Lu, 0x1FFFFFFLu}, // MAX negative/positive int16, 0x2000000Lu: 0x1FFFFFFLu
     };
-    if (type >= 2) {
+
+    if (type >= TRANS_TYPE_NUM) {
         return 1;
     }
     uint8_t overflowFlag = 0;
@@ -301,7 +307,7 @@ static int8_t Fp16ToInt8(const uint16_t &fpValue)
     if (FP16_IS_INVALID(fpValue)) { // Inf or NaN
         overflowFlag = 1;
     } else {
-        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, 0);
+        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, TRANS_TYPE_INT8);
     }
 
     uint8_t mVal = 0;
@@ -414,7 +420,7 @@ static int16_t Fp16ToInt16(const uint16_t &fpValue)
     if (FP16_IS_INVALID(fpValue)) {
         overflowFlag = 1;
     } else {
-        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, 1);
+        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, TRANS_TYPE_INT16);
     }
     uint16_t mVal = 0;
     if (overflowFlag != 0) {
@@ -607,12 +613,12 @@ static uint16_t Fp16Add(uint16_t v1, uint16_t v2)
 
     uint16_t sum;
     if (s1 != s2) {
-        ReverseMan(s1 > 0, &m1);
-        ReverseMan(s2 > 0, &m2);
+        ReverseMan(s1 > 0, m1);
+        ReverseMan(s2 > 0, m2);
         sum = static_cast<uint16_t>(GetManSum(e1, m1, e2, m2));
         sVal = (sum & FP16_SIGN_MASK) >> FP16_SIGN_INDEX;
-        ReverseMan(sVal > 0, &m1);
-        ReverseMan(sVal > 0, &m2);
+        ReverseMan(sVal > 0, m1);
+        ReverseMan(sVal > 0, m2);
     } else {
         sum = static_cast<uint16_t>(GetManSum(e1, m1, e2, m2));
         sVal = s1;
@@ -1052,6 +1058,34 @@ Fp16T &Fp16T::operator=(const uint8_t &uiVal)
     return *this;
 }
 
+static int16_t GetExpValueformInt16(uint32_t &mTmp, uint16_t &mMax, uint16_t &len)
+{
+    int16_t eVal = FP16_EXP_BIAS + FP16_MAN_LEN;
+    uint16_t eTmp = len - CONST_11;
+    uint32_t trctMask = 1;
+    for (int i = 1; i < eTmp; i++) {
+        trctMask = (trctMask << 1) + 1;
+    }
+    uint32_t mTrct = (mTmp & trctMask) << (CONST_32 - eTmp);
+    for (int i = 0; i < eTmp; i++) {
+        mTmp = (mTmp >> 1);
+        eVal = eVal + 1;
+    }
+    bool bLastBit = ((mTmp & 1) > 0);
+    bool bTrctHigh = false;
+    bool bTrctLeft = false;
+    if (Fp16RoundMode::ROUND_TO_NEAREST == FP16_ROUND_MODE) { // Truncate
+        bTrctHigh = ((mTrct & FP32_SIGN_MASK) > 0);
+        bTrctLeft = ((mTrct & FP32_ABS_MAX) > 0);
+    }
+    mTmp = ManRoundToNearest(bLastBit, bTrctHigh, bTrctLeft, mTmp);
+    while (mTmp >= mMax || eVal < 0) {
+        mTmp = mTmp >> 1;
+        eVal = eVal + 1;
+    }
+    return eVal;
+}
+
 Fp16T &Fp16T::operator=(const int16_t &iVal)
 {
     if (iVal == 0) {
@@ -1071,31 +1105,8 @@ Fp16T &Fp16T::operator=(const int16_t &iVal)
         uint16_t len = static_cast<uint16_t>(GetManBitLength(mTmp));
         if (mTmp != 0) {
             int16_t eVal;
-
             if (len > CONST_11) {
-                eVal = FP16_EXP_BIAS + FP16_MAN_LEN;
-                uint16_t eTmp = len - CONST_11;
-                uint32_t trctMask = 1;
-                for (int i = 1; i < eTmp; i++) {
-                    trctMask = (trctMask << 1) + 1;
-                }
-                uint32_t mTrct = (mTmp & trctMask) << (CONST_32 - eTmp);
-                for (int i = 0; i < eTmp; i++) {
-                    mTmp = (mTmp >> 1);
-                    eVal = eVal + 1;
-                }
-                bool bLastBit = ((mTmp & 1) > 0);
-                bool bTrctHigh = false;
-                bool bTrctLeft = false;
-                if (Fp16RoundMode::ROUND_TO_NEAREST == FP16_ROUND_MODE) { // Truncate
-                    bTrctHigh = ((mTrct & FP32_SIGN_MASK) > 0);
-                    bTrctLeft = ((mTrct & FP32_ABS_MAX) > 0);
-                }
-                mTmp = ManRoundToNearest(bLastBit, bTrctHigh, bTrctLeft, mTmp);
-                while (mTmp >= mMax || eVal < 0) {
-                    mTmp = mTmp >> 1;
-                    eVal = eVal + 1;
-                }
+                eVal = GetExpValueformInt16(mTmp, mMax, len);
             } else {
                 eVal = FP16_EXP_BIAS;
                 mTmp = mTmp << (CONST_11 - len);
