@@ -20,6 +20,8 @@ const uint32_t PLATFORM_FAILED = 0XFFFFFFFF;
 const uint32_t PLATFORM_SUCCESS = 0;
 
 class PlatformManager {
+using PlatMapType = std::map<std::string, std::string>;
+
 public:
     PlatformManager(const PlatformManager &) = delete;
     PlatformManager &operator=(const PlatformManager &) = delete;
@@ -40,17 +42,17 @@ private:
     std::string GetSoFilePath() const;
     std::string RealPath(const std::string &filePath) const;
 
-    void ParseVersion(std::map<std::string, std::string> &versionMap, std::string &socVersion) const;
-    void ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
+    void ParseVersion(PlatMapType &versionMap, std::string &socVersion) const;
+    void ParsePlatformRes(const std::string &label, PlatMapType &platformResMap,
                           fe::PlatFormInfos &platInfoTemp) const;
-    uint32_t ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
+    uint32_t ParsePlatformInfo(std::map<std::string, PlatMapType> &contentMap,
                                std::string &socVersion, fe::PlatFormInfos &platInfoTemp) const;
-    bool ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
+    bool ParseAICoreintrinsicDtypeMap(PlatMapType &aiCoreintrinsicDtypeMap,
                                       fe::PlatFormInfos &platInfoTemp) const;
-    bool ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
+    bool ParseVectorCoreintrinsicDtypeMap(PlatMapType &vectorCoreintrinsicDtypeMap,
                                           fe::PlatFormInfos &platInfoTemp) const;
 
-    uint32_t AssemblePlatformInfoVector(std::map<std::string, std::map<std::string, std::string>> &contentMap);
+    uint32_t AssemblePlatformInfoVector(std::map<std::string, PlatMapType> &contentMap);
     void FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const;
 
 private:

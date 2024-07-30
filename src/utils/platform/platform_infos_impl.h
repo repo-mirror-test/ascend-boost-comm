@@ -21,24 +21,26 @@
 
 namespace fe {
 class PlatFormInfosImpl {
+using PlatInfoMapType = std::map<std::string, std::vector<std::string>>;
+
 public:
-    std::map<std::string, std::vector<std::string>> GetAICoreIntrinsicDtype();
-    std::map<std::string, std::vector<std::string>> GetVectorCoreIntrinsicDtype();
-    std::map<std::string, std::vector<std::string>> GetFixPipeDtypeMap();
+    PlatInfoMapType GetAICoreIntrinsicDtype();
+    PlatInfoMapType GetVectorCoreIntrinsicDtype();
+    PlatInfoMapType GetFixPipeDtypeMap();
 
     void SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
     bool GetPlatformRes(const std::string &label, const std::string &key, std::string &value);
     bool GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
 
-    void SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &fixpipeDtypeMap);
-    void SetAICoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes);
-    void SetVectorCoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes);
+    void SetFixPipeDtypeMap(const PlatInfoMapType &fixpipeDtypeMap);
+    void SetAICoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
+    void SetVectorCoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
 
 private:
-    std::map<std::string, std::vector<std::string>> aiCoreIntrinsicDtypeMap_;
-    std::map<std::string, std::vector<std::string>> vectorCoreIntrinsicDtypeMap_;
+    PlatInfoMapType aiCoreIntrinsicDtypeMap_;
+    PlatInfoMapType vectorCoreIntrinsicDtypeMap_;
     std::map<std::string, std::map<std::string, std::string>> platformResMap_;
-    std::map<std::string, std::vector<std::string>> fixpipeDtypeMap_;
+    PlatInfoMapType fixpipeDtypeMap_;
 };
 } // namespace fe
 
