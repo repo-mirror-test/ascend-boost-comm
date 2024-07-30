@@ -246,13 +246,45 @@ static double Fp16ToDouble(const uint16_t &fpValue)
     return ret;
 }
 
+static uint8_t FP16CheckIntOverflow(uint16_t sVal, uint16_t &hfExp, uint64_t &longIntM, uint16_t &shiftOut, uint8_t type)
+{
+    uint64_t MaxValueMap[2][2] = {   // 2 types, type 0: int8, type 1: int16;
+        {0x20000u,    0x1FFFFu},    // MAX negative/positive int8, 0x20000u: 0x1FFFFu
+        {0x2000000Lu, 0x1FFFFFFLu}, // MAX negative/positive int16, 0x2000000Lu: 0x1FFFFFFLu
+    };
+    if (type >= 2) {
+        return 1;
+    }
+    uint8_t overflowFlag = 0;
+    uint64_t maxNegetaiveValue = MaxValueMap[type][0];
+    uint64_t maxPositiveValue = MaxValueMap[type][1];
+    while (hfExp != FP16_EXP_BIAS) {
+        if (hfExp > FP16_EXP_BIAS) {
+            hfExp -= 1;
+            longIntM = longIntM << 1;
+            // sign=1,negative number(<0)
+            if (sVal == 1 && longIntM >= maxNegetaiveValue) {
+                longIntM = maxNegetaiveValue;
+                overflowFlag = 1;
+                break;
+            } else if (sVal != 1 && longIntM >= maxPositiveValue) {
+                longIntM = maxPositiveValue;
+                overflowFlag = 1;
+                break;
+            }
+        } else {
+            hfExp += 1;
+            shiftOut += 1;
+        }
+    }
+    return overflowFlag;
+}
+
 // Convert Fp16T to int8_t
 static int8_t Fp16ToInt8(const uint16_t &fpValue)
 {
     if (FP16_IS_DENORM(fpValue)) { // Denormalized number
-        uint8_t retV = 0;
-        int8_t ret = *(reinterpret_cast<uint8_t *>(&retV));
-        return ret;
+        return 0;
     }
 
     // 1.get sVal and shift it to bit0.
@@ -269,25 +301,7 @@ static int8_t Fp16ToInt8(const uint16_t &fpValue)
     if (FP16_IS_INVALID(fpValue)) { // Inf or NaN
         overflowFlag = 1;
     } else {
-        while (hfExp != FP16_EXP_BIAS) {
-            if (hfExp > FP16_EXP_BIAS) {
-                hfExp -= 1;
-                longIntM = longIntM << 1;
-                // sign=1,negative number(<0)
-                if (sVal == 1 && longIntM >= 0x20000u) {
-                    longIntM = 0x20000u; // (Fp16T-manVal)+7(int8)=17bit
-                    overflowFlag = 1;
-                    break;
-                } else if (sVal != 1 && longIntM >= 0x1FFFFu) { // sign=0,positive number(>0)
-                    longIntM = 0x1FFFFu; // (Fp16T-manVal)+7(int8)
-                    overflowFlag = 1;
-                    break;
-                }
-            } else {
-                hfExp += 1;
-                shiftOut += 1;
-            }
-        }
+        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, 0);
     }
 
     uint8_t mVal = 0;
@@ -315,6 +329,27 @@ static int8_t Fp16ToInt8(const uint16_t &fpValue)
     return ret;
 }
 
+static uint8_t FP16CheckU8Overflow(uint8_t &mVal, uint16_t &hfExp, uint64_t &longIntM, uint16_t &shiftOut)
+{
+    uint8_t overflowFlag = 0;
+    while (hfExp != FP16_EXP_BIAS) {
+        if (hfExp > FP16_EXP_BIAS) {
+            hfExp -= 1;
+            longIntM = longIntM << 1;
+            if (longIntM >= 0x40000Lu) { // overflow 0x40000
+                longIntM = 0x3FFFFLu; // (Fp16T-manVal)+8(uint8)=18bit
+                overflowFlag = 1;
+                mVal = ~0;
+                break;
+            }
+        } else {
+            hfExp += 1;
+            shiftOut += 1;
+        }
+    }
+    return overflowFlag;
+}
+
 // Convert Fp16T to uint8_t
 static uint8_t Fp16ToUInt8(const uint16_t &fpValue)
 {
@@ -335,23 +370,7 @@ static uint8_t Fp16ToUInt8(const uint16_t &fpValue)
     } else {
         uint16_t shiftOut = 0;
         uint64_t longIntM = hfMan;
-        uint8_t overFlow = 0;
-
-        while (hfExp != FP16_EXP_BIAS) {
-            if (hfExp > FP16_EXP_BIAS) {
-                hfExp -= 1;
-                longIntM = longIntM << 1;
-                if (longIntM >= 0x40000Lu) { // overflow 0x40000 
-                    longIntM = 0x3FFFFLu; // (Fp16T-manVal)+8(uint8)=18bit
-                    overFlow = 1;
-                    mVal = ~0;
-                    break;
-                }
-            } else {
-                hfExp += 1;
-                shiftOut += 1;
-            }
-        }
+        uint8_t overFlow = FP16CheckU8Overflow(mVal, hfExp, longIntM, shiftOut);
         if (overFlow == 0) {
             bool needRound = IsRoundOne(longIntM, shiftOut + FP16_MAN_LEN);
             mVal = static_cast<uint8_t>((longIntM >> (FP16_MAN_LEN + shiftOut)) & BIT_LEN8_MAX);
@@ -395,24 +414,7 @@ static int16_t Fp16ToInt16(const uint16_t &fpValue)
     if (FP16_IS_INVALID(fpValue)) {
         overflowFlag = 1;
     } else {
-        while (hfExp != FP16_EXP_BIAS) {
-            if (hfExp > FP16_EXP_BIAS) {
-                hfExp -= 1;
-                longIntM = longIntM << 1;
-                if (sVal == 1 && longIntM > 0x2000000Lu) { // sign=1,negative number(<0)
-                    overflowFlag = 1;
-                    longIntM = 0x2000000Lu; // 10(Fp16T-manVal)+15(int16)=25bit
-                    break;
-                } else if (sVal != 1 && longIntM >= 0x1FFFFFFLu) { // sign=0,positive number(>0) Overflow
-                    overflowFlag = 1;
-                    longIntM = 0x1FFFFFFLu; // 10(Fp16T-manVal)+15(int16)=25bit
-                    break;
-                }
-            } else {
-                shiftOut += 1;
-                hfExp += 1;
-            }
-        }
+        overflowFlag = FP16CheckIntOverflow(sVal, hfExp, longIntM, shiftOut, 1);
     }
     uint16_t mVal = 0;
     if (overflowFlag != 0) {
