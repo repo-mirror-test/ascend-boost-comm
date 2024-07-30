@@ -34,33 +34,27 @@ private:
     PlatformManager();
     ~PlatformManager();
 
-    uint32_t LoadIniFile(std::string iniFileRealPath);
-
     uint32_t LoadConfigFile(std::string filePath);
-
-    std::string RealPath(const std::string &path) const;
+    uint32_t LoadIniFile(std::string realFilePath);
 
     std::string GetSoFilePath() const;
+    std::string RealPath(const std::string &filePath) const;
 
     void ParseVersion(std::map<std::string, std::string> &versionMap, std::string &socVersion) const;
-
-    bool ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
-                                      fe::PlatFormInfos &platformInfoTemp) const;
-
-    bool ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
-                                          fe::PlatFormInfos &platformInfoTemp) const;
-
     void ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
-                          fe::PlatFormInfos &platformInfoTemp) const;
-
+                          fe::PlatFormInfos &platInfoTemp) const;
     uint32_t ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
-                               std::string &socVersion, fe::PlatFormInfos &platformInfoTemp) const;
+                               std::string &socVersion, fe::PlatFormInfos &platInfoTemp) const;
+    bool ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
+                                      fe::PlatFormInfos &platInfoTemp) const;
+    bool ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
+                                          fe::PlatFormInfos &platInfoTemp) const;
 
-    uint32_t AssemblePlatformInfoVector(std::map<std::string, std::map<std::string, std::string>> &contentInfoMap);
+    uint32_t AssemblePlatformInfoVector(std::map<std::string, std::map<std::string, std::string>> &contentMap);
     void FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const;
 
+private:
     bool initFlag_;
-
     std::map<std::string, fe::PlatFormInfos> platformInfosMap_;
 };
 } // namespace Mki
