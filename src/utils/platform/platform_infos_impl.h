@@ -24,14 +24,15 @@ class PlatFormInfosImpl {
 public:
     std::map<std::string, std::vector<std::string>> GetAICoreIntrinsicDtype();
     std::map<std::string, std::vector<std::string>> GetVectorCoreIntrinsicDtype();
-    bool GetPlatformRes(const std::string &label, const std::string &key, std::string &val);
+    std::map<std::string, std::vector<std::string>> GetFixPipeDtypeMap();
+
+    void SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
+    bool GetPlatformRes(const std::string &label, const std::string &key, std::string &value);
     bool GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
 
+    void SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &fixpipeDtypeMap);
     void SetAICoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes);
     void SetVectorCoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes);
-    void SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
-    std::map<std::string, std::vector<std::string>> GetFixPipeDtypeMap();
-    void SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &fixpipeDtypeMap);
 
 private:
     std::map<std::string, std::vector<std::string>> aiCoreIntrinsicDtypeMap_;
