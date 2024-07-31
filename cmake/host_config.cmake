@@ -37,7 +37,12 @@ add_link_options(
     "$<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:${LD_FLAGS_GLOBAL};-pie;-fPIE>"
 )
 
-if(BUILD_TEST_FRAMEWORK OR USE_PYTHON_TEST)
+if(NPU_FORMAT_H_VALID)
+    message(STATUS "NPUFormat.h is available")
+    add_compile_definitions(NPU_FORMAT_H_VALID)
+endif()
+
+if(BUILD_TEST_FRAMEWORK OR BUILD_SELF_TEST)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -O3")
     set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 endif()
