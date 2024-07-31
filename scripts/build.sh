@@ -60,13 +60,15 @@ function fn_install_cann_and_kernel()
 function fn_build_googletest()
 {
     GTEST_DIR=$THIRD_PARTY_DIR/googletest
-    if [ ! -d "$GTEST_DIR" ]; then
-        [[ ! -d "$THIRD_PARTY_DIR" ]] && mkdir -p $THIRD_PARTY_DIR
-        cd $THIRD_PARTY_DIR
-        wget --no-check-certificate $CMC_URL_COMMON/googletest-v1.13.0.tar.gz
-        tar -xf googletest-v1.13.0.tar.gz
-        rm googletest-v1.13.0.tar.gz
+    if [ -d "$GTEST_DIR" ]; then
+        return $?
     fi
+    [[ ! -d "$THIRD_PARTY_DIR" ]] && mkdir -p $THIRD_PARTY_DIR
+    cd $THIRD_PARTY_DIR
+    wget --no-check-certificate https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+    tar -xf v1.13.0.tar.gz
+    mv googletest-1.13.0 googletest
+    rm v1.13.0.tar.gz
 }
 
 function fn_build_nlohmann_json()
@@ -243,9 +245,9 @@ function fn_build()
     echo "** Mki framework build and install!"
     fn_compile_and_install "$CODE_ROOT" "$COMPILE_OPTIONS"
 
+    fn_config_json_copy
     fn_platform_configs_copy
     fn_cmake_configs_copy
-    fn_config_json_copy
 }
 
 function fn_build_testframework()

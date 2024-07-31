@@ -10,7 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/file_system/file_system.h"
 #include "mki/utils/log/log.h"
 
 TEST(FileSystemTest, GetDirChildFiles)

@@ -11,7 +11,7 @@
  */
 #include <gtest/gtest.h>
 #include <thread>
-#include "mki/utils/svector/svector.h"
+#include "mki/utils/SVector/SVector.h"
 #include "mki/utils/log/log.h"
 
 TEST(SVectorTest, all)

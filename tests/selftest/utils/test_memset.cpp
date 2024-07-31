@@ -14,7 +14,7 @@
 #include <random>
 
 #include "mki/utils/log/log.h"
-#include "mki/utils/memset/memset_launcher.h"
+#include "mki/utils/memset/clear_tensors.h"
 #include "mki/utils/rt/rt.h"
 
 using namespace Mki;

@@ -43,15 +43,21 @@ TEST(TestOperationIr, ParseIniSuccess)
     ASSERT_EQ(opIr->GetSupportSize(), 2);
     ASSERT_EQ(opIr->GetInTensorInfoIrs().size(), 2);
     ASSERT_EQ(opIr->GetInTensorInfoIrs()[0].isOptional, true);
-    EXPECT_EQ(opIr->GetInTensorInfoIrs()[0].supportedDtypes, (std::vector<int>{ 0, 27 }));
-    EXPECT_EQ(opIr->GetInTensorInfoIrs()[0].supportedFormats, (std::vector<int>{ 2, 2 }));
+    EXPECT_EQ(opIr->GetInTensorInfoIrs()[0].supportedDtypes,
+              (std::vector<TensorDType>{TENSOR_DTYPE_FLOAT, TENSOR_DTYPE_BF16}));
+    EXPECT_EQ(opIr->GetInTensorInfoIrs()[0].supportedFormats,
+              (std::vector<TensorFormat>{TENSOR_FORMAT_ND, TENSOR_FORMAT_ND}));
     ASSERT_EQ(opIr->GetInTensorInfoIrs()[1].isOptional, false);
-    EXPECT_EQ(opIr->GetInTensorInfoIrs()[1].supportedDtypes, (std::vector<int>{ 0, 1 }));
-    EXPECT_EQ(opIr->GetInTensorInfoIrs()[1].supportedFormats, (std::vector<int>{ 2, 29 }));
+    EXPECT_EQ(opIr->GetInTensorInfoIrs()[1].supportedDtypes,
+              (std::vector<TensorDType>{TENSOR_DTYPE_FLOAT, TENSOR_DTYPE_FLOAT16}));
+    EXPECT_EQ(opIr->GetInTensorInfoIrs()[1].supportedFormats,
+              (std::vector<TensorFormat>{TENSOR_FORMAT_ND, TENSOR_FORMAT_FRACTAL_NZ}));
     ASSERT_EQ(opIr->GetOutTensorInfoIrs().size(), 1);
     ASSERT_EQ(opIr->GetOutTensorInfoIrs()[0].isOptional, true);
-    EXPECT_EQ(opIr->GetOutTensorInfoIrs()[0].supportedDtypes, (std::vector<int>{ 0, 27 }));
-    EXPECT_EQ(opIr->GetOutTensorInfoIrs()[0].supportedFormats, (std::vector<int>{ 2, 2 }));
+    EXPECT_EQ(opIr->GetOutTensorInfoIrs()[0].supportedDtypes,
+              (std::vector<TensorDType>{TENSOR_DTYPE_FLOAT, TENSOR_DTYPE_BF16}));
+    EXPECT_EQ(opIr->GetOutTensorInfoIrs()[0].supportedFormats,
+              (std::vector<TensorFormat>{TENSOR_FORMAT_ND, TENSOR_FORMAT_ND}));
 
     opIr = opIrCfg.GetOperationIr("TestOperation2");
     ASSERT_NE(opIr, nullptr);

@@ -10,7 +10,7 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/rt/backend/rtbackend.h"
+#include "mki/utils/rt/backend/rt_backend.h"
 
 TEST(RtBackendTest, ModuleCreate) {
     Mki::RtBackend rtBackend;

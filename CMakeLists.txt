@@ -42,7 +42,6 @@ file(GLOB_RECURSE SCRIPTS_FILES "${PROJECT_SOURCE_DIR}/scripts/*.py")
 list(APPEND SCRIPTS_FILES
     ${PROJECT_SOURCE_DIR}/scripts/build_env_setup.sh
     ${PROJECT_SOURCE_DIR}/scripts/build_ops.sh
-    ${PROJECT_SOURCE_DIR}/scripts/set_ops_env.sh
 )
 install(FILES ${SCRIPTS_FILES} DESTINATION ./scripts)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/include DESTINATION .)

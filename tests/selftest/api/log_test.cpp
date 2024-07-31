@@ -11,7 +11,7 @@
  */
 #include <gtest/gtest.h>
 #include <cstdlib>
-#include "mki/utils/svector/svector.h"
+#include "mki/utils/SVector/SVector.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/log/log_entity.h"
 #include "mki/utils/log/log_sink_file.h"

@@ -10,8 +10,8 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/binfile/binfile.h"
-#include "mki/utils/filesystem/filesystem.h"
+#include "mki/utils/bin_file/bin_file.h"
+#include "mki/utils/file_system/file_system.h"
 
 using namespace Mki;
 
