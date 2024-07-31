@@ -30,7 +30,7 @@ USE_VERBOSE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
 SKIP_BUILD=OFF
-BUILD_OPTION_LIST="testframework example debug release help dev clean"
+BUILD_OPTION_LIST="testframework debug dev release selftest testexample example help clean"
 BUILD_CONFIGURE_LIST=("--output=.*" "--cache=.*" "--incremental" "--gcov" "--force_clean" "--use_cxx11_abi=0"
                       "--use_cxx11_abi=1" "--build_config=.*" "--skip_build" "--no_werror" "--namespace=.*")
 

@@ -236,22 +236,6 @@ function fn_build()
     fn_compile_and_install "$CODE_ROOT" "$COMPILE_OPTIONS"
 }
 
-# function fn_build_testframework()
-# {
-#     fn_build_release_3rdparty
-#     export OPS_ROOT=$CODE_ROOT/tests
-#     [[ ! -d "$CACHE_DIR/testframework" ]] && mkdir $CACHE_DIR/testframework
-#     cd $CACHE_DIR/testframework
-#     COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$OUTPUT_DIR/mki"
-#     if command -v ccache &> /dev/null; then
-#         COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
-#     fi
-#     echo "COMPILE_OPTIONS:$COMPILE_OPTIONS"
-
-#     echo "** Mki test framework build and install!"
-#     fn_compile_and_install "$CODE_ROOT/tests/framework" "$COMPILE_OPTIONS"
-# }
-
 function fn_make_tar_package()
 {
     cd $OUTPUT_DIR
@@ -406,10 +390,9 @@ function fn_main()
     COMPILE_OPTIONS="${COMPILE_OPTIONS} -DUSE_CXX11_ABI=$USE_CXX11_ABI"
     case "${arg1}" in
         "testframework")
-            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DBUILD_TEST_FRAMEWORK=ON -DCMAKE_BUILD_TYPE=Debug"
+            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DBUILD_TEST_FRAMEWORK=ON"
             BUILD_TEST_FRAMEWORK=ON
             fn_init_pytorch_env
-            # fn_build_testframework
             fn_build
             ;;
         "debug")
