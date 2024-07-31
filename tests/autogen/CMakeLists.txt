@@ -1,12 +1,6 @@
 include_directories(
-    # $ENV{CODE_ROOT}
-    # $ENV{CODE_ROOT}/include
     $ENV{THIRD_PARTY_DIR}/nlohmannJson/include
 )
-
-# link_directories(
-#     $ENV{CODE_ROOT}/lib
-# )
 
 execute_process(COMMAND python3 ${CMAKE_CURRENT_LIST_DIR}/op_desc_json_auto.py
                                 --namespace ${NAMESPACE}
