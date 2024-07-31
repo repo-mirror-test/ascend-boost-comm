@@ -147,8 +147,9 @@ function fn_init_pytorch_env()
     echo "PYTHON_INCLUDE_PATH=$PYTHON_INCLUDE_PATH"
     echo "PYTHON_LIB_PATH=$PYTHON_LIB_PATH"
     echo "PYTORCH_INSTALL_PATH=$PYTORCH_INSTALL_PATH"
-    if [ -f $PYTORCH_NPU_INSTALL_PATH/include/torch_npu/csrc/core/npu/NPUFormat.h ]; then
-        COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNPU_FORMAT_H_VALID=ON"
+    if [ ! -f $PYTORCH_NPU_INSTALL_PATH/include/torch_npu/csrc/core/npu/NPUFormat.h ]; then
+        echo "Not compatiable torch_npu version!"
+        exit 1
     fi
 }
 

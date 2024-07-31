@@ -13,11 +13,7 @@
 #include <ATen/ATen.h>
 #include <torch/extension.h>
 #include <torch_npu/csrc/core/npu/NPUStream.h>
-#ifdef NPU_FORMAT_H_VALID
 #include <torch_npu/csrc/core/npu/NPUFormat.h>
-#else
-#include <torch_npu/csrc/framework/utils/CalcuOpUtil.h>
-#endif
 #include <nlohmann/json.hpp>
 #include "mki/kernel.h"
 #include "mki/utils/assert/assert.h"
@@ -319,12 +315,7 @@ Mki::Tensor MkiTorch::AtTensor2MkiTensor(const at::Tensor &atTensor)
         mkiTensor.desc.dims[i] = atTensor.sizes()[i];
     }
 
-    mkiTensor.desc.format = static_cast<Mki::TensorFormat>(
-#ifdef NPU_FORMAT_H_VALID
-        at_npu::native::get_npu_format(atTensor));
-#else
-        at_npu::native::NPUNativeFunctions::get_npu_format(atTensor));
-#endif
+    mkiTensor.desc.format = static_cast<Mki::TensorFormat>(at_npu::native::get_npu_format(atTensor));
 
     MKI_LOG(INFO) << "At tensor dtype " << atTensor.scalar_type();
 
