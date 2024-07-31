@@ -97,6 +97,7 @@ function fn_build_dependency()
         cp -r $MKI_SOURCE_DIR/metadef $METADEF_DIR
     fi
 
+    [[ -d "$THIRD_PARTY_DIR/compiler" ]] && rm -rf $THIRD_PARTY_DIR/compiler
     mkdir -p $THIRD_PARTY_DIR/compiler
     ln -s $ASCEND_HOME_PATH/compiler/ccec_compiler $CCEC_COMPILER_DIR
     ln -s $ASCEND_HOME_PATH/compiler/tikcpp $TIKCPP_DIR
