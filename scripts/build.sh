@@ -66,10 +66,9 @@ function fn_build_nlohmann_json()
     rm -rf nlohmann
     mkdir nlohmann
     cd nlohmann
-    wget --no-check-certificate https://github.com/nlohmann/json/releases/download/v3.11.2/include.zip
-    unzip include.zip
+    git clone -b v3.11.2 --depth 1 https://gitee.com/mirrors/json.git
     mkdir -p $THIRD_PARTY_DIR/nlohmannJson
-    cp -r ./include $THIRD_PARTY_DIR/nlohmannJson
+    mv json/include $THIRD_PARTY_DIR/nlohmannJson
     cd $CACHE_DIR
     rm -rf nlohmann
 }
