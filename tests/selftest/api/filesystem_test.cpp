@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -13,15 +13,16 @@
 #include "mki/utils/file_system/file_system.h"
 #include "mki/utils/log/log.h"
 
+namespace {
 TEST(FileSystemTest, GetDirChildFiles)
 {
-    const char *asdHome = std::getenv("ASDOPS_HOME_PATH");
-    if (!asdHome) {
+    const char *mkiHome = std::getenv("MKI_HOME_PATH");
+    if (!mkiHome) {
         return;
     }
 
     std::vector<std::string> filePaths;
-    Mki::FileSystem::GetDirChildFiles(asdHome, filePaths);
+    Mki::FileSystem::GetDirChildFiles(mkiHome, filePaths);
     for (const auto &filePath : filePaths) {
         MKI_LOG(INFO) << filePath;
     }
@@ -43,18 +44,18 @@ TEST(FileSystemTest, DirName)
 
 TEST(FileSystemTest, GetDirChildItems)
 {
-    const char *asdHome = std::getenv("ASDOPS_HOME_PATH");
-    if (!asdHome) {
+    const char *mkiHome = std::getenv("MKI_HOME_PATH");
+    if (!mkiHome) {
         return;
     }
     std::vector<std::string> itemPaths;
     std::vector<std::string> longPath(10000, std::string('a', 1));
-    Mki::FileSystem::GetDirChildFiles(asdHome, itemPaths);
+    Mki::FileSystem::GetDirChildFiles(mkiHome, itemPaths);
     const std::string directoryPath = "/path/to/directory";
     std::vector<std::string> fileExtension;
     fileExtension.push_back(".txt");
     Mki::FileSystem::GetDirChildItems(directoryPath, fileExtension);
-    Mki::FileSystem::GetDirChildItems(asdHome, longPath);
+    Mki::FileSystem::GetDirChildItems(mkiHome, longPath);
     std::string str1 = Mki::FileSystem::PathCheckAndRegular("");
     const std::string longPath1(10000, 'a');
     EXPECT_EQ(str1, "");
@@ -68,12 +69,12 @@ TEST(FileSystemTest, GetDirChildItems)
 
 TEST(FileSystemTest, GetDirChildDirs)
 {
-    const char *asdHome = std::getenv("ASDOPS_HOME_PATH");
-    if (!asdHome) {
+    const char *mkiHome = std::getenv("MKI_HOME_PATH");
+    if (!mkiHome) {
         return;
     }
     std::vector<std::string> dirPaths;
-    Mki::FileSystem::GetDirChildDirs(asdHome, dirPaths);
+    Mki::FileSystem::GetDirChildDirs(mkiHome, dirPaths);
     for (const auto &dirPath : dirPaths) {
         MKI_LOG(INFO) << dirPath;
     }
@@ -115,7 +116,6 @@ TEST(FileSystemTest, MakedirsTest)
     fs.DeleteFile(tempDir + "/subdir1/subdir2");
     fs.DeleteFile(tempDir + "/subdir1");
     fs.DeleteFile(tempDir);
-
 }
 
 TEST(FileSystemTest, PathCheckAndRegular)
@@ -124,3 +124,4 @@ TEST(FileSystemTest, PathCheckAndRegular)
     std::string longPath(10000, 'a');
     EXPECT_EQ(Mki::FileSystem::PathCheckAndRegular(longPath), "");
 }
+} // namespace

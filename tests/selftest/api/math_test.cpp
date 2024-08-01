@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,9 +9,10 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#include "mki/utils/math/math.h"
 #include <gtest/gtest.h>
+#include "mki/utils/math/math.h"
 
+namespace {
 TEST(MathTest, DividendIsZero) {
     int64_t dividend = 2147483648;
     int64_t divisor = 2147483648;
@@ -21,3 +22,4 @@ TEST(MathTest, DividendIsZero) {
     EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor1), 2147483648);
     EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor2), 0);
 }
+} // namespace

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 #include "mki/utils/status/status.h"
 
+namespace {
 TEST(StatusTest, Base)
 {
     Mki::Status st = Mki::Status::FailStatus(3, "dd");
@@ -34,7 +35,10 @@ TEST(StatusTest, Base2)
     Mki::Status status;
     Mki::Status status_copy = status;
 }
-TEST(StatusTest, Code){
+
+TEST(StatusTest, Code)
+{
     Mki::Status st = Mki::Status::FailStatus(3, "dd");
     EXPECT_EQ(st.Code(), 3);
 }
+} // namespace

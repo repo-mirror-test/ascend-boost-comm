@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -14,6 +14,7 @@
 #include "mki/utils/SVector/SVector.h"
 #include "mki/utils/log/log.h"
 
+namespace {
 TEST(SVectorTest, all)
 {
     Mki::SVector<int, 32> ints;
@@ -88,7 +89,7 @@ TEST(PushBackTest, push_back)
     EXPECT_EQ(ints.size(), 1);
     int i;
     try {
-        for (i = 0; i < 47; i++){
+        for (i = 0; i < 47; i++) {
             ints.push_back(i);
         }
     } catch (const std::exception &e) {
@@ -101,7 +102,7 @@ TEST(PushBackTest, emplace_back)
     ints.resize(48);
     try {
         ints.emplace_back(5);
-    } catch(const std::exception &e){
+    } catch (const std::exception &e) {
     }
 }
 
@@ -110,8 +111,8 @@ TEST(PushBackTest, EraseOutOfrange)
     Mki::SVector<int, 48> ints;
     ints.push_back(4);
     try {
-        ints.erase(ints.begin()+1);
-    } catch(const std::exception &e){
+        ints.erase(ints.begin() + 1);
+    } catch (const std::exception &e) {
     }
 }
 
@@ -122,3 +123,4 @@ TEST(OperatorTest, AccessElementOutOfBounds)
     EXPECT_THROW(v1[3], std::out_of_range);
     EXPECT_THROW(v1[10], std::out_of_range);
 }
+} // namespace

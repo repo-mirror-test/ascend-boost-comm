@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -17,15 +17,16 @@
 #include "mki/utils/memset/clear_tensors.h"
 #include "mki/utils/rt/rt.h"
 
+namespace {
 using namespace Mki;
 
 constexpr float MEMSET_FACTOR = 0.7; // set 70% to zero
 constexpr uint64_t BLOCK_LEN = 32;
+constexpr int START = 1;
+constexpr int END = 4096 * 1024; // 4mb
 
 uint64_t GenRandomLen()
 {
-    constexpr int START = 1;
-    constexpr int END = 4096 * 1024; // 4mb
     return (rand() % (END - START)) + START;
 }
 
@@ -104,4 +105,5 @@ TEST(TestMemset, TestMemsetOp)
     CompareResult(tensor5, len5);
     CompareResult(tensor6, len6);
     CompareResult(tensor7, len7);
+}
 }

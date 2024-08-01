@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -12,6 +12,7 @@
 #include <gtest/gtest.h>
 #include "mki/utils/rt/backend/rt_backend.h"
 
+namespace {
 TEST(RtBackendTest, ModuleCreate) {
     Mki::RtBackend rtBackend;
     MkiRtModuleInfo moduleInfo;
@@ -24,3 +25,4 @@ TEST(RtBackendTest, ModuleCreate) {
     ASSERT_EQ(rtBackend.ModuleCreate(nullptr, &module), MKIRT_ERROR_NOT_INITIALIZED);
     ASSERT_EQ(rtBackend.ModuleCreate(&moduleInfo, nullptr), MKIRT_ERROR_NOT_INITIALIZED);
 }
+} // namespace

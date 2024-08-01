@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -13,6 +13,7 @@
 #include "mki/utils/bin_file/bin_file.h"
 #include "mki/utils/file_system/file_system.h"
 
+namespace {
 using namespace Mki;
 
 TEST(BinFileTest, all)
@@ -105,7 +106,7 @@ TEST(CheckNameTest, NameStartsWithDollar) {
     const std::string value = "1";
     Status status = file.AddAttr(name, value);
     EXPECT_FALSE(status.Ok());
-    EXPECT_EQ(file.AddAttr(name, value).Ok(),false);
+    EXPECT_EQ(file.AddAttr(name, value).Ok(), false);
 }
 
 TEST(CheckNameTest, ValidName) {
@@ -126,7 +127,8 @@ TEST(CheckNameTest, ValidName0)
     EXPECT_EQ(status.Ok(), true);
 }
 
-TEST(CheckNameTest, ValidName2) {
+TEST(CheckNameTest, ValidName2)
+{
     BinFile file;
     std::string name = "John";
     const std::string value = "1";
@@ -136,7 +138,7 @@ TEST(CheckNameTest, ValidName2) {
     EXPECT_EQ(result.Message(), "attr:John already exists");
 }
 
-TEST(CheckNameTest,Read)
+TEST(CheckNameTest, Read)
 {
     BinFile file;
     std::string name = "test_object";
@@ -151,6 +153,7 @@ TEST(FileSystemTest, Write)
     Status result = file.Write(dirPath);
     EXPECT_EQ(result.Message(), "open file fail");
 }
+
 TEST(BinFileTest, invalidChar)
 {
     {
@@ -205,3 +208,4 @@ TEST(BinFileTest, exceedMaxLen)
         EXPECT_EQ(attrMap.size(), 0);
     }
 }
+} // namespace

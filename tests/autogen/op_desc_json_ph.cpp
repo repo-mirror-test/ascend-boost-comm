@@ -14,6 +14,7 @@
 #include "mki/utils/log/log.h"
 #include "op_desc_json.h"
 
+namespace MkiAutoGen {
 void JsonToOpParam(const nlohmann::json &opDescJson, Mki::LaunchParam &launchParam)
 {
     MKI_LOG(ERROR) << "Please replace the libmki_test_autogen.so with your own version!";
@@ -24,3 +25,4 @@ Mki::Operation *GetOpByName(const std::string &operationName)
     MKI_LOG(ERROR) << "Please replace the libmki_test_autogen.so with your own version!";
     return nullptr;
 }
+} // namespace MkiAutoGen

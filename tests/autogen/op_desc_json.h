@@ -12,20 +12,14 @@
 #ifndef MKI_DESC_JSON_H
 #define MKI_DESC_JSON_H
 
-#include <nlohmann/json.hpp>
 #include <string>
+#include <nlohmann/json.hpp>
 #include "mki/launch_param.h"
 #include "mki/operation.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+namespace MkiAutoGen {
 void JsonToOpParam(const nlohmann::json &opDescJson, Mki::LaunchParam &launchParam);
 Mki::Operation *GetOpByName(const std::string &operationName);
-
-#ifdef __cplusplus
-}
-#endif
+} // namespace MkiAutoGen
 
 #endif

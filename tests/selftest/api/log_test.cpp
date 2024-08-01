@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -18,6 +18,7 @@
 #include "mki/utils/log/log_sink_stdout.h"
 #include "mki/utils/log/log_core.h"
 
+namespace {
 TEST(LogCore, InitTest1)
 {
     char envLogToStdout[] = "MKI_LOG_TO_STDOUT=0";
@@ -109,7 +110,6 @@ TEST(LogCore, LogTest3)
     logCore.SetLogLevel(Mki::LogLevel::DEBUG);
     Mki::LogLevel logLevel = logCore.GetLogLevel();
     EXPECT_EQ(logLevel, Mki::LogLevel::DEBUG);
-
 }
 
 TEST(LogEntity, Trace) {
@@ -144,3 +144,4 @@ TEST(LogEntity, AddSink) {
     Mki::LogCore logCore;
     logCore.AddSink(std::make_shared<Mki::LogSinkStdout>());
 }
+} // namespace

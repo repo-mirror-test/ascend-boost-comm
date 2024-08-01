@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -16,6 +16,7 @@
 #include "mki/utils/operationir/operation_ir.h"
 #include "mki/utils/operationir/operation_ir_cfg.h"
 
+namespace {
 using namespace Mki;
 
 TEST(TestOperationIr, ParseIniSuccess)
@@ -99,15 +100,16 @@ TEST(TestOperationIr, ParseIniInvalid)
     ASSERT_EQ(st.Ok(), false);
 
     file.open(fileName, std::ios::trunc);
-    //invalid dtype
+    // invalid dtype
     file << "[TestOperationInvalid] \n input0.dtype=float16,int8,int32,bool,string,complex64,float88,bf16 \n";
     file.close();
     st = opIrCfg.Load(fileName);
     ASSERT_EQ(st.Ok(), false);
 
     file.open(fileName, std::ios::trunc);
-    //invalid format
-    file << "[TestOperationInvalid] \n input0.dtype=float,bf16,uint8,int16,uint16,uint32,int64,uint64,double,complex128 \n "
+    // invalid format
+    file << "[TestOperationInvalid] \n "
+            "input0.dtype=float,bf16,uint8,int16,uint16,uint32,int64,uint64,double,complex128 \n "
             "input0.format=nchw,nchc,nc1hc0,fractal_z,nc1hwc0_c04,hwcn,ndhwc,fractal_nz,ncdhw,"
             "ndc1hwc0,fractal_z_3d,aaa,nd ";
     file.close();
@@ -116,3 +118,4 @@ TEST(TestOperationIr, ParseIniInvalid)
 
     std::remove(fileName.c_str());
 }
+} // namespace

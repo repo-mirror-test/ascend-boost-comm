@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -13,6 +13,7 @@
 #include "mki/base/operation_base.h"
 #include "mki/base/kernel_base.h"
 
+namespace {
 using namespace Mki;
 
 class OperationNew : public OperationBase {
@@ -56,3 +57,4 @@ TEST(OperationBaseTest, all0)
     delete op;
     op = nullptr;
 }
+} // namespace

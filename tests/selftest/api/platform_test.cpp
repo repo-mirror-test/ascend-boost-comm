@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -17,6 +17,7 @@
 #include "mki/utils/platform/platform_manager.h"
 #include "utils/platform/platform_infos_impl.h"
 
+namespace {
 TEST(PlatformTest, platformTest1)
 {
     const uint32_t PLATFORM_SUCCESS = 0;
@@ -49,12 +50,13 @@ TEST(PlatformInfoTest, SupportL0c2out0) {
     platformInfo.GetLocalMemSize(fe::LocalMemType::HBM, size);
     platformInfo.GetLocalMemSize(fe::LocalMemType::HBM, size1);
     platformInfo.GetLocalMemBw(fe::LocalMemType::L2, size1);
-    platformInfo.GetLocalMemBw(fe::LocalMemType::HBM,size1);
+    platformInfo.GetLocalMemBw(fe::LocalMemType::HBM, size1);
     platformInfo.GetLocalMemBw(fe::LocalMemType::L2, size);
     platformInfo.GetFixPipeDtypeMap();
 }
 
-TEST(PlatFormInfosImplTest, GetPlatformRes){
+TEST(PlatFormInfosImplTest, GetPlatformRes)
+{
     std::string label = "platform1";
     fe::PlatFormInfosImpl platformInfoimp;
     std::map<std::string, std::string> res;
@@ -62,7 +64,10 @@ TEST(PlatFormInfosImplTest, GetPlatformRes){
     std::map<std::string, std::vector<std::string>> map1;
     EXPECT_EQ(platformInfoimp.GetFixPipeDtypeMap(), map1);
 }
-TEST(PlatformManagerTest, Finalize){
+
+TEST(PlatformManagerTest, Finalize)
+{
     Mki::PlatformManager &platformManager = Mki::PlatformManager::Instance();
     EXPECT_EQ(platformManager.Finalize(), 0);
 }
+} // namespace

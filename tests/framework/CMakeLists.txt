@@ -1,5 +1,6 @@
 include_directories(
     ${CMAKE_CURRENT_LIST_DIR}/../autogen
+    ${PROJECT_SOURCE_DIR}/3rdparty/nlohmannJson/include
     $ENV{PYTHON_INCLUDE_PATH}
     $ENV{PYTORCH_INSTALL_PATH}/include
     $ENV{PYTORCH_INSTALL_PATH}/include/torch/csrc/api/include

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * AscendOpCommonLib is licensed under Mulan PSL v2.
+ * MindKernelInfra is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -13,6 +13,7 @@
 #include <thread>
 #include "mki/utils/time/timer.h"
 
+namespace {
 TEST(TimerTest, ElapsedMicroSecond)
 {
     Mki::Timer timer;
@@ -32,3 +33,4 @@ TEST(TimerTest, ElapsedMicroSecond)
     timer.Reset();
     std::cout << timer.ElapsedMicroSecond() << std::endl;
 }
+} // namespace

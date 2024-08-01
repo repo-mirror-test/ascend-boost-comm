@@ -89,7 +89,7 @@ std::string MkiTorch::FreeWorkspace(const Mki::KernelInfo &kernelInfo, Mki::RunI
 std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki::Tensor> &inTensors,
                             std::vector<Mki::Tensor> &outTensors)
 {
-    Mki::Operation *op = GetOpByName(opName_);
+    Mki::Operation *op = MkiAutoGen::GetOpByName(opName_);
     if (op == nullptr) {
         MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
         return "get operation by name fail";
@@ -137,11 +137,11 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
         int st = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceLaunchBuffer),
-                                              launchBufferSize, MKIRT_MEM_DEFAULT);
+                                           launchBufferSize, MKIRT_MEM_DEFAULT);
         MKI_CHECK(st == MKIRT_SUCCESS, "MkiRtMemMallocDevice error", return "MkiRtMemMallocDevice error");
 
         st = Mki::MkiRtMemCopy(deviceLaunchBuffer, launchBufferSize,
-                                  hostLaunchBuffer, launchBufferSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
+                               hostLaunchBuffer, launchBufferSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
         if (st != MKIRT_SUCCESS) {
             Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
             deviceLaunchBuffer = nullptr;
@@ -181,23 +181,23 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
 }
 
 std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::Tensor> &inTensors,
-                                   std::vector<Mki::Tensor> &outTensors, int runTimes)
+                                std::vector<Mki::Tensor> &outTensors, int runTimes)
 {
     int st;
     int inTensorIdx = 0;
     std::string retStr;
-    char *inTensorTempBufList[20];
+    uint8_t *inTensorTempBufList[20];
     for (auto iter : inTensors) {
-        inTensorTempBufList[inTensorIdx] = (char *)malloc(iter.dataSize);
-        st = Mki::MkiRtMemCopy((void *)inTensorTempBufList[inTensorIdx], iter.dataSize, iter.data, iter.dataSize,
-                                  MKIRT_MEMCOPY_DEVICE_TO_HOST);
+        inTensorTempBufList[inTensorIdx] = (uint8_t *)malloc(iter.dataSize);
+        st = Mki::MkiRtMemCopy((void *)inTensorTempBufList[inTensorIdx], iter.dataSize, iter.deviceData, iter.dataSize,
+                               MKIRT_MEMCOPY_DEVICE_TO_HOST);
         if (st != MKIRT_SUCCESS) {
             MKI_LOG(ERROR) << "MkiRtMemCopy error";
             return "MkiRtMemCopy error";
         }
         inTensorIdx++;
     }
-    Mki::Operation *op = GetOpByName(opName_);
+    Mki::Operation *op = MkiAutoGen::GetOpByName(opName_);
     if (op == nullptr) {
         MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
         return "get operation by name fail";
@@ -228,7 +228,6 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     MkiRtStream stream = GetCurrentStream();
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
-
 
     uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
@@ -271,8 +270,8 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
     for (int runIdx = 0; runIdx < runTimes; runIdx++) {
         inTensorIdx = 0;
         for (auto iter : inTensors) {
-            st = Mki::MkiRtMemCopy(iter.data, iter.dataSize, inTensorTempBufList[inTensorIdx], iter.dataSize,
-                                      MKIRT_MEMCOPY_HOST_TO_DEVICE);
+            st = Mki::MkiRtMemCopy(iter.deviceData, iter.dataSize, inTensorTempBufList[inTensorIdx], iter.dataSize,
+                                   MKIRT_MEMCOPY_HOST_TO_DEVICE);
             if (st != MKIRT_SUCCESS) {
                 MKI_LOG(ERROR) << "MkiRtMemCopy error";
                 return "MkiRtMemCopy error";
@@ -307,7 +306,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::
 Mki::Tensor MkiTorch::AtTensor2MkiTensor(const at::Tensor &atTensor)
 {
     Mki::Tensor mkiTensor;
-    mkiTensor.data = atTensor.data_ptr();
+    mkiTensor.deviceData = atTensor.data_ptr();
     mkiTensor.dataSize = atTensor.numel() * atTensor.element_size();
 
     mkiTensor.desc.dims.resize(atTensor.sizes().size());
@@ -349,7 +348,7 @@ std::string MkiTorch::ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vec
         perfFlag = 1;
         runTimes = opDescJson["runTimes"];
     }
-    JsonToOpParam(opDescJson, launchParam);
+    MkiAutoGen::JsonToOpParam(opDescJson, launchParam);
 
     std::vector<Mki::Tensor> mkiInTensors;
     std::vector<Mki::Tensor> mkiOutTensors;
@@ -377,7 +376,7 @@ std::string MkiTorch::ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vec
     }
 
     if (perfFlag == 0) {
-        retStr = RunOp(launchParam, mkiInTensors, mkiOutTensors);  
+        retStr = RunOp(launchParam, mkiInTensors, mkiOutTensors);
     } else if (perfFlag == 1) {
         retStr = RunOpPerf(launchParam, mkiInTensors, mkiOutTensors, runTimes);
     }
