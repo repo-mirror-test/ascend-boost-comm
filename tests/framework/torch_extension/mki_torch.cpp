@@ -14,7 +14,6 @@
 #include <torch/extension.h>
 #include <torch_npu/csrc/core/npu/NPUStream.h>
 #include <torch_npu/csrc/core/npu/NPUFormat.h>
-#include <nlohmann/json.hpp>
 #include "mki/kernel.h"
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
@@ -54,6 +53,100 @@ void MkiTorch::ContiguousAtTensor(std::vector<at::Tensor> &atTensors)
     }
 }
 
+void MkiTorch::SetUpTensors(const nlohmann::json &opDescJson, Mki::LaunchParam &launchParam,
+                            std::vector<at::Tensor> &atInTensors, std::vector<at::Tensor> &atOutTensors)
+{
+    std::vector<Mki::Tensor> mkiInTensors;
+    std::vector<Mki::Tensor> mkiOutTensors;
+    if (opDescJson.find("input_formats") !=  opDescJson.end()) {
+        for (uint32_t i = 0; i < atInTensors.size(); i++) {
+            mkiInTensors.push_back(AtTensor2MkiTensor(atInTensors[i]));
+            mkiInTensors[i].desc.format = static_cast<Mki::TensorFormat>(opDescJson["input_formats"][i]);
+        }
+    } else {
+        MKI_LOG(INFO) << "use default format";
+        for (at::Tensor &atTensor : atInTensors) {
+            mkiInTensors.push_back(AtTensor2MkiTensor(atTensor));
+        }
+    }
+    if (opDescJson.find("output_formats") !=  opDescJson.end()) {
+        for (uint32_t i = 0; i < atOutTensors.size(); i++) {
+            mkiOutTensors.push_back(AtTensor2MkiTensor(atOutTensors[i]));
+            mkiOutTensors[i].desc.format = static_cast<Mki::TensorFormat>(opDescJson["output_formats"][i]);
+        }
+    } else {
+        MKI_LOG(INFO) << "use default format";
+        for (at::Tensor &atTensor : atOutTensors) {
+            mkiOutTensors.push_back(AtTensor2MkiTensor(atTensor));
+        }
+    }
+
+    for (auto iter : mkiInTensors) {
+        launchParam.AddInTensor(iter);
+    }
+    for (auto iter : mkiOutTensors) {
+        launchParam.AddOutTensor(iter);
+    }
+}
+
+std::string MkiTorch::SaveTensorsToBuf(Mki::SVector<Mki::Tensor> &mkiTensors)
+{
+    int st;
+    int inTensorIdx = 0;
+    for (auto iter : mkiTensors) {
+        tensorTempBufList_[inTensorIdx] = (uint8_t *)malloc(iter.dataSize);
+        st = Mki::MkiRtMemCopy((void *)tensorTempBufList_[inTensorIdx], iter.dataSize, iter.deviceData, iter.dataSize,
+                               MKIRT_MEMCOPY_DEVICE_TO_HOST);
+        if (st != MKIRT_SUCCESS) {
+            MKI_LOG(ERROR) << "MkiRtMemCopy error";
+            return "MkiRtMemCopy error";
+        }
+        inTensorIdx++;
+    }
+    return "ok";
+}
+
+std::string MkiTorch::GetTensorsFromBuf(Mki::SVector<Mki::Tensor> &mkiTensors)
+{
+    int st;
+    int inTensorIdx = 0;
+    for (auto iter : mkiTensors) {
+        st = Mki::MkiRtMemCopy(iter.deviceData, iter.dataSize, tensorTempBufList_[inTensorIdx], iter.dataSize,
+                                MKIRT_MEMCOPY_HOST_TO_DEVICE);
+        if (st != MKIRT_SUCCESS) {
+            MKI_LOG(ERROR) << "MkiRtMemCopy error";
+            return "MkiRtMemCopy error";
+        }
+        inTensorIdx++;
+    }
+    return "ok";
+}
+
+Mki::Kernel *MkiTorch::GetKernelInstance(Mki::LaunchParam &launchParam)
+{
+    Mki::Operation *op = MkiAutoGen::GetOpByName(opName_);
+    if (op == nullptr) {
+        MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
+        return nullptr;
+    }
+
+    MKI_LOG(INFO) << "before infershape, launchParam:\n" << launchParam.ToString();
+    Mki::Status status = op->InferShape(launchParam);
+    if (!status.Ok()) {
+        MKI_LOG(ERROR) << opName_ << " infer shape fail, error:" << status.ToString();
+        return nullptr;
+    }
+
+    MKI_LOG(INFO) << "after infershape, runInfo:\n" << launchParam.ToString();
+    Mki::Kernel *kernel = op->GetBestKernel(launchParam);
+    if (kernel == nullptr) {
+        MKI_LOG(ERROR) << opName_ << " get best kernel fail";
+        return nullptr;
+    }
+
+    return kernel;
+}
+
 std::string MkiTorch::AddWorkspace(const Mki::KernelInfo &kernelInfo, Mki::RunInfo &runInfo)
 {
     size_t bufferSize = kernelInfo.GetTotalScratchSize();
@@ -86,76 +179,59 @@ std::string MkiTorch::FreeWorkspace(const Mki::KernelInfo &kernelInfo, Mki::RunI
     return "ok";
 }
 
-std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki::Tensor> &inTensors,
-                            std::vector<Mki::Tensor> &outTensors)
+std::string MkiTorch::InitTilingAtMkiTorch(std::shared_ptr<Mki::Kernel> kernel, const Mki::LaunchParam &launchParam,
+                                           Mki::RunInfo &runInfo)
 {
-    Mki::Operation *op = MkiAutoGen::GetOpByName(opName_);
-    if (op == nullptr) {
-        MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
-        return "get operation by name fail";
-    }
+    kernel->SetLaunchWithTiling(false);
+    uint32_t launchBufferSize = kernel->GetTilingSize(launchParam);
+    MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
 
-    for (auto iter : inTensors) {
-        launchParam.AddInTensor(iter);
-    }
-    for (auto iter : outTensors) {
-        launchParam.AddOutTensor(iter);
-    }
+    uint8_t hostLaunchBuffer[launchBufferSize];
+    kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
+    auto status = kernel->Init(launchParam);
+    MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
-    MKI_LOG(INFO) << "before infershape, launchParam:\n" << launchParam.ToString();
-    Mki::Status status = op->InferShape(launchParam);
-    if (!status.Ok()) {
-        MKI_LOG(ERROR) << opName_ << " infer shape fail, error:" << status.ToString();
-        return "infer shape fail";
-    }
+    int st = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceLaunchBuffer_),
+                                       launchBufferSize, MKIRT_MEM_DEFAULT);
+    MKI_CHECK(st == MKIRT_SUCCESS, "MkiRtMemMallocDevice error", return "MkiRtMemMallocDevice error");
 
-    MKI_LOG(INFO) << "after infershape, runInfo:\n" << launchParam.ToString();
-    Mki::Kernel *kernel = op->GetBestKernel(launchParam);
-    if (kernel == nullptr) {
-        MKI_LOG(ERROR) << opName_ << " get best kernel fail";
-        return "get best kernel fail";
+    st = Mki::MkiRtMemCopy(deviceLaunchBuffer_, launchBufferSize,
+                           hostLaunchBuffer, launchBufferSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
+    if (st != MKIRT_SUCCESS) {
+        Mki::MkiRtMemFreeDevice(deviceLaunchBuffer_);
+        deviceLaunchBuffer_ = nullptr;
+        MKI_LOG(ERROR) << "MkiRtMemCopy error";
+        return "MkiRtMemCopy error";
     }
+    runInfo.SetTilingDeviceAddr(deviceLaunchBuffer_);
+    return "ok";
+}
+
+std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam)
+{
+    std::string retStr;
+    Mki::Status status;
+
+    std::shared_ptr<Mki::Kernel> kernel(GetKernelInstance(launchParam));
+    MKI_CHECK(kernel != nullptr, "failed to get kernel instance", return "failed to init op");
 
     Mki::RunInfo runInfo;
     MkiRtStream stream = GetCurrentStream();
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
         kernel->SetLaunchWithTiling(true);
-        auto status = kernel->Init(launchParam);
+        status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
     } else {
-        kernel->SetLaunchWithTiling(false);
-        uint32_t launchBufferSize = kernel->GetTilingSize(launchParam);
-        MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
-
-        uint8_t hostLaunchBuffer[launchBufferSize];
-        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
-        auto status = kernel->Init(launchParam);
-        MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
-
-        int st = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceLaunchBuffer),
-                                           launchBufferSize, MKIRT_MEM_DEFAULT);
-        MKI_CHECK(st == MKIRT_SUCCESS, "MkiRtMemMallocDevice error", return "MkiRtMemMallocDevice error");
-
-        st = Mki::MkiRtMemCopy(deviceLaunchBuffer, launchBufferSize,
-                               hostLaunchBuffer, launchBufferSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
-        if (st != MKIRT_SUCCESS) {
-            Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
-            deviceLaunchBuffer = nullptr;
-            MKI_LOG(ERROR) << "MkiRtMemCopy error";
-            return "MkiRtMemCopy error";
-        }
-        runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
+        InitTilingAtMkiTorch(kernel, launchParam, runInfo);
+        MKI_CHECK(retStr == "ok", "failed to init tiling in mkiTorch", return retStr);
     }
 
     const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
-    std::string resStr = AddWorkspace(kernelInfo, runInfo);
-    if (resStr != "ok") {
-        return resStr;
-    }
+    retStr = AddWorkspace(kernelInfo, runInfo);
+    MKI_CHECK(retStr == "ok", "failed to add workspace", return retStr);
 
     MKI_LOG(INFO) << kernel->GetName() << " run start, LaunchParam:\n" << launchParam.ToString();
     MKI_LOG(INFO) << "RunInfo:\n" << runInfo.ToString();
@@ -165,141 +241,78 @@ std::string MkiTorch::RunOp(Mki::LaunchParam &launchParam, const std::vector<Mki
     if (!status.Ok()) {
         return "kernel run fail";
     }
+
     int ret = Mki::MkiRtStreamSynchronize(runInfo.GetStream());
     MKI_LOG_IF(ret != 0, ERROR) << "MkiRtStreamSynchronize fail";
     if (ret != 0) {
         return "MkiRtStreamSynchronize fail";
     }
 
-    if (deviceLaunchBuffer != nullptr) {
-        Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
+    if (deviceLaunchBuffer_ != nullptr) {
+        Mki::MkiRtMemFreeDevice(deviceLaunchBuffer_);
     }
 
-    std::string retStr = FreeWorkspace(kernelInfo, runInfo);
-    delete kernel;
+    retStr = FreeWorkspace(kernelInfo, runInfo);
     return retStr;
 }
 
-std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, std::vector<Mki::Tensor> &inTensors,
-                                std::vector<Mki::Tensor> &outTensors, int runTimes)
+std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, int runTimes)
 {
-    int st;
-    int inTensorIdx = 0;
     std::string retStr;
-    uint8_t *inTensorTempBufList[20];
-    for (auto iter : inTensors) {
-        inTensorTempBufList[inTensorIdx] = (uint8_t *)malloc(iter.dataSize);
-        st = Mki::MkiRtMemCopy((void *)inTensorTempBufList[inTensorIdx], iter.dataSize, iter.deviceData, iter.dataSize,
-                               MKIRT_MEMCOPY_DEVICE_TO_HOST);
-        if (st != MKIRT_SUCCESS) {
-            MKI_LOG(ERROR) << "MkiRtMemCopy error";
-            return "MkiRtMemCopy error";
-        }
-        inTensorIdx++;
-    }
-    Mki::Operation *op = MkiAutoGen::GetOpByName(opName_);
-    if (op == nullptr) {
-        MKI_LOG(ERROR) << "get operation by name fail, opName:" << opName_;
-        return "get operation by name fail";
-    }
+    Mki::Status status;
 
-    for (auto iter : inTensors) {
-        launchParam.AddInTensor(iter);
-    }
-    for (auto iter : outTensors) {
-        launchParam.AddOutTensor(iter);
-    }
+    retStr = SaveTensorsToBuf(launchParam.GetInTensors());
+    MKI_CHECK(retStr != "ok", "failed to save tensors to buffer", return retStr);
 
-    MKI_LOG(INFO) << "before infershape, launchParam:\n" << launchParam.ToString();
-    Mki::Status status = op->InferShape(launchParam);
-    if (!status.Ok()) {
-        MKI_LOG(ERROR) << opName_ << " infer shape fail, error:" << status.ToString();
-        return "infer shape fail";
-    }
-
-    MKI_LOG(INFO) << "after infershape, runInfo:\n" << launchParam.ToString();
-    Mki::Kernel *kernel = op->GetBestKernel(launchParam);
-    if (kernel == nullptr) {
-        MKI_LOG(ERROR) << opName_ << " get best kernel fail";
-        return "get best kernel fail";
-    }
+    std::shared_ptr<Mki::Kernel> kernel(GetKernelInstance(launchParam));
+    MKI_CHECK(kernel != nullptr, "failed to get kernel instance", return "failed to init op");
 
     Mki::RunInfo runInfo;
     MkiRtStream stream = GetCurrentStream();
     MKI_LOG(INFO) << "stream:" << stream;
     runInfo.SetStream(stream);
 
-    uint8_t *deviceLaunchBuffer = nullptr;
     if (launchWithTiling_) {
         kernel->SetLaunchWithTiling(true);
         status = kernel->Init(launchParam);
         MKI_CHECK(status.Ok(), "failed to run tiling", return "failed to run tiling");
     } else {
-        kernel->SetLaunchWithTiling(false);
-        uint32_t launchBufferSize = kernel->GetTilingSize(launchParam);
-        MKI_CHECK(launchBufferSize > 0, "empty tiling size", return "empty tiling size");
-
-        uint8_t hostLaunchBuffer[launchBufferSize];
-        kernel->SetTilingHostAddr(hostLaunchBuffer, launchBufferSize);
-        status = kernel->Init(launchParam);
-        MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
-
-        int st = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceLaunchBuffer),
-                                           launchBufferSize, MKIRT_MEM_DEFAULT);
-        MKI_CHECK(st == MKIRT_SUCCESS, "MkiRtMemMallocDevice error", return "MkiRtMemMallocDevice error");
-
-        st = Mki::MkiRtMemCopy(deviceLaunchBuffer, launchBufferSize,
-                               hostLaunchBuffer, launchBufferSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
-        if (st != MKIRT_SUCCESS) {
-            Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
-            deviceLaunchBuffer = nullptr;
-            MKI_LOG(ERROR) << "MkiRtMemCopy error";
-            return "MkiRtMemCopy error";
-        }
-        runInfo.SetTilingDeviceAddr(deviceLaunchBuffer);
+        InitTilingAtMkiTorch(kernel, launchParam, runInfo);
+        MKI_CHECK(retStr == "ok", "failed to init tiling in mkiTorch", return retStr);
     }
 
     const Mki::KernelInfo &kernelInfo = kernel->GetKernelInfo();
     retStr = AddWorkspace(kernelInfo, runInfo);
-    if (retStr != "ok") {
-        return retStr;
-    }
+    MKI_CHECK(retStr == "ok", "failed to add workspace", return retStr);
 
     MKI_LOG(INFO) << kernel->GetName() << " run start, runInfo:\n" << runInfo.ToString();
 
     for (int runIdx = 0; runIdx < runTimes; runIdx++) {
-        inTensorIdx = 0;
-        for (auto iter : inTensors) {
-            st = Mki::MkiRtMemCopy(iter.deviceData, iter.dataSize, inTensorTempBufList[inTensorIdx], iter.dataSize,
-                                   MKIRT_MEMCOPY_HOST_TO_DEVICE);
-            if (st != MKIRT_SUCCESS) {
-                MKI_LOG(ERROR) << "MkiRtMemCopy error";
-                return "MkiRtMemCopy error";
-            }
-            inTensorIdx++;
-        }
+        retStr = GetTensorsFromBuf(launchParam.GetInTensors());
+        MKI_CHECK(retStr != "ok", "failed to save tensors to buffer", return retStr);
+
         status = kernel->Run(launchParam, runInfo);
         MKI_LOG_IF(!status.Ok(), ERROR) << kernel->GetName() << " run fail, error:" << status.ToString();
         if (!status.Ok()) {
-            if (deviceLaunchBuffer != nullptr) {
-                Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
+            if (deviceLaunchBuffer_ != nullptr) {
+                Mki::MkiRtMemFreeDevice(deviceLaunchBuffer_);
             }
             retStr = FreeWorkspace(kernelInfo, runInfo);
             return "kernel run fail";
         }
     }
+
     int ret = Mki::MkiRtStreamSynchronize(runInfo.GetStream());
     MKI_LOG_IF(ret != 0, ERROR) << "MkiRtStreamSynchronize fail";
     if (ret != 0) {
         return "MkiRtStreamSynchronize fail";
     }
 
-    if (deviceLaunchBuffer != nullptr) {
-        Mki::MkiRtMemFreeDevice(deviceLaunchBuffer);
+    if (deviceLaunchBuffer_ != nullptr) {
+        Mki::MkiRtMemFreeDevice(deviceLaunchBuffer_);
     }
 
     retStr = FreeWorkspace(kernelInfo, runInfo);
-    delete kernel;
     return retStr;
 }
 
@@ -350,36 +363,9 @@ std::string MkiTorch::ExecuteImpl(std::vector<at::Tensor> &atInTensors, std::vec
     }
     MkiAutoGen::JsonToOpParam(opDescJson, launchParam);
 
-    std::vector<Mki::Tensor> mkiInTensors;
-    std::vector<Mki::Tensor> mkiOutTensors;
-    if (opDescJson.find("input_formats") !=  opDescJson.end()) {
-        for (uint32_t i = 0; i < atInTensors.size(); i++) {
-            mkiInTensors.push_back(AtTensor2MkiTensor(atInTensors[i]));
-            mkiInTensors[i].desc.format = static_cast<Mki::TensorFormat>(opDescJson["input_formats"][i]);
-        }
-    } else {
-        MKI_LOG(INFO) << "use default format";
-        for (at::Tensor &atTensor : atInTensors) {
-            mkiInTensors.push_back(AtTensor2MkiTensor(atTensor));
-        }
-    }
-    if (opDescJson.find("output_formats") !=  opDescJson.end()) {
-        for (uint32_t i = 0; i < atOutTensors.size(); i++) {
-            mkiOutTensors.push_back(AtTensor2MkiTensor(atOutTensors[i]));
-            mkiOutTensors[i].desc.format = static_cast<Mki::TensorFormat>(opDescJson["output_formats"][i]);
-        }
-    } else {
-        MKI_LOG(INFO) << "use default format";
-        for (at::Tensor &atTensor : atOutTensors) {
-            mkiOutTensors.push_back(AtTensor2MkiTensor(atTensor));
-        }
-    }
+    SetUpTensors(opDescJson, launchParam, atInTensors, atOutTensors);
 
-    if (perfFlag == 0) {
-        retStr = RunOp(launchParam, mkiInTensors, mkiOutTensors);
-    } else if (perfFlag == 1) {
-        retStr = RunOpPerf(launchParam, mkiInTensors, mkiOutTensors, runTimes);
-    }
+    retStr = perfFlag ? RunOpPerf(launchParam, runTimes) : RunOp(launchParam);
 
     return retStr;
 }
