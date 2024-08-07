@@ -95,7 +95,7 @@ std::string MkiTorch::SaveTensorsToBuf(Mki::SVector<Mki::Tensor> &mkiTensors)
     int inTensorIdx = 0;
     for (auto iter : mkiTensors) {
         tensorTempBufList_[inTensorIdx] = (uint8_t *)malloc(iter.dataSize);
-        st = Mki::MkiRtMemCopy((void *)tensorTempBufList_[inTensorIdx], iter.dataSize, iter.deviceData, iter.dataSize,
+        st = Mki::MkiRtMemCopy((void *)tensorTempBufList_[inTensorIdx], iter.dataSize, iter.data, iter.dataSize,
                                MKIRT_MEMCOPY_DEVICE_TO_HOST);
         if (st != MKIRT_SUCCESS) {
             MKI_LOG(ERROR) << "MkiRtMemCopy error";
@@ -111,7 +111,7 @@ std::string MkiTorch::GetTensorsFromBuf(Mki::SVector<Mki::Tensor> &mkiTensors)
     int st;
     int inTensorIdx = 0;
     for (auto iter : mkiTensors) {
-        st = Mki::MkiRtMemCopy(iter.deviceData, iter.dataSize, tensorTempBufList_[inTensorIdx], iter.dataSize,
+        st = Mki::MkiRtMemCopy(iter.data, iter.dataSize, tensorTempBufList_[inTensorIdx], iter.dataSize,
                                 MKIRT_MEMCOPY_HOST_TO_DEVICE);
         if (st != MKIRT_SUCCESS) {
             MKI_LOG(ERROR) << "MkiRtMemCopy error";
@@ -319,7 +319,7 @@ std::string MkiTorch::RunOpPerf(Mki::LaunchParam &launchParam, int runTimes)
 Mki::Tensor MkiTorch::AtTensor2MkiTensor(const at::Tensor &atTensor)
 {
     Mki::Tensor mkiTensor;
-    mkiTensor.deviceData = atTensor.data_ptr();
+    mkiTensor.data = atTensor.data_ptr();
     mkiTensor.dataSize = atTensor.numel() * atTensor.element_size();
 
     mkiTensor.desc.dims.resize(atTensor.sizes().size());
