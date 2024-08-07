@@ -22,17 +22,15 @@ export OUTPUT_DIR=$CODE_ROOT/output
 
 export THIRD_PARTY_DIR=$CODE_ROOT/3rdparty
 BUILD_TEST_FRAMEWORK=OFF
-FORCE_CLEAN=OFF
 COMPILE_OPTIONS=""
 INCREMENTAL_SWITCH=OFF
 DEVICE_CODE_PACK_SWITCH=ON
 USE_VERBOSE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
-SKIP_BUILD=OFF
-BUILD_OPTION_LIST="testframework debug dev release selftest testexample example help clean"
-BUILD_CONFIGURE_LIST=("--output=.*" "--cache=.*" "--incremental" "--gcov" "--force_clean" "--use_cxx11_abi=0"
-                      "--use_cxx11_abi=1" "--build_config=.*" "--skip_build" "--no_werror" "--namespace=.*")
+BUILD_OPTION_LIST="testframework release selftest clean help"
+BUILD_CONFIGURE_LIST=("--output=.*" "--use_cxx11_abi=0" "--use_cxx11_abi=1"
+                      "--verbose" "--no_werror" "--namespace=.*")
 
 # install cann
 function fn_install_cann_and_kernel()
@@ -87,18 +85,6 @@ function fn_build_nlohmann_json()
     rm -rf nlohmann
 }
 
-function fn_build_huawei_secure_c()
-{
-    if [ -d "$THIRD_PARTY_DIR/securec" ]; then
-        return $?
-    fi
-    cd $CACHE_DIR
-    wget --no-check-certificate https://gitee.com/openeuler/libboundscheck/repository/archive/v1.1.10.tar.gz
-    tar -xf v1.1.10.tar.gz
-    mv libboundscheck-v1.1.10 securec
-    mv securec $THIRD_PARTY_DIR
-}
-
 function fn_build_dependency()
 {
     ARCH=$(uname -m)
@@ -107,7 +93,7 @@ function fn_build_dependency()
     TIKCPP_DIR=$THIRD_PARTY_DIR/compiler/tikcpp
 
     if [[ ! -d "$METADEF_DIR" ]]; then
-        cp -r $MKI_SOURCE_DIR/metadef $METADEF_DIR
+        git clone --depth 1 https://gitee.com/ascend/metadef.git $METADEF_DIR
     fi
 
     [[ -d "$THIRD_PARTY_DIR/compiler" ]] && rm -rf $THIRD_PARTY_DIR/compiler
@@ -119,7 +105,6 @@ function fn_build_dependency()
 function fn_build_release_3rdparty()
 {
     fn_build_dependency
-    fn_build_huawei_secure_c
     fn_build_nlohmann_json
 }
 
@@ -128,10 +113,12 @@ function fn_init_pytorch_env()
     export PYTHON_INCLUDE_PATH="$(python3 -c 'from sysconfig import get_paths; print(get_paths()["include"])')"
     export PYTHON_LIB_PATH="$(python3 -c 'from sysconfig import get_paths; print(get_paths()["include"])')"
     export PYTORCH_INSTALL_PATH="$(python3 -c 'import torch, os; print(os.path.dirname(os.path.abspath(torch.__file__)))')"
-    export PYTORCH_NPU_INSTALL_PATH="$(python3 -c 'import torch, torch_npu, os; print(os.path.dirname(os.path.abspath(torch_npu.__file__)))')"
+    export PYTORCH_NPU_INSTALL_PATH="$(python3 -c 'import importlib.util; spec=importlib.util.find_spec("torch_npu"); \
+                                                   print(spec.submodule_search_locations[0])')"
     echo "PYTHON_INCLUDE_PATH=$PYTHON_INCLUDE_PATH"
     echo "PYTHON_LIB_PATH=$PYTHON_LIB_PATH"
     echo "PYTORCH_INSTALL_PATH=$PYTORCH_INSTALL_PATH"
+    echo "PYTORCH_NPU_INSTALL_PATH=$PYTORCH_NPU_INSTALL_PATH"
     if [ ! -f $PYTORCH_NPU_INSTALL_PATH/include/torch_npu/csrc/core/npu/NPUFormat.h ]; then
         echo "Not compatiable torch_npu version!"
         exit 1
@@ -221,14 +208,7 @@ function fn_build()
         exit 1
     fi
 
-    if [ "$SKIP_BUILD" == "ON" ]; then
-        echo "info: skip mki build because SKIP_BUILD is on."
-        return 0
-    fi
-
-    if [ "$INCREMENTAL_SWITCH" == "OFF" ];then
-        [ -n "$CACHE_DIR" ] && rm -rf $CACHE_DIR
-    fi
+    [ -n "$CACHE_DIR" ] && rm -rf $CACHE_DIR
     [[ ! -d "$CACHE_DIR" ]] && mkdir $CACHE_DIR
     [[ ! -d "$OUTPUT_DIR" ]] && mkdir -p $OUTPUT_DIR
     [[ ! -d $THIRD_PARTY_DIR ]] && mkdir -p $THIRD_PARTY_DIR
@@ -248,28 +228,6 @@ function fn_build()
     fn_config_json_copy
     fn_platform_configs_copy
     fn_cmake_configs_copy
-}
-
-function fn_build_testframework()
-{
-    fn_build_release_3rdparty
-    export OPS_ROOT=$CODE_ROOT/example/output/simpleops
-    [[ ! -d "$CACHE_DIR/testframework" ]] && mkdir $CACHE_DIR/testframework
-    cd $CACHE_DIR/testframework
-    COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$OUTPUT_DIR/mki"
-    if command -v ccache &> /dev/null; then
-        COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
-    fi
-    echo "COMPILE_OPTIONS:$COMPILE_OPTIONS"
-
-    echo "** Mki test framework build and install!"
-    fn_compile_and_install "$CODE_ROOT/tests/framework" "$COMPILE_OPTIONS"
-}
-
-function fn_build_example()
-{
-    cd $CODE_ROOT/example
-    bash $SCRIPT_DIR/build_ops.sh --mkidir=$OUTPUT_DIR/mki --build_config=$CODE_ROOT/configs
 }
 
 function fn_make_tar_package()
@@ -320,18 +278,6 @@ function fn_main()
                 export OUTPUT_DIR=$(cd $arg2; pwd)
             fi
             ;;
-        --cache=*)
-            arg2=${arg2#*=}
-            if [ -z $arg2 ];then
-                echo "the cache directory is not set. This should be set like --cache=<cacheDir>"
-            else
-                cd $CURRENT_DIR
-                if [ ! -d "$arg2" ];then
-                    mkdir -p $arg2
-                fi
-                export CACHE_DIR=$(cd $arg2; pwd)
-            fi
-            ;;
         "--use_cxx11_abi=1")
             USE_CXX11_ABI=ON
             ;;
@@ -341,25 +287,6 @@ function fn_main()
         "--verbose")
             USE_VERBOSE=ON
             ;;
-        "--incremental")
-            INCREMENTAL_SWITCH=ON
-            ;;
-        "--force_clean")
-            FORCE_CLEAN=ON
-            ;;
-        --build_config=*)
-            arg2=${arg2#*=}
-            if [ -z $arg2 ];then
-                echo "the config directory is not set. This should be set like --build_config=<configFileDir>"
-            else
-                first_char=${arg2: 0: 1}
-                if [[ "$first_char" == "/" ]];then
-                    export BUILD_CONFIG_DIR=$arg2
-                else
-                    export BUILD_CONFIG_DIR=$CURRENT_DIR"/"$arg2
-                fi
-            fi
-            ;;
         --namespace=*)
             arg2=${arg2#*=}
             if [ -z $arg2 ];then
@@ -367,9 +294,6 @@ function fn_main()
             else
                 COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNAMESPACE:STRING=$arg2"
             fi
-            ;;
-        "--skip_build")
-            SKIP_BUILD=ON
             ;;
         "--no_werror")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNO_WERROR=ON"
@@ -388,32 +312,16 @@ function fn_main()
             fn_init_pytorch_env
             fn_build
             ;;
-        "debug")
-            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug"
-            fn_build
-            ;;
         "release")
             IS_RELEASE=True
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Release"
             fn_build
             fn_make_tar_package
             ;;
-        "dev")
-            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Release"
-            fn_build
-            ;;
         "selftest")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SELF_TEST=ON"
             fn_build_googletest
             fn_build
-            ;;
-        "example")
-            fn_build_example
-            ;;
-        "testexample")
-            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DBUILD_TEST_FRAMEWORK=ON"
-            BUILD_TEST_FRAMEWORK=ON
-            fn_build_example
             ;;
         "clean")
             [[ -d "$CACHE_DIR" ]] && rm -rf $CACHE_DIR
@@ -422,9 +330,9 @@ function fn_main()
             echo "clear all build history."
             ;;
         *)
-            echo "build.sh testframework|example|dev|debug|release|clean"\
-            "--incremental|--force_clean|--output=<dir>|--cache=<dir>|--use_cxx11_abi=0"\
-            "|--use_cxx11_abi=1|--build_config=<dir>|--skip_build|--no_werror|--namespace=<namespace>"
+            echo "build.sh testframework|release|selftest|clean"\
+            "--output=<dir>|--force_clean|--use_cxx11_abi=0|--use_cxx11_abi=1"\
+            "|--no_werror|--namespace=<namespace>"
             ;;
     esac
 }
