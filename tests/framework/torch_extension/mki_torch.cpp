@@ -39,14 +39,15 @@ TORCH_LIBRARY(MkiTorch, m)
 void *MkiTorch::GetCurrentStream() const
 {
     int32_t devId = 0;
-    Mki::MkiRtDeviceGetCurrent(&devId);
+    int st = Mki::MkiRtDeviceGetCurrent(&devId);
+    MKI_CHECK(st == MKIRT_SUCCESS, "failed to get current device", return nullptr);
     void *stream = c10_npu::getCurrentNPUStream(devId).stream();
     return stream;
 }
 
 void MkiTorch::ContiguousAtTensor(std::vector<at::Tensor> &atTensors)
 {
-    for (size_t i = 0; i < atTensors.size(); ++i) {
+    for (size_t i = 0; i < atTensors.size(); i++) {
         if (!atTensors.at(i).is_contiguous()) {
             atTensors.at(i) = atTensors.at(i).contiguous();
         }
@@ -137,7 +138,7 @@ Mki::Kernel *MkiTorch::GetKernelInstance(Mki::LaunchParam &launchParam)
         return nullptr;
     }
 
-    MKI_LOG(INFO) << "after infershape, runInfo:\n" << launchParam.ToString();
+    MKI_LOG(INFO) << "after infershape, launchParam:\n" << launchParam.ToString();
     Mki::Kernel *kernel = op->GetBestKernel(launchParam);
     if (kernel == nullptr) {
         MKI_LOG(ERROR) << opName_ << " get best kernel fail";
