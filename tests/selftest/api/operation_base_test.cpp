@@ -16,9 +16,9 @@
 namespace {
 using namespace Mki;
 
-class OperationNew : public OperationBase {
+class OperationBaseTest : public OperationBase {
 public:
-    OperationNew() : OperationBase("") {}
+    OperationBaseTest() : OperationBase("") {}
     Mki::Status InferShape(LaunchParam &launchParam) const override { return Status::OkStatus(); };
     int64_t GetInputNum(const Any &specificParam) const override { return 1; };
     int64_t GetOutputNum(const Any &specificParam) const override { return 1; };
@@ -34,7 +34,7 @@ protected:
 
 TEST(OperationBaseTest, all)
 {
-    Mki::Operation *op = new OperationNew();
+    Mki::Operation *op = new OperationBaseTest();
     std::unique_ptr<Kernel> kernel{nullptr};
     LaunchParam launchParam;
     Tensor inTensor;
@@ -51,7 +51,7 @@ TEST(OperationBaseTest, all)
 
 TEST(OperationBaseTest, all0)
 {
-    Mki::Operation *op = new OperationNew();
+    Mki::Operation *op = new OperationBaseTest();
     const KernelList &kernelList = op->GetKernelList();
     EXPECT_EQ(kernelList.size(), 0);
     delete op;

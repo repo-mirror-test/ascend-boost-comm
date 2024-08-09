@@ -30,21 +30,23 @@ uint64_t GenRandomLen()
     return (rand() % (END - START)) + START;
 }
 
-void MallocDevice(void **p, uint64_t len)
+void MallocDevice(uint8_t **p, uint64_t len)
 {
     MKI_LOG(INFO) << "malloc " << len << " bytes for memset";
     std::vector<uint8_t> src(len, 0x78);
-    int st = MkiRtMemMallocDevice(p, len, MKIRT_MEM_DEFAULT);
+    void *vp = nullptr;
+    int st = MkiRtMemMallocDevice(&vp, len, MKIRT_MEM_DEFAULT);
     ASSERT_EQ(st, MKIRT_SUCCESS);
-    st = MkiRtMemCopy(*p, len, src.data(), len, MKIRT_MEMCOPY_HOST_TO_DEVICE);
+    st = MkiRtMemCopy(vp, len, src.data(), len, MKIRT_MEMCOPY_HOST_TO_DEVICE);
     ASSERT_EQ(st, MKIRT_SUCCESS);
+    *p = static_cast<uint8_t *>(vp);
 }
 
-void CompareResult(void *p, uint64_t len)
+void CompareResult(uint8_t *p, uint64_t len)
 {
     MKI_LOG(INFO) << "compare result " << len;
     std::vector<uint8_t> dst(len, 0xb3);
-    int st = MkiRtMemCopy(dst.data(), len, p, len, MKIRT_MEMCOPY_DEVICE_TO_HOST);
+    int st = MkiRtMemCopy(dst.data(), len, static_cast<void *>(p), len, MKIRT_MEMCOPY_DEVICE_TO_HOST);
     ASSERT_EQ(st, MKIRT_SUCCESS);
     uint64_t memsetLen = ((uint64_t)(len * MEMSET_FACTOR) + BLOCK_LEN - 1) / BLOCK_LEN * BLOCK_LEN;
     for (uint64_t i = 0; i < memsetLen && i < len; i++) {
@@ -59,15 +61,15 @@ void CompareResult(void *p, uint64_t len)
         }
         ASSERT_EQ(dst[i], 0x78);
     }
-    MkiRtMemFreeDevice(p);
+    MkiRtMemFreeDevice(static_cast<void *>(p));
 }
 
 #define GEN_MEMSET_TENSOR(idx) \
     uint64_t len##idx = GenRandomLen(); \
     uint64_t lent##idx = len##idx * MEMSET_FACTOR; \
-    void *tensor##idx = nullptr; \
+    uint8_t *tensor##idx = nullptr; \
     MallocDevice(&tensor##idx, len##idx); \
-    data.push_back(tensor##idx); \
+    data.push_back(static_cast<void *>(tensor##idx)); \
     memsetInfo[idx].argIdx = idx; \
     memsetInfo[idx].size = lent##idx
 
