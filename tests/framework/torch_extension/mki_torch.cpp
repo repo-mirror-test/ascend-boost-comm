@@ -30,12 +30,13 @@ static std::map<at::ScalarType, Mki::TensorDType> DTYPE_MAP = {
 namespace {
 TORCH_LIBRARY(MkiTorch, m)
 {
-    m.class_<MkiTorch>("MkiTorch")
+    m.class_<MkiTest::MkiTorch>("MkiTorch")
         .def(torch::init<std::string>())
-        .def("execute", &MkiTorch::Execute);
+        .def("execute", &MkiTest::MkiTorch::Execute);
 }
 }
 
+namespace MkiTest {
 void *MkiTorch::GetCurrentStream() const
 {
     int32_t devId = 0;
@@ -377,4 +378,5 @@ std::string MkiTorch::Execute(std::vector<at::Tensor> atInTensors, std::vector<a
     ContiguousAtTensor(atOutTensors);
     std::string retStr = ExecuteImpl(atInTensors, atOutTensors);
     return retStr;
+}
 }
