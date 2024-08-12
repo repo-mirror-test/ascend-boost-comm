@@ -1,6 +1,7 @@
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/api TEST_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/operationir TEST_SRC)
 aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/utils TEST_SRC)
+aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/common TEST_SRC)
 add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/googletest googletest EXCLUDE_FROM_ALL)
 add_executable(mki_selftest ${TEST_SRC})
 target_include_directories(mki_selftest PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/metadef/inc)
