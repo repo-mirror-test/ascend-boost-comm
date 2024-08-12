@@ -3,10 +3,10 @@ project("mki")
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_TEST_FRAMEWORK "BUILD_TEST_FRAMEWORK" OFF)
-option(BUILD_SELF_TEST "BUILD_SELF_TEST" OFF)
+option(BUILD_UNIT_TEST "BUILD_UNIT_TEST" OFF)
 option(USE_CXX11_ABI "USE_CXX11_ABI" ON)
 message(STATUS "BUILD_TEST_FRAMEWORK:${BUILD_TEST_FRAMEWORK}")
-message(STATUS "BUILD_SELF_TEST:${BUILD_SELF_TEST}")
+message(STATUS "BUILD_UNIT_TEST:${BUILD_UNIT_TEST}")
 message(STATUS "USE_CXX11_ABI:${USE_CXX11_ABI}")
 
 include(${PROJECT_SOURCE_DIR}/cmake/host_config.cmake)
@@ -27,8 +27,8 @@ if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)
 endif()
 
-if(BUILD_SELF_TEST)
-    add_subdirectory(${PROJECT_SOURCE_DIR}/tests/selftest)
+if(BUILD_UNIT_TEST)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/tests/unittest)
 endif()
 
 # cmake install stage
