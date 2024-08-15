@@ -10,14 +10,18 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/any/any.h"
+#include "mki/utils/compare/compare.h"
 
-namespace {
-TEST(AnyTest, HasValue)
-{
-    Mki::Any any;
-    EXPECT_EQ(any.HasValue(), false);
-    any = 4;
-    EXPECT_EQ(any.HasValue(), true);
+namespace Mki {
+TEST(CompareTest, IsEqual) {
+    int a = 5;
+    int b = 5;
+    EXPECT_TRUE(Mki::Utils::Compare<int>::IsEqual(a, b));
+    double c = 3.14;
+    double d = 3.14;
+    EXPECT_TRUE(Mki::Utils::Compare<double>::IsEqual(c, d));
+    std::string e = "hello";
+    std::string f = "world";
+    EXPECT_FALSE(Mki::Utils::Compare<std::string>::IsEqual(e, f));
 }
-} // namespace
+} // namespace Mki

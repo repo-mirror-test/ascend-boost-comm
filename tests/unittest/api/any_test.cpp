@@ -10,14 +10,14 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/strings/match.h"
+#include "mki/utils/any/any.h"
 
-namespace {
-TEST(StringTest, Match)
+namespace Mki {
+TEST(AnyTest, HasValue)
 {
-    bool ret = Mki::EndsWith("dd.a", ".a");
-    EXPECT_EQ(ret, true);
-    ret = Mki::EndsWith("dd.a", ".b");
-    EXPECT_NE(ret, true);
+    Mki::Any any;
+    EXPECT_EQ(any.HasValue(), false);
+    any = 4;
+    EXPECT_EQ(any.HasValue(), true);
 }
-} // namespace
+} // namespace Mki

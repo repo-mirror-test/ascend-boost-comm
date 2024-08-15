@@ -10,19 +10,16 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/rt/backend/rt_backend.h"
+#include "mki/utils/math/math.h"
 
-namespace {
-TEST(RtBackendTest, ModuleCreate) {
-    Mki::RtBackend rtBackend;
-    MkiRtModuleInfo moduleInfo;
-    MkiRtModule module;
-    moduleInfo.type = MKIRT_MODULE_OBJECT;
-    moduleInfo.version = 0;
-    moduleInfo.data = 0;
-    moduleInfo.dataLen = 0;
-    moduleInfo.magic = 0x41494343U;
-    ASSERT_EQ(rtBackend.ModuleCreate(nullptr, &module), MKIRT_ERROR_NOT_INITIALIZED);
-    ASSERT_EQ(rtBackend.ModuleCreate(&moduleInfo, nullptr), MKIRT_ERROR_NOT_INITIALIZED);
+namespace Mki {
+TEST(MathTest, DividendIsZero) {
+    int64_t dividend = 2147483648;
+    int64_t divisor = 2147483648;
+    int64_t divisor1 = 1;
+    int64_t divisor2 = 0;
+    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor), 1);
+    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor1), 2147483648);
+    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor2), 0);
 }
-} // namespace
+} // namespace Mki

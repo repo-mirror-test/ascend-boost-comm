@@ -28,7 +28,7 @@ DEVICE_CODE_PACK_SWITCH=ON
 USE_VERBOSE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
-BUILD_OPTION_LIST="testframework release selftest clean help"
+BUILD_OPTION_LIST="testframework release unittest clean help"
 BUILD_CONFIGURE_LIST=("--output=.*" "--use_cxx11_abi=0" "--use_cxx11_abi=1"
                       "--verbose" "--no_werror" "--namespace=.*")
 
@@ -119,10 +119,13 @@ function fn_init_pytorch_env()
     echo "PYTHON_LIB_PATH=$PYTHON_LIB_PATH"
     echo "PYTORCH_INSTALL_PATH=$PYTORCH_INSTALL_PATH"
     echo "PYTORCH_NPU_INSTALL_PATH=$PYTORCH_NPU_INSTALL_PATH"
+<<<<<<< HEAD
     if [ ! -f $PYTORCH_NPU_INSTALL_PATH/include/torch_npu/csrc/core/npu/NPUFormat.h ]; then
         echo "Not compatiable torch_npu version!"
         exit 1
     fi
+=======
+>>>>>>> upstream/master
 }
 
 function fn_init_use_cxx11_abi()
@@ -318,8 +321,13 @@ function fn_main()
             fn_build
             fn_make_tar_package
             ;;
+<<<<<<< HEAD
         "selftest")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SELF_TEST=ON"
+=======
+        "unittest")
+            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_UNIT_TEST=ON"
+>>>>>>> upstream/master
             fn_build_googletest
             fn_build
             ;;
@@ -330,7 +338,11 @@ function fn_main()
             echo "clear all build history."
             ;;
         *)
+<<<<<<< HEAD
             echo "build.sh testframework|release|selftest|clean"\
+=======
+            echo "build.sh testframework|release|unittest|clean"\
+>>>>>>> upstream/master
             "--output=<dir>|--force_clean|--use_cxx11_abi=0|--use_cxx11_abi=1"\
             "|--no_werror|--namespace=<namespace>"
             ;;

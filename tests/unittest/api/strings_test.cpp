@@ -10,15 +10,14 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki_loader/op_register.h"
+#include "mki/utils/strings/match.h"
 
-namespace {
-TEST(OpRegisterTest, Base)
+namespace Mki {
+TEST(StringTest, Match)
 {
-    std::vector<std::string> opList;
-    auto &operationCreators = OpSpace::OperationRegister::GetOperationCreators();
-    auto &kernelCreators = OpSpace::KernelRegister::GetKernelCreators();
-    (void)operationCreators;
-    (void)kernelCreators;
+    bool ret = Mki::EndsWith("dd.a", ".a");
+    EXPECT_EQ(ret, true);
+    ret = Mki::EndsWith("dd.a", ".b");
+    EXPECT_NE(ret, true);
 }
-} // namespace
+} // namespace Mki

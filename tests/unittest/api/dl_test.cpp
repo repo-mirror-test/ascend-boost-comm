@@ -10,16 +10,22 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/math/math.h"
+#include "mki/utils/dl/dl.h"
 
-namespace {
-TEST(MathTest, DividendIsZero) {
-    int64_t dividend = 2147483648;
-    int64_t divisor = 2147483648;
-    int64_t divisor1 = 1;
-    int64_t divisor2 = 0;
-    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor), 1);
-    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor1), 2147483648);
-    EXPECT_EQ(Mki::Utils::CeilDiv(dividend, divisor2), 0);
+namespace Mki {
+TEST(Dl, Base)
+{
+    char data[1024];
+    Mki::Dl dl(data);
 }
-} // namespace
+TEST(Dl, GetSymbol)
+{
+    char data[1024];
+    Mki::Dl GetSymbol(data);
+}
+TEST(Dl, GetSymbolReturnsNullptrWhenDlHandleIsNullptr) {
+    char data[1024];
+    Mki::Dl dl(data);
+    EXPECT_EQ(nullptr, dl.GetSymbol("someSymbol"));
+}
+} // namespace Mki

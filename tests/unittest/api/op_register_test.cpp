@@ -10,18 +10,15 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/compare/compare.h"
+#include "mki_loader/op_register.h"
 
-namespace {
-TEST(CompareTest, IsEqual) {
-    int a = 5;
-    int b = 5;
-    EXPECT_TRUE(Mki::Utils::Compare<int>::IsEqual(a, b));
-    double c = 3.14;
-    double d = 3.14;
-    EXPECT_TRUE(Mki::Utils::Compare<double>::IsEqual(c, d));
-    std::string e = "hello";
-    std::string f = "world";
-    EXPECT_FALSE(Mki::Utils::Compare<std::string>::IsEqual(e, f));
+namespace Mki {
+TEST(OpRegisterTest, Base)
+{
+    std::vector<std::string> opList;
+    auto &operationCreators = OpSpace::OperationRegister::GetOperationCreators();
+    auto &kernelCreators = OpSpace::KernelRegister::GetKernelCreators();
+    (void)operationCreators;
+    (void)kernelCreators;
 }
-} // namespace
+} // namespace Mki

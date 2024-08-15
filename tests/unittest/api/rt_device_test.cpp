@@ -10,22 +10,23 @@
  * See the Mulan PSL v2 for more details.
  */
 #include <gtest/gtest.h>
-#include "mki/utils/dl/dl.h"
+#include "mki/utils/rt/device/device.h"
+#include "mki/utils/log/log.h"
 
-namespace {
-TEST(Dl, Base)
+namespace Mki {
+TEST(RtDeviceTest, RtDeviceSetSocVersionTest)
 {
-    char data[1024];
-    Mki::Dl dl(data);
+    const char *setVersion = "Ascend910A";
+    int status = MkiRtDeviceSetSocVersion(setVersion);
+    EXPECT_EQ(status, MKIRT_SUCCESS);
 }
-TEST(Dl, GetSymbol)
+
+TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
 {
-    char data[1024];
-    Mki::Dl GetSymbol(data);
+    char getVersion[100];
+    uint32_t maxLen = 100;
+    int status = MkiRtDeviceGetSocVersion(getVersion, maxLen);
+    EXPECT_EQ(status, MKIRT_SUCCESS);
+    MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
 }
-TEST(Dl, GetSymbolReturnsNullptrWhenDlHandleIsNullptr) {
-    char data[1024];
-    Mki::Dl dl(data);
-    EXPECT_EQ(nullptr, dl.GetSymbol("someSymbol"));
-}
-} // namespace
+} // namespace Mki

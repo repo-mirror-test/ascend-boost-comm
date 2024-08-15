@@ -20,6 +20,8 @@
 #include "mki/utils/SVector/SVector.h"
 #include "mki_loader/ops.h"
 
+namespace Mki {
+namespace Test {
 class MkiTorch : public torch::CustomClassHolder {
 public:
     explicit MkiTorch(std::string opDescJsonStr) : opDescJsonStr_(opDescJsonStr) {}
@@ -58,5 +60,7 @@ private:
     std::string opDescJsonStr_;
     std::string opName_;
 };
+} // namespace Test
+} // namespace Mki
 
 #endif
