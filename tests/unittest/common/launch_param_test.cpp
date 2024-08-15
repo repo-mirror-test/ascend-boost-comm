@@ -3,28 +3,28 @@
 
 namespace{
 class LaunchParamTest : public ::testing::Test {
-	protected:
-		Mki::LaunchParam launchParam;
-		Mki::Tensor tensor1, tensor2;
+protected:
+	Mki::LaunchParam launchParam;
+	Mki::Tensor tensor1, tensor2;
 
-		void SetUp() override {
-			tensor1.desc = Mki::TensorDesc{};
-			tensor1.deviceData = malloc(128);  // 示例数据
-			tensor1.dataSize = 128;
-			tensor1.hostData = malloc(128);
+	void SetUp() override {
+		tensor1.desc = Mki::TensorDesc{};
+		tensor1.deviceData = malloc(128);
+		tensor1.dataSize = 128;
+		tensor1.hostData = malloc(128);
 
-			tensor2.desc = Mki::TensorDesc{};
-			tensor2.deviceData = malloc(256);  // 示例数据
-			tensor2.dataSize = 256;
-			tensor2.hostData = malloc(256);
-		}
+		tensor2.desc = Mki::TensorDesc{};
+		tensor2.deviceData = malloc(256);
+		tensor2.dataSize = 256;
+		tensor2.hostData = malloc(256);
+	}
 
-		void TearDown() override {
-			free(tensor1.deviceData);
-			free(tensor1.hostData);
-			free(tensor2.deviceData);
-			free(tensor2.hostData);
-		}
+	void TearDown() override {
+		free(tensor1.deviceData);
+		free(tensor1.hostData);
+		free(tensor2.deviceData);
+		free(tensor2.hostData);
+	}
 };
 
 TEST_F(LaunchParamTest, AddInputTensor) {
