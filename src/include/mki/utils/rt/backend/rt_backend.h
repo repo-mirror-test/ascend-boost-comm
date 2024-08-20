@@ -77,8 +77,8 @@ int rtGetC2cCtrlAddr(uint64_t *addr, uint32_t *len);
 namespace Mki {
 class RtBackend : public Backend {
 public:
-    RtBackend();
-    ~RtBackend() override;
+    RtBackend() = default;
+    ~RtBackend() override = default;
 
 public:
     int DeviceGetCount(int32_t *devCount) override;

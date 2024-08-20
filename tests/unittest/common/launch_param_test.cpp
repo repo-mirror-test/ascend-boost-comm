@@ -20,20 +20,20 @@ protected:
 
 	void SetUp() override {
 		tensor1.desc = Mki::TensorDesc{};
-		tensor1.deviceData = malloc(128);
+		tensor1.data = malloc(128);
 		tensor1.dataSize = 128;
 		tensor1.hostData = malloc(128);
 
 		tensor2.desc = Mki::TensorDesc{};
-		tensor2.deviceData = malloc(256);
+		tensor2.data = malloc(256);
 		tensor2.dataSize = 256;
 		tensor2.hostData = malloc(256);
 	}
 
 	void TearDown() override {
-		free(tensor1.deviceData);
+		free(tensor1.data);
 		free(tensor1.hostData);
-		free(tensor2.deviceData);
+		free(tensor2.data);
 		free(tensor2.hostData);
 	}
 };

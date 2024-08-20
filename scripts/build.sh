@@ -28,7 +28,7 @@ DEVICE_CODE_PACK_SWITCH=ON
 USE_VERBOSE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
-BUILD_OPTION_LIST="testframework release unittest clean help"
+BUILD_OPTION_LIST="testframework release unittest selftest clean help"
 BUILD_CONFIGURE_LIST=("--output=.*" "--use_cxx11_abi=0" "--use_cxx11_abi=1"
                       "--verbose" "--no_werror" "--namespace=.*")
 
@@ -320,6 +320,11 @@ function fn_main()
             ;;
         "unittest")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_UNIT_TEST=ON"
+            fn_build_googletest
+            fn_build
+            ;;
+        "selftest")
+            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_SELF_TEST=ON"
             fn_build_googletest
             fn_build
             ;;

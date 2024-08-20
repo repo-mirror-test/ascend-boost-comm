@@ -48,7 +48,7 @@ int RtBackend::DeviceSetCurrent(int32_t devId)
 int RtBackend::DeviceResetCurrent(int32_t devId)
 {
     MKI_LOG(INFO) << "rt ResetDevice start, devId:" << devId;
-    CHECK_STATUS_WITH_DESC_RETURN(rtResetDevice(devId), "rt DeviceReset");
+    CHECK_STATUS_WITH_DESC_RETURN(rtDeviceReset(devId), "rt DeviceReset");
 }
 
 int RtBackend::DeviceSetSocVersion(const char *version)
@@ -69,7 +69,7 @@ int RtBackend::DeviceGetBareTgid(uint32_t *pid)
 
 int RtBackend::DeviceGetPairDevicesInfo(uint32_t devId, uint32_t otherDevId, int32_t infoType, int64_t *val)
 {
-    CHECK_STATUS_RETURN(rtDevicePairDevicesInfo(devId, otherDevId, infoType, val));
+    CHECK_STATUS_RETURN(rtGetPairDevicesInfo(devId, otherDevId, infoType, val));
 }
 
 int RtBackend::StreamCreate(MkiRtStream *stream, int32_t priority)
