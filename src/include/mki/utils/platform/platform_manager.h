@@ -12,7 +12,10 @@
 #ifndef MKI_UTILS_PLATFORM_PLATFORM_MANAGER_H
 #define MKI_UTILS_PLATFORM_PLATFORM_MANAGER_H
 
-#include "platform/platform_infos_def.h" // in metadef
+#include <map>
+#include <string>
+#include "platform_configs.h"
+// #include "platform/platform_infos_def.h" // in metadef
 
 namespace Mki {
 
@@ -30,7 +33,8 @@ public:
     uint32_t InitializePlatformManager();
     uint32_t Finalize();
 
-    uint32_t GetPlatformInfos(const std::string socVersion, fe::PlatFormInfos &platformInfo);
+    uint32_t GetPlatformConfigs(const std::string socVersion, PlatformConfigs &platformConfigs);
+    // uint32_t GetPlatformInfos(const std::string socVersion, fe::PlatFormInfos &platformInfo);
 
 private:
     PlatformManager();
@@ -44,20 +48,30 @@ private:
 
     void ParseVersion(PlatMapType &versionMap, std::string &socVersion) const;
     void ParsePlatformRes(const std::string &label, PlatMapType &platformResMap,
-                          fe::PlatFormInfos &platformInfoTemp) const;
+                          PlatformConfigs &platformConfigsTemp) const;
+    // void ParsePlatformRes(const std::string &label, PlatMapType &platformResMap,
+    //                       fe::PlatFormInfos &platInfoTemp) const;
     uint32_t ParsePlatformInfo(std::map<std::string, PlatMapType> &contentMap,
-                               std::string &socVersion, fe::PlatFormInfos &platformInfoTemp) const;
+                               std::string &socVersion, PlatformConfigs &platformConfigsTemp) const;
+    // uint32_t ParsePlatformInfo(std::map<std::string, PlatMapType> &contentMap,
+    //                            std::string &socVersion, fe::PlatFormInfos &platInfoTemp) const;
     bool ParseAICoreintrinsicDtypeMap(PlatMapType &aiCoreintrinsicDtypeMap,
-                                      fe::PlatFormInfos &platformInfoTemp) const;
+                                      PlatformConfigs &platformConfigsTemp) const;
+    // bool ParseAICoreintrinsicDtypeMap(PlatMapType &aiCoreintrinsicDtypeMap,
+    //                                   fe::PlatFormInfos &platInfoTemp) const;
     bool ParseVectorCoreintrinsicDtypeMap(PlatMapType &vectorCoreintrinsicDtypeMap,
-                                          fe::PlatFormInfos &platformInfoTemp) const;
+                                          PlatformConfigs &platformConfigsTemp) const;
+    // bool ParseVectorCoreintrinsicDtypeMap(PlatMapType &vectorCoreintrinsicDtypeMap,
+    //                                       fe::PlatFormInfos &platInfoTemp) const;
 
-    uint32_t AssemblePlatformInfoVector(std::map<std::string, PlatMapType> &contentInfoMap);
-    void FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const;
+    uint32_t AssemblePlatformInfoVector(std::map<std::string, PlatMapType> &contentMap);
+    void FillupFixPipeInfo(PlatformConfigs &platformConfigs) const;
+    // void FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const;
 
 private:
     bool initFlag_;
-    std::map<std::string, fe::PlatFormInfos> platformInfosMap_;
+    std::map<std::string, PlatformConfigs> platformConfigsMap_;
+    // std::map<std::string, fe::PlatFormInfos> platformInfosMap_;
 };
 } // namespace Mki
 
