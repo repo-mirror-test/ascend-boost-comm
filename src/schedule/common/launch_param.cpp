@@ -12,6 +12,7 @@
 #include "mki/launch_param.h"
 #include <functional>
 #include <map>
+#include "mki/param_to_string.h"
 #include "mki/utils/log/log.h"
 
 namespace Mki {
@@ -70,16 +71,10 @@ const SVector<Tensor> &LaunchParam::GetOutTensors() const { return outTensors_; 
 
 SVector<Tensor> &LaunchParam::GetOutTensors() { return outTensors_; }
 
-std::string LaunchParam::ParamToJsonString() const
-{
-    //: 实现打印 specific param
-    return std::string("LaunchParam can not print param ") + specificParam_.Type().name();
-}
-
 std::string LaunchParam::ToString() const
 {
     std::stringstream ss;
-    ss << "specificParam: " << ParamToJsonString() << std::endl;
+    ss << "specificParam: " << ParamToString::ToString(specificParam_) << std::endl;
     for (size_t i = 0; i < inTensors_.size(); ++i) {
         ss << "intensors[" << i << "]: " << inTensors_.at(i).ToString() << std::endl;
     }
