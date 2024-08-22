@@ -81,8 +81,10 @@ void RtBackend::InitMsdebugHandle()
     std::string runtimeSoPath = std::string(asdHomePath) + "/tools/msdebug/lib/libruntime_stub.so";
     std::string realPath = FileSystem::PathCheckAndRegular(runtimeSoPath, false);
     MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
-    if (dlopen(realPath.c_str(), RTLD_LAZY) != nullptr)
-        stubHandle_ = dlopen(realPath.c_str(), RTLD_LAZY);
+    void *stubHandle = dlopen(realPath.c_str(), RTLD_LAZY);
+    if (stubHandle != nullptr) {
+        stubHandle_ = stubHandle;
+    }
 }
 #endif
 
