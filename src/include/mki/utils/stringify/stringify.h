@@ -9,8 +9,8 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_PARAM_TO_STRING_H
-#define MKI_PARAM_TO_STRING_H
+#ifndef MKI_STRINGIFY_H
+#define MKI_STRINGIFY_H
 
 #include <functional>
 #include <map>
@@ -18,18 +18,18 @@
 #include "mki/utils/any/any.h"
 
 namespace Mki {
-using ToStringFunc = std::function<std::string(const Any &)>;
+using StringifyFunc = std::function<std::string(const Any &)>;
 
-class ParamToString {
+class Stringify {
 public:
-    ParamToString(size_t typeHashCode, ToStringFunc func);
+    Stringify(size_t typeHashCode, StringifyFunc func);
     static std::string ToString(const Any &param);
 private:
-    static std::map<size_t, ToStringFunc> converterMap_;
+    static std::map<size_t, StringifyFunc> converterMap_;
 };
 } // namespace Mki
 
-#define REG_PARAM_TO_STRING(typename, func) \
-    static Mki::ParamToString g_register_##func(typeid(typename).hash_code(), func)
+#define REG_STRINGIFY(typename, func) \
+    static Mki::Stringify g_register_##func(typeid(typename).hash_code(), func)
 
 #endif

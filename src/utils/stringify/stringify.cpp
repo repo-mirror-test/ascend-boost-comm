@@ -9,13 +9,13 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#include "mki/param_to_string.h"
 #include "mki/utils/log/log.h"
+#include "mki/utils/stringify/stringify.h"
 
 namespace Mki {
-std::map<size_t, ToStringFunc> ParamToString::converterMap_;
+std::map<size_t, StringifyFunc> Stringify::converterMap_;
 
-ParamToString::ParamToString(size_t typeHashCode, ToStringFunc func)
+Stringify::Stringify(size_t typeHashCode, StringifyFunc func)
 {
     auto it = converterMap_.find(typeHashCode);
     if (it == converterMap_.end()) {
@@ -25,7 +25,7 @@ ParamToString::ParamToString(size_t typeHashCode, ToStringFunc func)
     }
 }
 
-std::string ParamToString::ToString(const Any &param)
+std::string Stringify::ToString(const Any &param)
 {
     auto it = converterMap_.find(param.Type().hash_code());
     if (it != converterMap_.end()) {

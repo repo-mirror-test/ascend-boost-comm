@@ -12,8 +12,8 @@
 #include "mki/launch_param.h"
 #include <functional>
 #include <map>
-#include "mki/param_to_string.h"
 #include "mki/utils/log/log.h"
+#include "mki/utils/stringify/stringify.h"
 
 namespace Mki {
 using ToStringFunc = std::function<std::string(const Any &)>;
@@ -74,7 +74,7 @@ SVector<Tensor> &LaunchParam::GetOutTensors() { return outTensors_; }
 std::string LaunchParam::ToString() const
 {
     std::stringstream ss;
-    ss << "specificParam: " << ParamToString::ToString(specificParam_) << std::endl;
+    ss << "specificParam: " << Stringify::ToString(specificParam_) << std::endl;
     for (size_t i = 0; i < inTensors_.size(); ++i) {
         ss << "intensors[" << i << "]: " << inTensors_.at(i).ToString() << std::endl;
     }
