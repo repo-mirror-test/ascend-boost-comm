@@ -30,6 +30,10 @@ RtBackend::~RtBackend()
         dlclose(soHandle_);
         soHandle_ = nullptr;
     }
+    if (stubHandle_) {
+        dlclose(stubHandle_);
+        stubHandle_ = nullptr;
+    }
 }
 
 void RtBackend::Init()
@@ -50,6 +54,10 @@ void RtBackend::Init()
         initStatus_ = MKIRT_ERROR_LOAD_RUNTIME_FAIL;
         return;
     }
+#ifdef _DEBUG
+    GetMsdebugHandle();
+    stubHandle_ = (stubHandle_ != nullptr) ? stubHandle_ : soHandle_;
+#endif
 
     InitDeviceFuncs();
     InitMemFuncs();
@@ -58,29 +66,30 @@ void RtBackend::Init()
     InitOtherFuncs();
 }
 
-void RtBackend::InitDeviceFuncs()
+void RtBackend::GetMsdebugHandle()
 {
-#ifdef _DEBUG
     const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
     if (asdHomePath == nullptr) {
         std::cout << "env ASCEND_HOME_PATH not exist" << std::endl;
         initStatus_ = MKIRT_ERROR_ASCEND_ENV_NOT_EXIST;
         return;
     }
-    std::cout << "env ASCEND_HOME_PATH exist" << std::endl;
-
+    
     std::string runtimeSoPath = std::string(asdHomePath) + "/tools/msdebug/lib/libruntime_stub.so";
     std::string realPath = FileSystem::PathCheckAndRegular(runtimeSoPath, false);
     MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
-    void *stubHandle = dlopen(realPath.c_str(), RTLD_LAZY);
-#endif
-    rtGetDeviceCount_ = (RtGetDeviceCountFunc)(dlsym(soHandle_, "rtGetDeviceCount"));
-    rtGetDeviceIDs_ = (RtGetDeviceIDsFunc)dlsym(soHandle_, "rtGetDeviceIDs");
+    stubHandle_ = dlopen(realPath.c_str(), RTLD_LAZY);
+}
+
+void RtBackend::InitDeviceFuncs()
+{
 #ifdef _DEBUG
-    rtSetDevice_ = (RtSetDeviceFunc)dlsym(stubHandle, "rtSetDevice");
+    rtSetDevice_ = (RtSetDeviceFunc)dlsym(stubHandle_, "rtSetDevice");
 #else
     rtSetDevice_ = (RtSetDeviceFunc)dlsym(soHandle_, "rtSetDevice");
 #endif
+    rtGetDeviceCount_ = (RtGetDeviceCountFunc)(dlsym(soHandle_, "rtGetDeviceCount"));
+    rtGetDeviceIDs_ = (RtGetDeviceIDsFunc)dlsym(soHandle_, "rtGetDeviceIDs");
     rtResetDevice_ = (RtResetDeviceFunc)dlsym(soHandle_, "rtDeviceReset");
     rtGetDevice_ = (RtGetDeviceFunc)dlsym(soHandle_, "rtGetDevice");
     rtSetSocVersion_ = (RtSetSocVersionFunc)dlsym(soHandle_, "rtSetSocVersion");
@@ -122,26 +131,13 @@ void RtBackend::InitMemFuncs()
 void RtBackend::InitModuleFuncs()
 {
 #ifdef _DEBUG
-    const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
-    if (asdHomePath == nullptr) {
-        std::cout << "env ASCEND_HOME_PATH not exist" << std::endl;
-        initStatus_ = MKIRT_ERROR_ASCEND_ENV_NOT_EXIST;
-        return;
-    }
-    std::cout << "env ASCEND_HOME_PATH exist" << std::endl;
-
-    std::string runtimeSoPath = std::string(asdHomePath) + "/tools/msdebug/lib/libruntime_stub.so";
-    std::string realPath = FileSystem::PathCheckAndRegular(runtimeSoPath, false);
-    MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
-    void *stubHandle = dlopen(realPath.c_str(), RTLD_LAZY);
-    
-    rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(stubHandle, "rtDevBinaryRegister");
-    rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(stubHandle, "rtDevBinaryUnRegister");
-    rtFunctionRegister_ = (RtFunctionRegisterFunc)dlsym(stubHandle, "rtFunctionRegister");
-    rtRegisterAllKernel_ = (RtRegisterAllKernelFunc)dlsym(stubHandle, "rtRegisterAllKernel");
-    rtKernelLaunch_ = (RtKernelLaunchFunc)dlsym(stubHandle, "rtKernelLaunch");
-    rtKernelLaunchWithHandle_ = (RtKernelLaunchWithHandleFunc)dlsym(stubHandle, "rtKernelLaunchWithHandleV2");
-    rtKernelLaunchWithFlag_ = (RtKernelLaunchWithFlagFunc)dlsym(stubHandle, "rtKernelLaunchWithFlagV2");
+    rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(stubHandle_, "rtDevBinaryRegister");
+    rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(stubHandle_, "rtDevBinaryUnRegister");
+    rtFunctionRegister_ = (RtFunctionRegisterFunc)dlsym(stubHandle_, "rtFunctionRegister");
+    rtRegisterAllKernel_ = (RtRegisterAllKernelFunc)dlsym(stubHandle_, "rtRegisterAllKernel");
+    rtKernelLaunch_ = (RtKernelLaunchFunc)dlsym(stubHandle_, "rtKernelLaunch");
+    rtKernelLaunchWithHandle_ = (RtKernelLaunchWithHandleFunc)dlsym(stubHandle_, "rtKernelLaunchWithHandleV2");
+    rtKernelLaunchWithFlag_ = (RtKernelLaunchWithFlagFunc)dlsym(stubHandle_, "rtKernelLaunchWithFlagV2");
 #else
     rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(soHandle_, "rtDevBinaryRegister");
     rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(soHandle_, "rtDevBinaryUnRegister");
@@ -163,32 +159,13 @@ void RtBackend::InitModuleFuncs()
 void RtBackend::InitStreamFuncs()
 {
 #ifdef _DEBUG
-    const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
-    if (asdHomePath == nullptr) {
-        std::cout << "env ASCEND_HOME_PATH not exist" << std::endl;
-        initStatus_ = MKIRT_ERROR_ASCEND_ENV_NOT_EXIST;
-        return;
-    }
-    std::cout << "env ASCEND_HOME_PATH exist" << std::endl;
-
-    std::string runtimeSoPath = std::string(asdHomePath) + "/tools/msdebug/lib/libruntime_stub.so";
-    // std::string runtimeSoPath = "/home/kangli/libruntime_stub.so";
-
-    std::string realPath = FileSystem::PathCheckAndRegular(runtimeSoPath, false);
-    MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
-    void *stubHandle = dlopen(realPath.c_str(), RTLD_LAZY);
-    std::cout << "env ASCEND_HOME_PATH not exist" << std::endl;
-
-    rtStreamCreate_ = (RtStreamCreateFunc)dlsym(soHandle_, "rtStreamCreate");
-    rtStreamDestroy_ = (RtStreamDestroyFunc)dlsym(soHandle_, "rtStreamDestroy");
-    rtStreamSynchronize_ = (RtStreamSynchronizeFunc)dlsym(soHandle_, "rtStreamSynchronize");
-    rtGetStreamId_ = (RtGetStreamIdFunc)dlsym(stubHandle, "rtGetStreamId");
+    rtGetStreamId_ = (RtGetStreamIdFunc)dlsym(stubHandle_, "rtGetStreamId");
 #else
-    rtStreamCreate_ = (RtStreamCreateFunc)dlsym(soHandle_, "rtStreamCreate");
-    rtStreamDestroy_ = (RtStreamDestroyFunc)dlsym(soHandle_, "rtStreamDestroy");
-    rtStreamSynchronize_ = (RtStreamSynchronizeFunc)dlsym(soHandle_, "rtStreamSynchronize");
     rtGetStreamId_ = (RtGetStreamIdFunc)dlsym(soHandle_, "rtGetStreamId");
 #endif
+    rtStreamCreate_ = (RtStreamCreateFunc)dlsym(soHandle_, "rtStreamCreate");
+    rtStreamDestroy_ = (RtStreamDestroyFunc)dlsym(soHandle_, "rtStreamDestroy");
+    rtStreamSynchronize_ = (RtStreamSynchronizeFunc)dlsym(soHandle_, "rtStreamSynchronize");
     MKI_LOG(DEBUG) << "Rt StreamCreate Func:" << rtStreamCreate_ <<
                      ", Rt StreamDestroy Func:" << rtStreamDestroy_ <<
                      ", Rt StreamSynchronize Func:" << rtStreamSynchronize_ <<

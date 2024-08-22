@@ -138,10 +138,12 @@ private:
     void InitModuleFuncs();
     void InitStreamFuncs();
     void InitOtherFuncs();
+    void GetMsdebugHandle();
     int ModuleDestoryRtModule(void *rtModule);
 
 private:
     void *soHandle_ = nullptr;
+    void *stubHandle_ = nullptr;
     int initStatus_ = MKIRT_SUCCESS;
 
 private:
