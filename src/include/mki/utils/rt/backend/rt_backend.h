@@ -139,7 +139,7 @@ private:
     void InitStreamFuncs();
     void InitOtherFuncs();
 #ifdef _DEBUG
-    void GetMsdebugHandle();
+    void InitMsdebugHandle();
 #endif
     int ModuleDestoryRtModule(void *rtModule);
 

@@ -57,7 +57,7 @@ void RtBackend::Init()
         return;
     }
 #ifdef _DEBUG
-    GetMsdebugHandle();
+    InitMsdebugHandle();
     stubHandle_ = (stubHandle_ != nullptr) ? stubHandle_ : soHandle_;
 #endif
 
@@ -69,7 +69,7 @@ void RtBackend::Init()
 }
 
 #ifdef _DEBUG
-void RtBackend::GetMsdebugHandle()
+void RtBackend::InitMsdebugHandle()
 {
     const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
     if (asdHomePath == nullptr) {
