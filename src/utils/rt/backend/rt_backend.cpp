@@ -30,10 +30,12 @@ RtBackend::~RtBackend()
         dlclose(soHandle_);
         soHandle_ = nullptr;
     }
+#ifdef _DEBUG
     if (stubHandle_) {
         dlclose(stubHandle_);
         stubHandle_ = nullptr;
     }
+#endif
 }
 
 void RtBackend::Init()
@@ -66,6 +68,7 @@ void RtBackend::Init()
     InitOtherFuncs();
 }
 
+#ifdef _DEBUG
 void RtBackend::GetMsdebugHandle()
 {
     const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
@@ -80,6 +83,7 @@ void RtBackend::GetMsdebugHandle()
     MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
     stubHandle_ = dlopen(realPath.c_str(), RTLD_LAZY);
 }
+#endif
 
 void RtBackend::InitDeviceFuncs()
 {
@@ -130,23 +134,17 @@ void RtBackend::InitMemFuncs()
 
 void RtBackend::InitModuleFuncs()
 {
+    void *soHandle = soHandle_;
 #ifdef _DEBUG
-    rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(stubHandle_, "rtDevBinaryRegister");
-    rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(stubHandle_, "rtDevBinaryUnRegister");
-    rtFunctionRegister_ = (RtFunctionRegisterFunc)dlsym(stubHandle_, "rtFunctionRegister");
-    rtRegisterAllKernel_ = (RtRegisterAllKernelFunc)dlsym(stubHandle_, "rtRegisterAllKernel");
-    rtKernelLaunch_ = (RtKernelLaunchFunc)dlsym(stubHandle_, "rtKernelLaunch");
-    rtKernelLaunchWithHandle_ = (RtKernelLaunchWithHandleFunc)dlsym(stubHandle_, "rtKernelLaunchWithHandleV2");
-    rtKernelLaunchWithFlag_ = (RtKernelLaunchWithFlagFunc)dlsym(stubHandle_, "rtKernelLaunchWithFlagV2");
-#else
-    rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(soHandle_, "rtDevBinaryRegister");
-    rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(soHandle_, "rtDevBinaryUnRegister");
-    rtFunctionRegister_ = (RtFunctionRegisterFunc)dlsym(soHandle_, "rtFunctionRegister");
-    rtRegisterAllKernel_ = (RtRegisterAllKernelFunc)dlsym(soHandle_, "rtRegisterAllKernel");
-    rtKernelLaunch_ = (RtKernelLaunchFunc)dlsym(soHandle_, "rtKernelLaunch");
-    rtKernelLaunchWithHandle_ = (RtKernelLaunchWithHandleFunc)dlsym(soHandle_, "rtKernelLaunchWithHandleV2");
-    rtKernelLaunchWithFlag_ = (RtKernelLaunchWithFlagFunc)dlsym(soHandle_, "rtKernelLaunchWithFlagV2");
+    soHandle = stubHandle_;
 #endif
+    rtDevBinaryRegister_ = (RtDevBinaryRegisterFunc)dlsym(soHandle, "rtDevBinaryRegister");
+    rtDevBinaryUnRegister_ = (RtDevBinaryUnRegisterFunc)dlsym(soHandle, "rtDevBinaryUnRegister");
+    rtFunctionRegister_ = (RtFunctionRegisterFunc)dlsym(soHandle, "rtFunctionRegister");
+    rtRegisterAllKernel_ = (RtRegisterAllKernelFunc)dlsym(soHandle, "rtRegisterAllKernel");
+    rtKernelLaunch_ = (RtKernelLaunchFunc)dlsym(soHandle, "rtKernelLaunch");
+    rtKernelLaunchWithHandle_ = (RtKernelLaunchWithHandleFunc)dlsym(soHandle, "rtKernelLaunchWithHandleV2");
+    rtKernelLaunchWithFlag_ = (RtKernelLaunchWithFlagFunc)dlsym(soHandle, "rtKernelLaunchWithFlagV2");
     MKI_LOG(DEBUG) << "Rt DevBinaryRegister Func:" << rtDevBinaryRegister_
                   << ", Rt DevBinaryUnRegister Func:" << rtDevBinaryUnRegister_
                   << ", Rt FunctionRegister Func:" << rtFunctionRegister_
