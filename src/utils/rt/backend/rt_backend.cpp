@@ -58,7 +58,6 @@ void RtBackend::Init()
     }
 #ifdef _DEBUG
     InitMsdebugHandle();
-    stubHandle_ = (stubHandle_ != nullptr) ? stubHandle_ : soHandle_;
 #endif
 
     InitDeviceFuncs();
@@ -71,6 +70,7 @@ void RtBackend::Init()
 #ifdef _DEBUG
 void RtBackend::InitMsdebugHandle()
 {
+    stubHandle_ = soHandle_;
     const char *asdHomePath = std::getenv("ASCEND_HOME_PATH");
     if (asdHomePath == nullptr) {
         std::cout << "env ASCEND_HOME_PATH not exist" << std::endl;
@@ -81,7 +81,8 @@ void RtBackend::InitMsdebugHandle()
     std::string runtimeSoPath = std::string(asdHomePath) + "/tools/msdebug/lib/libruntime_stub.so";
     std::string realPath = FileSystem::PathCheckAndRegular(runtimeSoPath, false);
     MKI_CHECK(!realPath.empty(), "runtimeSoPath is null", return);
-    stubHandle_ = dlopen(realPath.c_str(), RTLD_LAZY);
+    if (dlopen(realPath.c_str(), RTLD_LAZY) != nullptr)
+        stubHandle_ = dlopen(realPath.c_str(), RTLD_LAZY);
 }
 #endif
 
