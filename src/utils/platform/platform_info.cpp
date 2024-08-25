@@ -64,8 +64,6 @@ void PlatformInfo::Init()
                  "Initialize platform manager failed", return);
     MKI_CHECK(platformManager.GetPlatformConfigs(socVersion, platformConfigs_) == PLATFORM_SUCCESS,
                  "Get platform Information failed", return);
-    // MKI_CHECK(platformManager.GetPlatformInfos(socVersion, platformInfo_) == PLATFORM_SUCCESS,
-    //              "Get platform Information failed", return);
     inited_ = true;
 }
 
@@ -77,19 +75,15 @@ uint32_t PlatformInfo::GetCoreNum(CoreType type)
         switch (type) {
             case CoreType::CORE_TYPE_VECTOR:
                 platformConfigs_.SetCoreNumByCoreType("VectorCore");
-                // platformInfo_.SetCoreNumByCoreType("VectorCore");
                 break;
             default:
                 platformConfigs_.SetCoreNumByCoreType("AiCore");
-                // platformInfo_.SetCoreNumByCoreType("AiCore");
                 break;
         }
     } else {
         platformConfigs_.SetCoreNumByCoreType("AiCore");
-        // platformInfo_.SetCoreNumByCoreType("AiCore");
     }
     uint32_t coreNum = platformConfigs_.GetCoreNum();
-    // uint32_t coreNum = platformInfo_.GetCoreNum();
     MKI_FLOG_INFO("Platform get core num %u, type %d", coreNum, type);
     return coreNum;
 }
@@ -98,7 +92,6 @@ uint64_t PlatformInfo::GetL2Size()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::L2, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::L2, memSize);
     MKI_LOG(INFO) << "PlatformInfo get l2 size " << memSize;
     return memSize;
 }
@@ -107,7 +100,6 @@ uint64_t PlatformInfo::GetL1Size()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::L1, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::L1, memSize);
     MKI_LOG(INFO) << "PlatformInfo get l1 size " << memSize;
     return memSize;
 }
@@ -116,7 +108,6 @@ uint64_t PlatformInfo::GetL0ASize()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::L0_A, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::L0_A, memSize);
     MKI_LOG(INFO) << "PlatformInfo get l0a size " << memSize;
     return memSize;
 }
@@ -125,7 +116,6 @@ uint64_t PlatformInfo::GetL0BSize()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::L0_B, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::L0_B, memSize);
     MKI_LOG(INFO) << "PlatformInfo get l0b size " << memSize;
     return memSize;
 }
@@ -134,7 +124,6 @@ uint64_t PlatformInfo::GetL0CSize()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::L0_C, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::L0_C, memSize);
     MKI_LOG(INFO) << "PlatformInfo get l0c size " << memSize;
     return memSize;
 }
@@ -143,7 +132,6 @@ uint64_t PlatformInfo::GetUbSize()
 {
     uint64_t memSize = 0;
     platformConfigs_.GetLocalMemSize(LocalMemType::UB, memSize);
-    // platformInfo_.GetLocalMemSize(fe::LocalMemType::UB, memSize);
     MKI_LOG(INFO) << "PlatformInfo get ub size " << memSize;
     return memSize;
 }
@@ -154,7 +142,6 @@ bool PlatformInfo::GetAicoreIntrinsic(const std::string &intrinsicName)
 {
     std::string val;
     (void)platformConfigs_.GetPlatformRes("AICoreintrinsicDtypeMap", intrinsicName, val);
-    // (void)platformInfo_.GetPlatformRes("AICoreintrinsicDtypeMap", intrinsicName, val);
     if (!val.empty()) {
         MKI_LOG(INFO) << "PlatformInfo get aicore intrinsic " << intrinsicName << " = " << val;
         return true;

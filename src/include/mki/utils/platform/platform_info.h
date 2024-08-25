@@ -62,7 +62,6 @@ private:
     std::string platformName_;
 
     PlatformConfigs platformConfigs_;
-    // fe::PlatFormInfos platformInfo_;
 };
 } // namespace Mki
 

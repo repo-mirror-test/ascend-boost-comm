@@ -193,9 +193,6 @@ uint32_t PlatformManager::AssemblePlatformInfoVector(
 {
     std::string socVersion;
     PlatformConfigs platformConfigs;
-    // if (!platformConfigs.Init()) {
-    //     return PLATFORM_FAILED;
-    // }
 
     if (ParsePlatformInfo(contentInfoMap, socVersion, platformConfigs) != PLATFORM_SUCCESS) {
         MKI_LOG(ERROR) << "Parse platform info from content failed";
@@ -218,7 +215,6 @@ uint32_t PlatformManager::AssemblePlatformInfoVector(
 }
 
 void PlatformManager::FillupFixPipeInfo(PlatformConfigs &platformConfigs) const
-// void PlatformManager::FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const
 {
     std::map<std::string, std::vector<std::string>> aicoreMap = platformConfigs.GetAICoreIntrinsicDtype();
     std::map<std::string, std::vector<std::string>> fixpipeMap;
@@ -235,8 +231,6 @@ void PlatformManager::FillupFixPipeInfo(PlatformConfigs &platformConfigs) const
 
 bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
     PlatformConfigs &platformConfigsTemp) const
-// bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
-//     fe::PlatFormInfos &platformInfoTemp) const
 {
     std::map<std::string, std::string>::const_iterator iter;
     std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes = platformConfigsTemp.GetAICoreIntrinsicDtype();
@@ -259,8 +253,6 @@ bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::st
 
 bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
     PlatformConfigs &platformConfigsTemp) const
-// bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
-//     fe::PlatFormInfos &platformInfoTemp) const
 {
     std::map<std::string, std::string>::const_iterator iter;
     std::map<std::string, std::vector<std::string>> vectorCoreIntrinsicDtypeMap =
@@ -285,16 +277,12 @@ bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std
 
 void PlatformManager::ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
     PlatformConfigs &platformConfigsTemp) const
-// void PlatformManager::ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
-//     fe::PlatFormInfos &platformInfoTemp) const
 {
     platformConfigsTemp.SetPlatformRes(label, platformResMap);
 }
 
 uint32_t PlatformManager::ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
     std::string &socVersion, PlatformConfigs &platformConfigsTemp) const
-// uint32_t PlatformManager::ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
-//     std::string &socVersion, fe::PlatFormInfos &platformInfoTemp) const
 {
     std::map<std::string, std::map<std::string, std::string>>::iterator it;
     for (it = contentMap.begin(); it != contentMap.end(); it++) {
@@ -394,7 +382,6 @@ uint32_t PlatformManager::InitializePlatformManager()
 }
 
 uint32_t PlatformManager::GetPlatformConfigs(const std::string socVersion, PlatformConfigs &platformConfigs)
-// uint32_t PlatformManager::GetPlatformInfos(const std::string socVersion, fe::PlatFormInfos &platformInfo)
 {
     std::string realSocVersion = socVersion;
     if (realSocVersion == SOC_VERSION_ASCEND910) {
@@ -419,4 +406,4 @@ uint32_t PlatformManager::Finalize()
     initFlag_ = false;
     return PLATFORM_SUCCESS;
 }
-} // namespace fe
+} // namespace Mki
