@@ -78,8 +78,8 @@ int rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim, RtArgsExT 
 namespace Mki {
 class RtBackend : public Backend {
 public:
-    RtBackend();
-    ~RtBackend() override;
+    RtBackend() = default;
+    ~RtBackend() override = default;
 
 public:
     int DeviceGetCount(int32_t *devCount) override;
