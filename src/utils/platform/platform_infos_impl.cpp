@@ -39,30 +39,30 @@ bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, const std::stri
     return true;
 }
 
-bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res)
+bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, std::map<std::string, std::string> &result)
 {
     auto itLabel = platformResMap_.find(label);
     if (itLabel == platformResMap_.end()) {
         return false;
     }
 
-    res = itLabel->second;
+    result = itLabel->second;
     return true;
 }
 
-void PlatFormInfosImpl::SetAICoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes)
+void PlatFormInfosImpl::SetAICoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &dtypes)
 {
-    aiCoreIntrinsicDtypeMap_ = intrinsicDtypes;
+    aiCoreIntrinsicDtypeMap_ = dtypes;
 }
 
-void PlatFormInfosImpl::SetVectorCoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &intrinsicDtypes)
+void PlatFormInfosImpl::SetVectorCoreIntrinsicDtype(std::map<std::string, std::vector<std::string>> &dtypes)
 {
-    vectorCoreIntrinsicDtypeMap_ = intrinsicDtypes;
+    vectorCoreIntrinsicDtypeMap_ = dtypes;
 }
 
-void PlatFormInfosImpl::SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res)
+void PlatFormInfosImpl::SetPlatformRes(const std::string &label, std::map<std::string, std::string> &result)
 {
-    platformResMap_[label] = res;
+    platformResMap_[label] = result;
 }
 
 void PlatFormInfosImpl::SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &dtypeMap)
