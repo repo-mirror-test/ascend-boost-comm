@@ -32,7 +32,7 @@ public:
     bool GetPlatformRes(const std::string &label, const std::string &key, std::string &value);
     bool GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
 
-    void SetFixPipeDtypeMap(const PlatInfoMapType &fixpipeDtypeMap);
+    void SetFixPipeDtypeMap(const PlatInfoMapType &dtypeMap);
     void SetAICoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
     void SetVectorCoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
 

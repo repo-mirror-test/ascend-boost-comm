@@ -23,7 +23,7 @@ std::map<std::string, std::vector<std::string>> PlatFormInfosImpl::GetVectorCore
     return vectorCoreIntrinsicDtypeMap_;
 }
 
-bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, const std::string &key, std::string &val)
+bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, const std::string &key, std::string &value)
 {
     const auto itLabel = platformResMap_.find(label);
     if (itLabel == platformResMap_.cend()) {
@@ -35,7 +35,7 @@ bool PlatFormInfosImpl::GetPlatformRes(const std::string &label, const std::stri
         return false;
     }
 
-    val = itKey->second;
+    value = itKey->second;
     return true;
 }
 
@@ -65,9 +65,9 @@ void PlatFormInfosImpl::SetPlatformRes(const std::string &label, std::map<std::s
     platformResMap_[label] = res;
 }
 
-void PlatFormInfosImpl::SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &fixpipeDtypeMap)
+void PlatFormInfosImpl::SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &dtypeMap)
 {
-    fixpipeDtypeMap_ = fixpipeDtypeMap;
+    fixpipeDtypeMap_ = dtypeMap;
 }
 
 std::map<std::string, std::vector<std::string>> PlatFormInfosImpl::GetFixPipeDtypeMap() { return fixpipeDtypeMap_; }
