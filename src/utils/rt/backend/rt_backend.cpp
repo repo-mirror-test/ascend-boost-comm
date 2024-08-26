@@ -11,7 +11,6 @@
  */
 #include "mki/utils/rt/backend/rt_backend.h"
 #include <cstdlib>
-#include <dlfcn.h>
 #include <fstream>
 #include <iostream>
 #include <string>

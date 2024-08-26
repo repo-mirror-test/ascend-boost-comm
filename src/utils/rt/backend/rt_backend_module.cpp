@@ -166,7 +166,7 @@ int RtBackend::FunctionLaunch(const void *func, const MkiRtKernelParam *param, M
 {
     CHECK_FUN_PARA_RETURN(param);
     CHECK_STATUS_WITH_DESC_RETURN(rtKernelLaunch(func, param->blockDim, param->args, param->argSize, nullptr, stream),
-        "rt KernelLaunch");
+                                  "rt KernelLaunch");
 }
 
 int RtBackend::FunctionLaunchWithHandle(void *handle, const MkiRtKernelParam *param, MkiRtStream stream,
@@ -176,9 +176,10 @@ int RtBackend::FunctionLaunchWithHandle(void *handle, const MkiRtKernelParam *pa
     CHECK_FUN_PARA_RETURN(param);
     CHECK_FUN_PARA_RETURN(param->argsEx);
 
-    CHECK_STATUS_WITH_DESC_RETURN(
-        rtKernelLaunchWithHandleV2(handle, param->tilingId, param->blockDim, param->argsEx, nullptr, stream, cfgInfo),
-                                 "rt KernelLaunch With Handle");
+    CHECK_STATUS_WITH_DESC_RETURN(rtKernelLaunchWithHandleV2(handle, param->tilingId, 
+                                                             param->blockDim, param->argsEx,
+                                                             nullptr, stream, cfgInfo),
+                                  "rt KernelLaunch With Handle");
 }
 
 int RtBackend::FunctionLaunchWithFlag(const void *func, const MkiRtKernelParam *param, MkiRtStream stream,
@@ -187,9 +188,10 @@ int RtBackend::FunctionLaunchWithFlag(const void *func, const MkiRtKernelParam *
     /* runtime允许cfgInfo为nullptr，此处不校验 */
     CHECK_FUN_PARA_RETURN(param);
     CHECK_FUN_PARA_RETURN(param->argsEx);
-    CHECK_STATUS_WITH_DESC_RETURN(
-        rtKernelLaunchWithFlagV2(func, param->blockDim, param->argsEx, nullptr, stream, 0, cfgInfo),
-                               "rt KernelLaunch With Flag");
+    CHECK_STATUS_WITH_DESC_RETURN(rtKernelLaunchWithFlagV2(func, param->blockDim,
+                                                           param->argsEx, nullptr,
+                                                           stream, 0, cfgInfo),
+                                  "rt KernelLaunch With Flag");
 }
 
 int RtBackend::GetC2cCtrlAddr(uint64_t *addr, uint32_t *len)
