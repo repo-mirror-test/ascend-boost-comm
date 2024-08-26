@@ -177,7 +177,7 @@ int RtBackend::FunctionLaunchWithHandle(void *handle, const MkiRtKernelParam *pa
     CHECK_FUN_PARA_RETURN(param->argsEx);
 
     CHECK_STATUS_WITH_DESC_RETURN(
-        rtKernelLaunchWithHandle(handle, param->tilingId, param->blockDim, param->argsEx, nullptr, stream, cfgInfo),
+        rtKernelLaunchWithHandleV2(handle, param->tilingId, param->blockDim, param->argsEx, nullptr, stream, cfgInfo),
                                  "rt KernelLaunch With Handle");
 }
 
@@ -188,7 +188,7 @@ int RtBackend::FunctionLaunchWithFlag(const void *func, const MkiRtKernelParam *
     CHECK_FUN_PARA_RETURN(param);
     CHECK_FUN_PARA_RETURN(param->argsEx);
     CHECK_STATUS_WITH_DESC_RETURN(
-        rtKernelLaunchWithFlag(func, param->blockDim, param->argsEx, nullptr, stream, 0, cfgInfo),
+        rtKernelLaunchWithFlagV2(func, param->blockDim, param->argsEx, nullptr, stream, 0, cfgInfo),
                                "rt KernelLaunch With Flag");
 }
 

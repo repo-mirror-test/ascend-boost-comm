@@ -71,6 +71,9 @@ int rtKernelLaunchWithHandleV2(void *hdl, const uint64_t tilingKey, uint32_t blo
 int rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim, RtArgsExT *argsInfo, void *smDesc,
                              rtStream_t sm, uint32_t flags, const RtTaskCfgInfoT *cfgInfo);
 
+// rt other
+int rtGetC2cCtrlAddr(uint64_t *addr, uint32_t *len);
+
 #ifdef __cplusplus
 }
 #endif
