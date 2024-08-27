@@ -222,7 +222,7 @@ TEST(BinFileTest, changeObjectLength)
     {
         BinFile binFile;
         Status status = binFile.Read("4.bin");
-        EXPECT_FALSE(status.OK());
+        EXPECT_FALSE(status.Ok());
         FileSystem::DeleteFile("4.bin");
     }
 }
