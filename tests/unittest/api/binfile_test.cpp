@@ -226,5 +226,4 @@ TEST(BinFileTest, changeObjectLength)
         FileSystem::DeleteFile("4.bin");
     }
 }
-
 } // namespace Mki
