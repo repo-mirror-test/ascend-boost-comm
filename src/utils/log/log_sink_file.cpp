@@ -61,7 +61,7 @@ static bool IsSymlink(const std::string &filePath)
     return S_ISLNK(buf.st_mode);
 }
 
-std::string FileSystem::RemoveTrailingSlash(const std::string &path)
+std::string RemoveTrailingSlash(const std::string &path)
 {
     size_t lastNonSlash = path.find_last_not_of("/");
     if (lastNonSlash == std::string::npos && !path.empty()) {
