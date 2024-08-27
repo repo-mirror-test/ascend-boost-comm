@@ -51,6 +51,7 @@ static bool IsValidFileName(const char *name)
     return true;
 }
 
+// A symlink with a trailing slash (/) is not recognized as a symlink, which is consistent with the operating system.
 static bool IsSymlink(const std::string &filePath)
 {
     struct stat buf {};
@@ -58,6 +59,18 @@ static bool IsSymlink(const std::string &filePath)
         return false;
     }
     return S_ISLNK(buf.st_mode);
+}
+
+std::string FileSystem::RemoveTrailingSlash(const std::string &path)
+{
+    size_t lastNonSlash = path.find_last_not_of("/");
+    if (lastNonSlash == std::string::npos && !path.empty()) {
+        return "/";
+    } else if (lastNonSlash != std::string::npos && lastNonSlash != path.size() - 1) {
+        return path.substr(0, lastNonSlash + 1);
+    } else {
+        return path;
+    }
 }
 
 static std::string PathCheckAndRegular(const std::string &path)
