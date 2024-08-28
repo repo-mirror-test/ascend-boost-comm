@@ -74,14 +74,14 @@ uint32_t PlatformInfo::GetCoreNum(CoreType type)
     if (platformType_ == PlatformType::ASCEND_910B) {
         switch (type) {
             case CoreType::CORE_TYPE_VECTOR:
-                platformConfigs_.SetCoreNumByCoreType("VectorCore");
+                platformConfigs_.SetCoreNumByType("VectorCore");
                 break;
             default:
-                platformConfigs_.SetCoreNumByCoreType("AiCore");
+                platformConfigs_.SetCoreNumByType("AiCore");
                 break;
         }
     } else {
-        platformConfigs_.SetCoreNumByCoreType("AiCore");
+        platformConfigs_.SetCoreNumByType("AiCore");
     }
     uint32_t coreNum = platformConfigs_.GetCoreNum();
     MKI_FLOG_INFO("Platform get core num %u, type %d", coreNum, type);
@@ -141,7 +141,7 @@ bool PlatformInfo::SupportL0c2out() { return GetAicoreIntrinsic("Intrinsic_fix_p
 bool PlatformInfo::GetAicoreIntrinsic(const std::string &intrinsicName)
 {
     std::string val;
-    (void)platformConfigs_.GetPlatformRes("AICoreintrinsicDtypeMap", intrinsicName, val);
+    (void)platformConfigs_.GetPlatformSpec("AICoreintrinsicDtypeMap", intrinsicName, val);
     if (!val.empty()) {
         MKI_LOG(INFO) << "PlatformInfo get aicore intrinsic " << intrinsicName << " = " << val;
         return true;

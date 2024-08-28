@@ -234,7 +234,7 @@ bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::st
 {
     std::map<std::string, std::string>::const_iterator iter;
     std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes = platformConfigsTemp.GetAICoreIntrinsicDtype();
-    std::map<std::string, std::string> platformRes;
+    std::map<std::string, std::string> platformSpec;
     for (iter = aiCoreintrinsicDtypeMap.begin(); iter != aiCoreintrinsicDtypeMap.end(); iter++) {
         size_t pos = iter->second.find('|');
         if (pos == std::string::npos) {
@@ -243,10 +243,10 @@ bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::st
         std::string key = iter->second.substr(0, pos);
         std::string value = iter->second.substr(pos + 1);
         std::vector<std::string> dtypeVector = Split(value, ',');
-        platformRes.emplace(make_pair(key, value));
+        platformSpec.emplace(make_pair(key, value));
         aicoreIntrinsicDtypes.emplace(make_pair(key, dtypeVector));
     }
-    platformConfigsTemp.SetPlatformRes(STR_AI_CORE_INTRINSIC_DTYPE_MAP, platformRes);
+    platformConfigsTemp.SetPlatformSpec(STR_AI_CORE_INTRINSIC_DTYPE_MAP, platformSpec);
     platformConfigsTemp.SetAICoreIntrinsicDtype(aicoreIntrinsicDtypes);
     return true;
 }
@@ -257,7 +257,7 @@ bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std
     std::map<std::string, std::string>::const_iterator iter;
     std::map<std::string, std::vector<std::string>> vectorCoreIntrinsicDtypeMap =
         platformConfigsTemp.GetVectorCoreIntrinsicDtype();
-    std::map<std::string, std::string> platformRes;
+    std::map<std::string, std::string> platformSpec;
     for (iter = vectorCoreintrinsicDtypeMap.begin(); iter != vectorCoreintrinsicDtypeMap.end(); iter++) {
         size_t pos = iter->second.find('|');
         if (pos == std::string::npos) {
@@ -267,18 +267,18 @@ bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std
         std::string key = iter->second.substr(0, pos);
         std::string value = iter->second.substr(pos + 1);
         std::vector<std::string> dtypeVector = Split(value, ',');
-        platformRes.emplace(make_pair(key, value));
+        platformSpec.emplace(make_pair(key, value));
         vectorCoreIntrinsicDtypeMap.emplace(make_pair(key, dtypeVector));
     }
-    platformConfigsTemp.SetPlatformRes(STR_VECTOR_CORE_INTRINSIC_DTYPE_MAP, platformRes);
+    platformConfigsTemp.SetPlatformSpec(STR_VECTOR_CORE_INTRINSIC_DTYPE_MAP, platformSpec);
     platformConfigsTemp.SetVectorCoreIntrinsicDtype(vectorCoreIntrinsicDtypeMap);
     return true;
 }
 
-void PlatformManager::ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
+void PlatformManager::ParsePlatformSpec(const std::string &label, std::map<std::string, std::string> &platformSpecMap,
     PlatformConfigs &platformConfigsTemp) const
 {
-    platformConfigsTemp.SetPlatformRes(label, platformResMap);
+    platformConfigsTemp.SetPlatformSpec(label, platformSpecMap);
 }
 
 uint32_t PlatformManager::ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
@@ -295,7 +295,7 @@ uint32_t PlatformManager::ParsePlatformInfo(std::map<std::string, std::map<std::
             MKI_CHECK(ParseVectorCoreintrinsicDtypeMap(it->second, platformConfigsTemp),
                 "failed to parse vectorcore intrinsic dtype map", return PLATFORM_FAILED);
         } else {
-            ParsePlatformRes(it->first, it->second, platformConfigsTemp);
+            ParsePlatformSpec(it->first, it->second, platformConfigsTemp);
         }
     }
     return PLATFORM_SUCCESS;

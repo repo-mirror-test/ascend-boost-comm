@@ -30,14 +30,16 @@ enum class LocalMemType {
 
 class PlatformConfigs {
 using PlatInfoMapType = std::map<std::string, std::vector<std::string>>;
+using PlatSpecMapType = std::map<std::string, std::map<std::string, std::string>>;
 
 public:
-    void SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
-    bool GetPlatformRes(const std::string &label, const std::string &key, std::string &value);
-    bool GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res);
+    void SetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res);
+    bool GetPlatformSpec(const std::string &label, const std::string &key, std::string &value);
+    bool GetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res);
+    PlatSpecMapType GetPlatformSpecMap();
 
-    void SetCoreNumByCoreType(const std::string &core_type);
-    uint32_t GetCoreNumByType(const std::string &core_type);
+    void SetCoreNumByType(const std::string &coreType);
+    uint32_t GetCoreNumByType(const std::string &coreType);
     uint32_t GetCoreNum() const;
 
     void SetFixPipeDtypeMap(const PlatInfoMapType &fixpipeDtypeMap);
@@ -53,7 +55,7 @@ private:
     PlatInfoMapType fixpipeDtypeMap_;
     PlatInfoMapType aiCoreIntrinsicDtypeMap_;
     PlatInfoMapType vectorCoreIntrinsicDtypeMap_;
-    std::map<std::string, std::map<std::string, std::string>> platformResMap_;
+    PlatSpecMapType platformSpecMap_;
     uint32_t core_num_{0};
 };
 } // namespace Mki

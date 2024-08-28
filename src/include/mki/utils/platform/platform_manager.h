@@ -45,7 +45,7 @@ private:
     std::string RealPath(const std::string &path) const;
 
     void ParseVersion(PlatMapType &versionMap, std::string &socVersion) const;
-    void ParsePlatformRes(const std::string &label, PlatMapType &platformResMap,
+    void ParsePlatformSpec(const std::string &label, PlatMapType &platformSpecMap,
                           PlatformConfigs &platformConfigsTemp) const;
     uint32_t ParsePlatformInfo(std::map<std::string, PlatMapType> &contentMap,
                                std::string &socVersion, PlatformConfigs &platformConfigsTemp) const;

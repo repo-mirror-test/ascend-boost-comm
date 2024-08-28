@@ -16,15 +16,15 @@
 
 namespace Mki {
 constexpr uint32_t MAX_CORE_NUM = 128;
-void PlatformConfigs::SetPlatformRes(const std::string &label, std::map<std::string, std::string> &res)
+void PlatformConfigs::SetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res)
 {
-    platformResMap_[label] = res;
+    platformSpecMap_[label] = res;
 }
 
-bool PlatformConfigs::GetPlatformRes(const std::string &label, const std::string &key, std::string &value)
+bool PlatformConfigs::GetPlatformSpec(const std::string &label, const std::string &key, std::string &value)
 {
-    const auto itLabel = platformResMap_.find(label);
-    if (itLabel == platformResMap_.cend()) {
+    const auto itLabel = platformSpecMap_.find(label);
+    if (itLabel == platformSpecMap_.cend()) {
         return false;
     }
 
@@ -37,10 +37,10 @@ bool PlatformConfigs::GetPlatformRes(const std::string &label, const std::string
     return true;
 }
 
-bool PlatformConfigs::GetPlatformRes(const std::string &label, std::map<std::string, std::string> &res)
+bool PlatformConfigs::GetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res)
 {
-    auto itLabel = platformResMap_.find(label);
-    if (itLabel == platformResMap_.end()) {
+    auto itLabel = platformSpecMap_.find(label);
+    if (itLabel == platformSpecMap_.end()) {
         return false;
     }
 
@@ -48,18 +48,23 @@ bool PlatformConfigs::GetPlatformRes(const std::string &label, std::map<std::str
     return true;
 }
 
+std::map<std::string, std::map<std::string, std::string>> PlatformConfigs::GetPlatformSpecMap()
+{
+    return platformSpecMap_;
+}
+
 std::mutex g_coreNumMutex;
-void PlatformConfigs::SetCoreNumByCoreType(const std::string &core_type)
+void PlatformConfigs::SetCoreNumByType(const std::string &coreType)
 {
     std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
     std::string coreNumStr;
     std::string coreTypeStr;
-    if (core_type == "VectorCore") {
+    if (coreType == "VectorCore") {
         coreTypeStr = "vector_core_cnt";
     } else {
         coreTypeStr = "ai_core_cnt";
     }
-    (void)GetPlatformRes("SoCInfo", coreTypeStr, coreNumStr);
+    (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
     MKI_LOG(DEBUG) << "Set PlatformConfigs::core_num_ to " << coreTypeStr << ": " << coreNumStr;
     if (coreNumStr.empty()) {
         core_num_ = 1;
@@ -73,12 +78,12 @@ void PlatformConfigs::SetCoreNumByCoreType(const std::string &core_type)
     }
 }
 
-uint32_t PlatformConfigs::GetCoreNumByType(const std::string &core_type)
+uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
 {
     std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
     std::string coreNumStr;
-    std::string coreTypeStr = core_type == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
-    (void)GetPlatformRes("SoCInfo", coreTypeStr, coreNumStr);
+    std::string coreTypeStr = coreType == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
+    (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
     MKI_LOG(DEBUG) << "Get PlatformConfigs::core_num_ to " << coreTypeStr << ": " << coreNumStr;
     if (coreNumStr.empty()) {
         MKI_LOG(ERROR) << "CoreNumStr is empty!";
@@ -131,31 +136,31 @@ void PlatformConfigs::GetLocalMemSize(const LocalMemType &mem_type, uint64_t &si
     std::string sizeStr;
     switch (mem_type) {
         case LocalMemType::L0_A: {
-            (void)GetPlatformRes("AICoreSpec", "l0_a_size", sizeStr);
+            (void)GetPlatformSpec("AICoreSpec", "l0_a_size", sizeStr);
             break;
         }
         case LocalMemType::L0_B: {
-            (void)GetPlatformRes("AICoreSpec", "l0_b_size", sizeStr);
+            (void)GetPlatformSpec("AICoreSpec", "l0_b_size", sizeStr);
             break;
         }
         case LocalMemType::L0_C: {
-            (void)GetPlatformRes("AICoreSpec", "l0_c_size", sizeStr);
+            (void)GetPlatformSpec("AICoreSpec", "l0_c_size", sizeStr);
             break;
         }
         case LocalMemType::L1: {
-            (void)GetPlatformRes("AICoreSpec", "l1_size", sizeStr);
+            (void)GetPlatformSpec("AICoreSpec", "l1_size", sizeStr);
             break;
         }
         case LocalMemType::L2: {
-            (void)GetPlatformRes("SoCInfo", "l2_size", sizeStr);
+            (void)GetPlatformSpec("SoCInfo", "l2_size", sizeStr);
             break;
         }
         case LocalMemType::UB: {
-            (void)GetPlatformRes("AICoreSpec", "ub_size", sizeStr);
+            (void)GetPlatformSpec("AICoreSpec", "ub_size", sizeStr);
             break;
         }
         case LocalMemType::HBM: {
-            (void)GetPlatformRes("SoCInfo", "memory_size", sizeStr);
+            (void)GetPlatformSpec("SoCInfo", "memory_size", sizeStr);
             break;
         }
         default: {
