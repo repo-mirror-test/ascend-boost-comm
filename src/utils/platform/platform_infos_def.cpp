@@ -62,12 +62,12 @@ void PlatFormInfos::SetFixPipeDtypeMap(const std::map<std::string, std::vector<s
 }
 
 std::mutex g_coreNumMutex;
-void PlatFormInfos::SetCoreNumByCoreType(const std::string &coreType)
+void PlatFormInfos::SetCoreNumByCoreType(const std::string &core_type)
 {
     std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
     std::string coreNumStr;
     std::string coreTypeStr;
-    if (coreType == "VectorCore") {
+    if (core_type == "VectorCore") {
         coreTypeStr = "vector_core_cnt";
     } else {
         coreTypeStr = "ai_core_cnt";
@@ -86,11 +86,11 @@ void PlatFormInfos::SetCoreNumByCoreType(const std::string &coreType)
     }
 }
 
-uint32_t PlatFormInfos::GetCoreNumByType(const std::string &coreType)
+uint32_t PlatFormInfos::GetCoreNumByType(const std::string &core_type)
 {
     std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
     std::string coreNumStr;
-    std::string coreTypeStr = coreType == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
+    std::string coreTypeStr = core_type == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
     (void)GetPlatformRes("SoCInfo", coreTypeStr, coreNumStr);
     MKI_LOG(DEBUG) << "Get PlatFormInfos::core_num_ to " << coreTypeStr << ": " << coreNumStr;
     if (coreNumStr.empty()) {
