@@ -283,7 +283,7 @@ std::string FileSystem::PathCheckAndRegular(const std::string &path, bool symlin
         }
     }
 
-    // 5. get the real path  
+    // 5. get the real path
     char resolvedPath[PATH_MAX] = {0};
     std::string res = "";
 
