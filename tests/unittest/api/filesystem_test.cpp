@@ -126,9 +126,9 @@ TEST(FileSystemTest, PathCheckAndRegular)
     EXPECT_EQ(fs.PathCheckAndRegular(""), "");
     std::string longPath(10000, 'a');
     EXPECT_EQ(fs.PathCheckAndRegular(longPath), "");
-    ASSERT_TRUE(fs.MakeDir("testdir", 1));
-    ASSERT_TRUE(fs.MakeDir("testdir/subdir1", 1));
-    ASSERT_TRUE(fs.MakeDir("testdir/subdir1/subdir11", 1));
+    ASSERT_TRUE(fs.MakeDir("testdir1", 1));
+    ASSERT_TRUE(fs.MakeDir("testdir1/subdir1", 1));
+    ASSERT_TRUE(fs.MakeDir("testdir1/subdir1/subdir11", 1));
     ASSERT_TRUE(symlink("testdir1/subdir1/subdir11", "testdir2") != -1);
     ASSERT_TRUE(Mki::EndsWith(fs.PathCheckAndRegular("testdir1/./subdir1"), "testdir1/subdir1"));
     EXPECT_EQ(fs.PathCheckAndRegular("testdir1/subdir1/../", true, true), "");
@@ -138,8 +138,8 @@ TEST(FileSystemTest, PathCheckAndRegular)
     EXPECT_EQ(fs.PathCheckAndRegular("testdir2", true), "");
     ASSERT_TRUE(Mki::EndsWith(fs.PathCheckAndRegular("testdir2", false), "testdir1/subdir1/subdir11"));
     fs.DeleteFile("testdir2");
-    fs.DeleteFile("testdir/subdir1/subdir11");
-    fs.DeleteFile("testdir/subdir1");
-    fs.DeleteFile("testdir");
+    fs.DeleteFile("testdir1/subdir1/subdir11");
+    fs.DeleteFile("testdir1/subdir1");
+    fs.DeleteFile("testdir1");
 }
 } // namespace Mki
