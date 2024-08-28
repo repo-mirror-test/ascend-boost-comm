@@ -31,7 +31,7 @@ def parse_args():
 def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
-                   '-c', '-O2']
+                   '-c', '-O0', '-g', '--cce-ignore-always-inline=true']
     compile_cmd += compile_options
     compile_cmd += [args.srcs, "--cce-aicore-arch=%s" % sub_arch,
                     "--cce-aicore-only", "-o", dst,
@@ -44,7 +44,7 @@ def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
 def gen_compile_cmd_v220(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
-                   '-c', '-O3']
+                   '-c', '-O0', '-g', '--cce-ignore-always-inline=true']
     compile_cmd += compile_options
     compile_cmd += [args.srcs, "--cce-aicore-arch=%s" % sub_arch,
                     "--cce-aicore-only", "-o", dst,
@@ -60,7 +60,7 @@ def gen_compile_cmd_v220(args, dst: str, sub_arch: str, compile_options):
 def gen_compile_cmd_v300(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
-                   '-c', '-O3']
+                   '-c', '-O0', '-g', '--cce-ignore-always-inline=true']
     compile_cmd += compile_options
     compile_cmd += [args.srcs, "--cce-aicore-arch=%s" % sub_arch,
                     "--cce-aicore-only", "-o", dst,

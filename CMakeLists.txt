@@ -56,3 +56,5 @@ list(APPEND SCRIPTS_FILES
 )
 install(FILES ${SCRIPTS_FILES} DESTINATION ./scripts)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/include DESTINATION .)
+
+add_subdirectory(example)

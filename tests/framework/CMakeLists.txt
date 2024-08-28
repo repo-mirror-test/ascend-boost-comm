@@ -26,11 +26,11 @@ link_directories(
 
 # Pytorch testframework
 ## json->param lib
-add_library(mki_test_autogen SHARED ${CMAKE_CURRENT_LIST_DIR}/../autogen/op_desc_json_ph.cpp)
-if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/tests/libmki_test_autogen.so)
-    MESSAGE(STATUS "libmki_test_autogen.so does NOT exist. Generate placeholder.")
-    install(TARGETS mki_test_autogen DESTINATION tests)
-endif()
+# add_library(mki_test_autogen SHARED ${CMAKE_CURRENT_LIST_DIR}/../autogen/op_desc_json_ph.cpp)
+# if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/tests/libmki_test_autogen.so)
+#     MESSAGE(STATUS "libmki_test_autogen.so does NOT exist. Generate placeholder.")
+#     install(TARGETS mki_test_autogen DESTINATION tests)
+# endif()
 ## main framework
 file(GLOB_RECURSE TORCH_EXTENSION_SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/torch_extension/mki_torch.cpp")
 add_library(mki_torch SHARED ${TORCH_EXTENSION_SOURCE_FILES})
