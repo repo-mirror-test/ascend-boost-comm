@@ -63,14 +63,16 @@ static bool IsSymlink(const std::string &filePath)
 
 std::string RemoveTrailingSlash(const std::string &path)
 {
+    std::string res;
     size_t lastNonSlash = path.find_last_not_of("/");
     if (lastNonSlash == std::string::npos && !path.empty()) {
-        return "/";
+        res = "/";
     } else if (lastNonSlash != std::string::npos && lastNonSlash != path.size() - 1) {
-        return path.substr(0, lastNonSlash + 1);
+        res = path.substr(0, lastNonSlash + 1);
     } else {
-        return path;
+        res = path;
     }
+    return res;
 }
 
 static std::string PathCheckAndRegular(const std::string &path)
@@ -85,7 +87,13 @@ static std::string PathCheckAndRegular(const std::string &path)
         return "";
     }
 
-    if (IsSymlink(path)) {
+    if (path.find("..") != std::string::npos) {
+        std::cout << "file path " << path.c_str() << " contains parent directory reference!";
+        return "";
+    }
+
+    std::string regularPath = RemoveTrailingSlash(path);
+    if (IsSymlink(regularPath)) {
         std::cout << "The 'filepath' " << path.c_str() << " is symbolic link";
         return "";
     }

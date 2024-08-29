@@ -298,8 +298,8 @@ std::string FileSystem::PathCheckAndRegular(const std::string &path, bool symlin
 std::string FileSystem::RemoveTrailingSlash(const std::string &path)
 {
     size_t lastNonSlash = path.find_last_not_of("/");
-    // If there is no non-/ character and the path is not enpty, / is returned.
-    if (lastNonSlash == std::string::npos && path.size() > 1) {
+    // If there is no non-/ character and the path is not empty, / is returned.
+    if (lastNonSlash == std::string::npos && !path.empty()) {
         return "/";
     // When the last non-/ character is not the last character,
     // return the substring from the beginning of the path to the last non-/ character.
