@@ -48,39 +48,8 @@ bool PlatformConfigs::GetPlatformSpec(const std::string &label, std::map<std::st
     return true;
 }
 
-std::map<std::string, std::map<std::string, std::string>> PlatformConfigs::GetPlatformSpecMap()
-{
-    return platformSpecMap_;
-}
-
-std::mutex g_coreNumMutex;
-void PlatformConfigs::SetCoreNumByType(const std::string &coreType)
-{
-    std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
-    std::string coreNumStr;
-    std::string coreTypeStr;
-    if (coreType == "VectorCore") {
-        coreTypeStr = "vector_core_cnt";
-    } else {
-        coreTypeStr = "ai_core_cnt";
-    }
-    (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
-    MKI_LOG(DEBUG) << "Set PlatformConfigs::core_num_ to " << coreTypeStr << ": " << coreNumStr;
-    if (coreNumStr.empty()) {
-        core_num_ = 1;
-        MKI_LOG(ERROR) << "CoreNumStr is empty!";
-    } else {
-        core_num_ = std::strtoul(coreNumStr.c_str(), nullptr, 10); // 10 进制
-        if (core_num_ > MAX_CORE_NUM) {
-            core_num_ = 1;
-            MKI_LOG(ERROR) << "core_num is out of range : " << core_num_;
-        }
-    }
-}
-
 uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
 {
-    std::lock_guard<std::mutex> lockGuard(g_coreNumMutex);
     std::string coreNumStr;
     std::string coreTypeStr = coreType == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
     (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
@@ -98,12 +67,6 @@ uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
     }
 }
 
-uint32_t PlatformConfigs::GetCoreNum() const
-{
-    MKI_LOG(DEBUG) << "Get PlatformConfigs::core_num_: " << core_num_;
-    return core_num_;
-}
-
 void PlatformConfigs::SetFixPipeDtypeMap(const std::map<std::string, std::vector<std::string>> &fixpipeDtypeMap)
 {
     fixpipeDtypeMap_ = fixpipeDtypeMap;
@@ -119,16 +82,24 @@ void PlatformConfigs::SetVectorCoreIntrinsicDtype(std::map<std::string, std::vec
     vectorCoreIntrinsicDtypeMap_ = intrinsicDtypes;
 }
 
-std::map<std::string, std::vector<std::string>> PlatformConfigs::GetFixPipeDtypeMap() { return fixpipeDtypeMap_; }
+const std::map<std::string, std::vector<std::string>> &PlatformConfigs::GetFixPipeDtypeMap()
+{
+    return fixpipeDtypeMap_;
+}
 
-std::map<std::string, std::vector<std::string>> PlatformConfigs::GetAICoreIntrinsicDtype()
+std::map<std::string, std::vector<std::string>> &PlatformConfigs::GetAICoreIntrinsicDtype()
 {
     return aiCoreIntrinsicDtypeMap_;
 }
 
-std::map<std::string, std::vector<std::string>> PlatformConfigs::GetVectorCoreIntrinsicDtype()
+std::map<std::string, std::vector<std::string>> &PlatformConfigs::GetVectorCoreIntrinsicDtype()
 {
     return vectorCoreIntrinsicDtypeMap_;
+}
+
+const std::map<std::string, std::map<std::string, std::string>> &PlatformConfigs::GetPlatformSpecMap()
+{
+    return platformSpecMap_;
 }
 
 void PlatformConfigs::GetLocalMemSize(const LocalMemType &mem_type, uint64_t &size)

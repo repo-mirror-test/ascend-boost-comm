@@ -233,7 +233,8 @@ bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::st
     PlatformConfigs &platformConfigsTemp) const
 {
     std::map<std::string, std::string>::const_iterator iter;
-    std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes = platformConfigsTemp.GetAICoreIntrinsicDtype();
+    std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes =
+        platformConfigsTemp.GetAICoreIntrinsicDtype();
     std::map<std::string, std::string> platformSpec;
     for (iter = aiCoreintrinsicDtypeMap.begin(); iter != aiCoreintrinsicDtypeMap.end(); iter++) {
         size_t pos = iter->second.find('|');

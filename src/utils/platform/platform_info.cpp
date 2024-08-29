@@ -71,19 +71,19 @@ bool PlatformInfo::Inited() const { return inited_; }
 
 uint32_t PlatformInfo::GetCoreNum(CoreType type)
 {
+    uint32_t coreNum = 0;
     if (platformType_ == PlatformType::ASCEND_910B) {
         switch (type) {
             case CoreType::CORE_TYPE_VECTOR:
-                platformConfigs_.SetCoreNumByType("VectorCore");
+                coreNum = platformConfigs_.GetCoreNumByType("VectorCore");
                 break;
             default:
-                platformConfigs_.SetCoreNumByType("AiCore");
+                coreNum = platformConfigs_.GetCoreNumByType("AiCore");
                 break;
         }
     } else {
-        platformConfigs_.SetCoreNumByType("AiCore");
+        coreNum = platformConfigs_.GetCoreNumByType("AiCore");
     }
-    uint32_t coreNum = platformConfigs_.GetCoreNum();
     MKI_FLOG_INFO("Platform get core num %u, type %d", coreNum, type);
     return coreNum;
 }

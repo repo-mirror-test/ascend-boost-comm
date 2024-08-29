@@ -36,27 +36,23 @@ public:
     void SetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res);
     bool GetPlatformSpec(const std::string &label, const std::string &key, std::string &value);
     bool GetPlatformSpec(const std::string &label, std::map<std::string, std::string> &res);
-    PlatSpecMapType GetPlatformSpecMap();
 
-    void SetCoreNumByType(const std::string &coreType);
     uint32_t GetCoreNumByType(const std::string &coreType);
-    uint32_t GetCoreNum() const;
+    void GetLocalMemSize(const LocalMemType &mem_type, uint64_t &size);
 
     void SetFixPipeDtypeMap(const PlatInfoMapType &fixpipeDtypeMap);
     void SetAICoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
     void SetVectorCoreIntrinsicDtype(PlatInfoMapType &intrinsicDtypes);
-    PlatInfoMapType GetFixPipeDtypeMap();
-    PlatInfoMapType GetAICoreIntrinsicDtype();
-    PlatInfoMapType GetVectorCoreIntrinsicDtype();
-
-    void GetLocalMemSize(const LocalMemType &mem_type, uint64_t &size);
+    const PlatInfoMapType &GetFixPipeDtypeMap();
+    PlatInfoMapType &GetAICoreIntrinsicDtype();
+    PlatInfoMapType &GetVectorCoreIntrinsicDtype();
+    const PlatSpecMapType &GetPlatformSpecMap();
 
 private:
     PlatInfoMapType fixpipeDtypeMap_;
     PlatInfoMapType aiCoreIntrinsicDtypeMap_;
     PlatInfoMapType vectorCoreIntrinsicDtypeMap_;
     PlatSpecMapType platformSpecMap_;
-    uint32_t core_num_{0};
 };
 } // namespace Mki
 
