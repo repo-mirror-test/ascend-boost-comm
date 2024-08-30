@@ -3,7 +3,7 @@ if(NOT EXISTS ${OP_LIST_YAML_DIR}/op_list.yaml)
                     ERROR_VARIABLE RESULT_INFO
                     RESULT_VARIABLE RESULT)
     if(NOT RESULT EQUAL 0)
-        message(FATAL_ERROR "create op_build.yaml failed, error code: ${RESULT}, error info:\n${RESULT_INFO}")
+        message(FATAL_ERROR "create op_build.yaml failed, error code: ${RESULT}, error info:\n${RESULT_INFO}\nPlease build testframework first! ")
     endif()
 endif()
 
@@ -13,7 +13,7 @@ execute_process(COMMAND python3 -c "import op_list_utils\nop_list_utils.build_cm
                 ERROR_VARIABLE RESULT_INFO
                 RESULT_VARIABLE RESULT)
 if(NOT RESULT EQUAL 0)
-    message(FATAL_ERROR "create op_build.cmake failed, error code: ${RESULT}, error info:\n${RESULT_INFO}")
+    message(FATAL_ERROR "create op_build.cmake failed, error code: ${RESULT}, error info:\n${RESULT_INFO}\nPlease build testframework first! ")
 endif()
 
 include(${MKI_PACKAGE_DIR}/cmake/op_build.cmake)

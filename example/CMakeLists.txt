@@ -50,10 +50,7 @@ link_directories(
 )
 
 add_subdirectory(ops)
-
-if(BUILD_TEST_FRAMEWORK OR USE_PYTHON_TEST)
-    add_subdirectory(tests)
-endif()
+add_subdirectory(tests)
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include DESTINATION .)
 install(DIRECTORY

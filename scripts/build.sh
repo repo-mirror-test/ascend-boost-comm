@@ -28,7 +28,7 @@ DEVICE_CODE_PACK_SWITCH=ON
 USE_VERBOSE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
-BUILD_OPTION_LIST="testframework release dev debug unittest clean help"
+BUILD_OPTION_LIST="testframework release example dev debug unittest clean help"
 BUILD_CONFIGURE_LIST=("--output=.*" "--use_cxx11_abi=0" "--use_cxx11_abi=1"
                       "--verbose" "--no_werror" "--namespace=.*")
 
@@ -313,6 +313,11 @@ function fn_main()
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Release"
             fn_build
             fn_make_tar_package
+            ;;
+        "example")
+            COMPILE_OPTIONS="${COMPILE_OPTIONS} -DBUILD_EXAMPLE=ON"
+            fn_init_pytorch_env
+            fn_build
             ;;
         "dev")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Release"
