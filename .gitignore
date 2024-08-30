@@ -17,3 +17,5 @@ output
 # 3rdparty
 3rdparty/
 kernel_meta*
+# config
+/configs/op_list.yaml
