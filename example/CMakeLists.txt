@@ -35,7 +35,7 @@ include_directories(
     ${CMAKE_CURRENT_LIST_DIR}/include
     ${OPS_THIRD_PARTY_DIR}/metadef/inc/external
     ${OPS_THIRD_PARTY_DIR}/nlohmannJson/include
-    ${OPS_THIRD_PARTY_DIR}/securec/include
+    # ${OPS_THIRD_PARTY_DIR}/securec/include            // 这个第三方包未在MKI中安装
     ${ASCEND_DRIVER_DIR}/kernel/libc_sec/include
     $ENV{ASCEND_HOME_PATH}/include
 )
