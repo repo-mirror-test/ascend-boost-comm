@@ -11,7 +11,6 @@
  */
 #include "mki/utils/rt/backend/rt_backend.h"
 #include <cstdlib>
-#include <dlfcn.h>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -22,7 +21,6 @@
 #include "mki/utils/rt/backend/help_macro.h"
 
 namespace Mki {
-
 int RtBackend::DeviceGetCount(int32_t *devCount)
 {
     MKI_LOG(INFO) << "Rt GetDeviceCount Func start";

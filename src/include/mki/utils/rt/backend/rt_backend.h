@@ -17,14 +17,7 @@
 extern "C" {
 #endif
 
-typedef struct {
-    uint32_t magic{0};
-    uint32_t version{0};
-    const void *data{nullptr};
-    uint64_t length{0};
-} RtDevBinaryT;
-
-typedef void *rtStream_t;
+// rt device
 int rtGetDeviceCount(int32_t *cnt);
 int rtGetDeviceIDs(int32_t *devices, int32_t len);
 int rtSetDevice(int32_t devId);
@@ -34,14 +27,15 @@ int rtSetSocVersion(const char *version);
 int rtGetSocVersion(char *version, uint32_t maxLen);
 int rtDeviceGetBareTgid(uint32_t *pid);
 int rtGetPairDevicesInfo(uint32_t devId, uint32_t otherDevId, int32_t infoType, int64_t *val);
- 
+
 // rt stream
 typedef void *rtStream_t;
+
 int rtStreamCreate(rtStream_t *stm, int32_t priority);
 int rtStreamDestroy(rtStream_t stm);
 int rtStreamSynchronize(rtStream_t stm);
 int rtGetStreamId(rtStream_t stm, int32_t *streamId);
- 
+
 // rt mem
 int rtMalloc(void **devPtr, uint64_t size, uint32_t type);
 int rtFree(void *devPtr);
@@ -53,20 +47,30 @@ int rtMemsetAsync(void *dst, uint64_t destMax, uint32_t value, uint64_t cnt, voi
 int rtIpcSetMemoryName(const void *ptr, uint64_t byteCount, const char *name, uint32_t len);
 int rtIpcOpenMemory(void **ptr, const char *name);
 int rtSetIpcMemPid(const char *name, int32_t pid[], int num);
- 
+
+// rt kernel
+typedef struct {
+    uint32_t magic{0};
+    uint32_t version{0};
+    const void *data{nullptr};
+    uint64_t length{0};
+} RtDevBinaryT;
+
+typedef void *rtStream_t;
+
 int rtDevBinaryRegister(const RtDevBinaryT *bin, void **hdl);
 int rtDevBinaryUnRegister(void *hdl);
 int rtFunctionRegister(void *binHandle, const void *subFunc, const char *stubName,
-                                   const void *kernelInfoExt, uint32_t funcMode);
+                       const void *kernelInfoExt, uint32_t funcMode);
 int rtRegisterAllKernel(const RtDevBinaryT *bin, void **hdl);
-int rtKernelLaunch(const void *stubFunc, uint32_t blockDim, void *args, uint32_t argsSize, void *smDesc,
-                               rtStream_t sm);
+int rtKernelLaunch(const void *stubFunc, uint32_t blockDim, void *args, uint32_t argsSize,
+                   void *smDesc, rtStream_t sm);
 int rtKernelLaunchWithHandleV2(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
-                                        RtArgsExT *argsInfo, void *smDesc, rtStream_t sm,
-                                        const RtTaskCfgInfoT *cfgInfo);
+                               RtArgsExT *argsInfo, void *smDesc, rtStream_t sm,
+                               const RtTaskCfgInfoT *cfgInfo);
 int rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim, RtArgsExT *argsInfo, void *smDesc,
-                                        rtStream_t sm, uint32_t flags, const RtTaskCfgInfoT *cfgInfo);
- 
+                             rtStream_t sm, uint32_t flags, const RtTaskCfgInfoT *cfgInfo);
+
 // rt other
 int rtGetC2cCtrlAddr(uint64_t *addr, uint32_t *len);
 
