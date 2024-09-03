@@ -19,12 +19,10 @@ macro(add_kernel kernel soc channel srcs tac)
             "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
             "--kernel" "${kernel}"
         )
-        if(BUILD_MSDEBUG)
-            string(TOLOWER ${soc} soc_lower)
-            string(LENGTH ${soc} soc_length)
-            if(${soc_lower} STREQUAL "ascend910b")
-                list(APPEND PYTHON_ARGS "--build_type" "msDebug")
-            endif()
+        string(TOLOWER ${soc} soc_lower)
+        string(LENGTH ${soc} soc_length)
+        if(${soc_lower} STREQUAL "ascend910b")
+            list(APPEND PYTHON_ARGS "--build_type" "msDebug")
         endif()
         add_custom_command(
             OUTPUT ${${kernel}_${soc}_output}
