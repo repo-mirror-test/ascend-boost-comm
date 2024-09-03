@@ -7,16 +7,7 @@ macro(add_operation op srcs)
     endif()
 endmacro()
 
-function(add_kernel kernel soc channel srcs tac)
-    if(CMAKE_BUILD_TYPE STREQUAL "msDebug")
-        string(TOLOWER ${soc} soc_lower)
-        string(LENGTH ${soc} soc_length)
-        string(SUBSTRING ${CHIP_TYPE} 0 ${soc_length} chip_type_prefix)
-        if(NOT ${soc_lower} STREQUAL ${chip_type_prefix})
-            return()
-        endif()
-    endif()
-    message(STATUS "BUILD ${kernel} ${soc} ${channel} ${srcs} ${tac}")
+macro(add_kernel kernel soc channel srcs tac)
     if (BUILD_${op_name}_${tac}_${soc})
         set(${kernel}_${soc}_output
             ${CMAKE_BINARY_DIR}/op_kernels/${soc}/${op_name}/${tac}/${kernel}.o)
@@ -28,8 +19,12 @@ function(add_kernel kernel soc channel srcs tac)
             "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
             "--kernel" "${kernel}"
         )
-        if(NOT CMAKE_BUILD_TYPE STREQUAL "")
-            list(APPEND PYTHON_ARGS "--build_type" "${CMAKE_BUILD_TYPE}")
+        if(BUILD_MSDEBUG)
+            string(TOLOWER ${soc} soc_lower)
+            string(LENGTH ${soc} soc_length)
+            if(${soc_lower} STREQUAL "ascend910b")
+                list(APPEND PYTHON_ARGS "--build_type" "msDebug")
+            endif()
         endif()
         add_custom_command(
             OUTPUT ${${kernel}_${soc}_output}
@@ -45,7 +40,7 @@ function(add_kernel kernel soc channel srcs tac)
         set(LOCAL_BINARY_TARGET_LIST ${LOCAL_BINARY_TARGET_LIST} ascendc_${kernel}_${soc})
         set(BINARY_TARGET_LIST ${BINARY_TARGET_LIST} ${LOCAL_BINARY_TARGET_LIST} PARENT_SCOPE)
     endif()
-endfunction()
+macro()
 
 macro(add_kernel_bin tac soc)
     set(${tac}_${soc}_dir
