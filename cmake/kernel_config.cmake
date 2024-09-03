@@ -40,7 +40,7 @@ macro(add_kernel kernel soc channel srcs tac)
         set(LOCAL_BINARY_TARGET_LIST ${LOCAL_BINARY_TARGET_LIST} ascendc_${kernel}_${soc})
         set(BINARY_TARGET_LIST ${BINARY_TARGET_LIST} ${LOCAL_BINARY_TARGET_LIST} PARENT_SCOPE)
     endif()
-macro()
+endmacro()
 
 macro(add_kernel_bin tac soc)
     set(${tac}_${soc}_dir
