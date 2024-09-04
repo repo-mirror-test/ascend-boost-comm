@@ -190,12 +190,12 @@ static std::vector<std::string> Split(const std::string &str, char pattern)
 }
 
 uint32_t PlatformManager::AssemblePlatformInfoVector(
-    std::map<std::string, std::map<std::string, std::string>> &contentInfoMap)
+    std::map<std::string, std::map<std::string, std::string>> &contentMap)
 {
     std::string socVersion;
     PlatformConfigs platformConfigs;
 
-    if (ParsePlatformInfo(contentInfoMap, socVersion, platformConfigs) != PLATFORM_SUCCESS) {
+    if (ParsePlatformInfo(contentMap, socVersion, platformConfigs) != PLATFORM_SUCCESS) {
         MKI_LOG(ERROR) << "Parse platform info from content failed";
         return PLATFORM_FAILED;
     }
