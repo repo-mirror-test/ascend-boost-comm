@@ -31,7 +31,7 @@ TEST(BinFileTest, all)
         EXPECT_EQ(attrMap.size(), 1);
         EXPECT_EQ(attrMap[0].second, "3");
 
-        std::vector<std::pair<std::string, std::pair<void *, uint64_t>>> objMap;
+        std::vector<std::pair<std::string, std::pair<char *, uint64_t>>> objMap;
         binFile.GetAllObjects(objMap);
         EXPECT_EQ(objMap.size(), 1);
         EXPECT_EQ(objMap[0].second.second, 10);
@@ -56,7 +56,7 @@ TEST(BinFileTest, all0)
         EXPECT_EQ(attrMap.size(), 1);
         EXPECT_EQ(attrMap[0].second, "3");
 
-        std::vector<std::pair<std::string, std::pair<void *, uint64_t>>> objMap;
+        std::vector<std::pair<std::string, std::pair<char *, uint64_t>>> objMap;
         binFile.GetAllObjects(objMap);
         EXPECT_EQ(objMap.size(), 1);
         EXPECT_EQ(objMap[0].second.second, 10);
@@ -81,7 +81,7 @@ TEST(BinFileTest, all1)
         EXPECT_EQ(attrMap.size(), 1);
         EXPECT_EQ(attrMap[0].second, "3");
 
-        std::vector<std::pair<std::string, std::pair<void *, uint64_t>>> objMap;
+        std::vector<std::pair<std::string, std::pair<char *, uint64_t>>> objMap;
         binFile.GetAllObjects(objMap);
         EXPECT_EQ(objMap.size(), 1);
         EXPECT_EQ(objMap[0].second.second, 10);
@@ -204,6 +204,26 @@ TEST(BinFileTest, exceedMaxLen)
         std::vector<std::pair<std::string, std::string>> attrMap;
         binFile.GetAllAttrs(attrMap);
         EXPECT_EQ(attrMap.size(), 0);
+    }
+}
+
+TEST(BinFileTest, changeObjectLength)
+{
+    {
+        std::string binData;
+        binData.append("$Version=1.0\n");
+        binData.append("$Object.Length=3\n");
+        binData.append("$Object.Tactic1=0,3\n");
+        binData.append("Tactic1.CompileInfo=111\n");
+        binData.append("$Object.Length=1\n");
+        binData.append("$End=1\n");
+        FileSystem::WriteFile(binData.data(), binData.size(), "4.bin");
+    }
+    {
+        BinFile binFile;
+        Status status = binFile.Read("4.bin");
+        EXPECT_FALSE(status.Ok());
+        FileSystem::DeleteFile("4.bin");
     }
 }
 } // namespace Mki

@@ -56,15 +56,18 @@ const std::string SOC_VERSION_ASCEND910B1 = "Ascend910B1";
 const std::string SOC_VERSION_ASCEND910B2 = "Ascend910B2";
 const std::string SOC_VERSION_ASCEND910B3 = "Ascend910B3";
 const std::string SOC_VERSION_ASCEND910B4 = "Ascend910B4";
-const std::string SOC_VERSION_ASCEND910C1 = "Ascend910C1";
-const std::string SOC_VERSION_ASCEND910C2 = "Ascend910C2";
-const std::string SOC_VERSION_ASCEND910C3 = "Ascend910C3";
-const std::string SOC_VERSION_ASCEND910C4 = "Ascend910C4";
+const std::string SOC_VERSION_ASCEND910_9391 = "Ascend910_9391";
+const std::string SOC_VERSION_ASCEND910_9381 = "Ascend910_9381";
+const std::string SOC_VERSION_ASCEND910_9392 = "Ascend910_9392";
+const std::string SOC_VERSION_ASCEND910_9382 = "Ascend910_9382";
+const std::string SOC_VERSION_ASCEND910_9372 = "Ascend910_9372";
+const std::string SOC_VERSION_ASCEND910_9361 = "Ascend910_9361";
 
 const std::unordered_set<std::string> FIXPIPE_SOCVERSION = {
     SOC_VERSION_ASCEND320,   SOC_VERSION_ASCEND310B1, SOC_VERSION_ASCEND910B1, SOC_VERSION_ASCEND910B2,
-    SOC_VERSION_ASCEND910B3, SOC_VERSION_ASCEND910B4, SOC_VERSION_ASCEND910C1, SOC_VERSION_ASCEND910C2,
-    SOC_VERSION_ASCEND910C3, SOC_VERSION_ASCEND910C4, SOC_VERSION_ASCEND031
+    SOC_VERSION_ASCEND910B3, SOC_VERSION_ASCEND910B4, SOC_VERSION_ASCEND910_9391, SOC_VERSION_ASCEND910_9381,
+    SOC_VERSION_ASCEND910_9392, SOC_VERSION_ASCEND910_9382,
+    SOC_VERSION_ASCEND910_9372, SOC_VERSION_ASCEND910_9361, SOC_VERSION_ASCEND031
 };
 
 enum class PlatformInfoType {
@@ -192,22 +195,19 @@ uint32_t PlatformManager::AssemblePlatformInfoVector(
     std::map<std::string, std::map<std::string, std::string>> &contentInfoMap)
 {
     std::string socVersion;
-    fe::PlatFormInfos platformInfos;
-    if (!platformInfos.Init()) {
-        return PLATFORM_FAILED;
-    }
+    PlatformConfigs platformConfigs;
 
-    if (ParsePlatformInfo(contentInfoMap, socVersion, platformInfos) != PLATFORM_SUCCESS) {
+    if (ParsePlatformInfo(contentInfoMap, socVersion, platformConfigs) != PLATFORM_SUCCESS) {
         MKI_LOG(ERROR) << "Parse platform info from content failed";
         return PLATFORM_FAILED;
     }
     if (FIXPIPE_SOCVERSION.count(socVersion) != 0) {
-        FillupFixPipeInfo(platformInfos);
+        FillupFixPipeInfo(platformConfigs);
     }
     if (!socVersion.empty()) {
-        auto iter = platformInfosMap_.find(socVersion);
-        if (iter == platformInfosMap_.end()) {
-            platformInfosMap_.emplace(make_pair(socVersion, platformInfos));
+        auto iter = platformConfigsMap_.find(socVersion);
+        if (iter == platformConfigsMap_.end()) {
+            platformConfigsMap_.emplace(make_pair(socVersion, platformConfigs));
         } else {
             MKI_LOG(ERROR) << "There are repetitive soc version[" << socVersion.c_str() << "] in config files";
             return PLATFORM_FAILED;
@@ -217,9 +217,9 @@ uint32_t PlatformManager::AssemblePlatformInfoVector(
     return PLATFORM_SUCCESS;
 }
 
-void PlatformManager::FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const
+void PlatformManager::FillupFixPipeInfo(PlatformConfigs &platformConfigs) const
 {
-    std::map<std::string, std::vector<std::string>> aicoreMap = platformInfos.GetAICoreIntrinsicDtype();
+    std::map<std::string, std::vector<std::string>> aicoreMap = platformConfigs.GetAICoreIntrinsicDtype();
     std::map<std::string, std::vector<std::string>> fixpipeMap;
     for (auto iter = aicoreMap.begin(); iter != aicoreMap.end(); iter++) {
         if (iter->first.find(FIXPIPE_CONFIG_KEY) != iter->first.npos) {
@@ -229,15 +229,16 @@ void PlatformManager::FillupFixPipeInfo(fe::PlatFormInfos &platformInfos) const
     if (fixpipeMap.empty()) {
         return;
     }
-    platformInfos.SetFixPipeDtypeMap(fixpipeMap);
+    platformConfigs.SetFixPipeDtypeMap(fixpipeMap);
 }
 
 bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::string> &aiCoreintrinsicDtypeMap,
-    fe::PlatFormInfos &platformInfoTemp) const
+    PlatformConfigs &platformConfigsTemp) const
 {
     std::map<std::string, std::string>::const_iterator iter;
-    std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes = platformInfoTemp.GetAICoreIntrinsicDtype();
-    std::map<std::string, std::string> platformRes;
+    std::map<std::string, std::vector<std::string>> aicoreIntrinsicDtypes =
+        platformConfigsTemp.GetAICoreIntrinsicDtype();
+    std::map<std::string, std::string> platformSpec;
     for (iter = aiCoreintrinsicDtypeMap.begin(); iter != aiCoreintrinsicDtypeMap.end(); iter++) {
         size_t pos = iter->second.find('|');
         if (pos == std::string::npos) {
@@ -246,21 +247,21 @@ bool PlatformManager::ParseAICoreintrinsicDtypeMap(std::map<std::string, std::st
         std::string key = iter->second.substr(0, pos);
         std::string value = iter->second.substr(pos + 1);
         std::vector<std::string> dtypeVector = Split(value, ',');
-        platformRes.emplace(make_pair(key, value));
+        platformSpec.emplace(make_pair(key, value));
         aicoreIntrinsicDtypes.emplace(make_pair(key, dtypeVector));
     }
-    platformInfoTemp.SetPlatformRes(STR_AI_CORE_INTRINSIC_DTYPE_MAP, platformRes);
-    platformInfoTemp.SetAICoreIntrinsicDtype(aicoreIntrinsicDtypes);
+    platformConfigsTemp.SetPlatformSpec(STR_AI_CORE_INTRINSIC_DTYPE_MAP, platformSpec);
+    platformConfigsTemp.SetAICoreIntrinsicDtype(aicoreIntrinsicDtypes);
     return true;
 }
 
 bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std::string> &vectorCoreintrinsicDtypeMap,
-    fe::PlatFormInfos &platformInfoTemp) const
+    PlatformConfigs &platformConfigsTemp) const
 {
     std::map<std::string, std::string>::const_iterator iter;
     std::map<std::string, std::vector<std::string>> vectorCoreIntrinsicDtypeMap =
-        platformInfoTemp.GetVectorCoreIntrinsicDtype();
-    std::map<std::string, std::string> platformRes;
+        platformConfigsTemp.GetVectorCoreIntrinsicDtype();
+    std::map<std::string, std::string> platformSpec;
     for (iter = vectorCoreintrinsicDtypeMap.begin(); iter != vectorCoreintrinsicDtypeMap.end(); iter++) {
         size_t pos = iter->second.find('|');
         if (pos == std::string::npos) {
@@ -270,35 +271,35 @@ bool PlatformManager::ParseVectorCoreintrinsicDtypeMap(std::map<std::string, std
         std::string key = iter->second.substr(0, pos);
         std::string value = iter->second.substr(pos + 1);
         std::vector<std::string> dtypeVector = Split(value, ',');
-        platformRes.emplace(make_pair(key, value));
+        platformSpec.emplace(make_pair(key, value));
         vectorCoreIntrinsicDtypeMap.emplace(make_pair(key, dtypeVector));
     }
-    platformInfoTemp.SetPlatformRes(STR_VECTOR_CORE_INTRINSIC_DTYPE_MAP, platformRes);
-    platformInfoTemp.SetVectorCoreIntrinsicDtype(vectorCoreIntrinsicDtypeMap);
+    platformConfigsTemp.SetPlatformSpec(STR_VECTOR_CORE_INTRINSIC_DTYPE_MAP, platformSpec);
+    platformConfigsTemp.SetVectorCoreIntrinsicDtype(vectorCoreIntrinsicDtypeMap);
     return true;
 }
 
-void PlatformManager::ParsePlatformRes(const std::string &label, std::map<std::string, std::string> &platformResMap,
-    fe::PlatFormInfos &platformInfoTemp) const
+void PlatformManager::ParsePlatformSpec(const std::string &label, std::map<std::string, std::string> &platformSpecMap,
+    PlatformConfigs &platformConfigsTemp) const
 {
-    platformInfoTemp.SetPlatformRes(label, platformResMap);
+    platformConfigsTemp.SetPlatformSpec(label, platformSpecMap);
 }
 
 uint32_t PlatformManager::ParsePlatformInfo(std::map<std::string, std::map<std::string, std::string>> &contentMap,
-    std::string &socVersion, fe::PlatFormInfos &platformInfoTemp) const
+    std::string &socVersion, PlatformConfigs &platformConfigsTemp) const
 {
     std::map<std::string, std::map<std::string, std::string>>::iterator it;
     for (it = contentMap.begin(); it != contentMap.end(); it++) {
         if (it->first == STR_VERSION) {
             ParseVersion(it->second, socVersion);
         } else if (it->first == STR_AI_CORE_INTRINSIC_DTYPE_MAP) {
-            MKI_CHECK(ParseAICoreintrinsicDtypeMap(it->second, platformInfoTemp),
+            MKI_CHECK(ParseAICoreintrinsicDtypeMap(it->second, platformConfigsTemp),
                 "failed to parse aicore intrinsic dtype map", return PLATFORM_FAILED);
         } else if (it->first == STR_VECTOR_CORE_INTRINSIC_DTYPE_MAP) {
-            MKI_CHECK(ParseVectorCoreintrinsicDtypeMap(it->second, platformInfoTemp),
+            MKI_CHECK(ParseVectorCoreintrinsicDtypeMap(it->second, platformConfigsTemp),
                 "failed to parse vectorcore intrinsic dtype map", return PLATFORM_FAILED);
         } else {
-            ParsePlatformRes(it->first, it->second, platformInfoTemp);
+            ParsePlatformSpec(it->first, it->second, platformConfigsTemp);
         }
     }
     return PLATFORM_SUCCESS;
@@ -359,9 +360,9 @@ uint32_t PlatformManager::InitializePlatformManager()
     if (initFlag_) {
         return PLATFORM_SUCCESS;
     }
-    const char *mkiHomePath = getenv("MKI_HOME_PATH");
+    const char *mkiHomePath = getenv("ASDOPS_HOME_PATH");
     if (mkiHomePath == nullptr) {
-        MKI_LOG(ERROR) << "env MKI_HOME_PATH not exists";
+        MKI_LOG(ERROR) << "env ASDOPS_HOME_PATH not exists";
         return PLATFORM_FAILED;
     }
     std::string mkiHomePathStr = mkiHomePath;
@@ -384,18 +385,18 @@ uint32_t PlatformManager::InitializePlatformManager()
     return PLATFORM_SUCCESS;
 }
 
-uint32_t PlatformManager::GetPlatformInfos(const std::string socVersion, fe::PlatFormInfos &platformInfo)
+uint32_t PlatformManager::GetPlatformConfigs(const std::string socVersion, PlatformConfigs &platformConfigs)
 {
     std::string realSocVersion = socVersion;
     if (realSocVersion == SOC_VERSION_ASCEND910) {
         realSocVersion = SOC_VERSION_ASCEND910A;
     }
-    auto iter = platformInfosMap_.find(realSocVersion);
-    if (iter == platformInfosMap_.end()) {
+    auto iter = platformConfigsMap_.find(realSocVersion);
+    if (iter == platformConfigsMap_.end()) {
         MKI_LOG(ERROR) << "Can not found platform_info by socVersion " << realSocVersion.c_str();
         return PLATFORM_FAILED;
     }
-    platformInfo = iter->second;
+    platformConfigs = iter->second;
     return PLATFORM_SUCCESS;
 }
 
@@ -405,8 +406,8 @@ uint32_t PlatformManager::Finalize()
     if (!initFlag_) {
         return PLATFORM_SUCCESS;
     }
-    platformInfosMap_.clear();
+    platformConfigsMap_.clear();
     initFlag_ = false;
     return PLATFORM_SUCCESS;
 }
-} // namespace fe
+} // namespace Mki

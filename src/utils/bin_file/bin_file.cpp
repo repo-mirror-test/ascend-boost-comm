@@ -12,6 +12,7 @@
 #include "mki/utils/bin_file/bin_file.h"
 #include <securec.h>
 #include <cstring>
+#include <climits>
 #include <fcntl.h>
 #include <unistd.h>
 #include "mki/utils/assert/assert.h"
@@ -48,7 +49,7 @@ Status BinFile::AddAttr(const std::string &name, const std::string &value)
     return Status::OkStatus();
 }
 
-Status BinFile::AddObject(const std::string &name, void *binaryBuffer, uint64_t binaryLen)
+Status BinFile::AddObject(const std::string &name, char *binaryBuffer, uint64_t binaryLen)
 {
     if (!CheckNameValid(name)) {
         return Status::FailStatus(1, "invalid name");
@@ -78,7 +79,7 @@ Status BinFile::AddObject(const std::string &name, void *binaryBuffer, uint64_t 
     while (copyLen > 0) {
         uint64_t curCopySize = copyLen > MAX_SINGLE_MEMCPY_SIZE ? MAX_SINGLE_MEMCPY_SIZE : copyLen;
         auto ret = memcpy_s(binariesBuffer_.data() + currentLen + offset, binariesBuffer_.size() - currentLen - offset,
-                            static_cast<uint8_t *>(binaryBuffer) + offset, curCopySize);
+                            binaryBuffer + offset, curCopySize);
         if (ret != EOK) {
             return Status::FailStatus(1, "Memcpy fail");
         }
@@ -125,6 +126,10 @@ bool BinFile::WriteImpl(int &fd)
 
 Status BinFile::Write(const std::string &filePath, const mode_t mode)
 {
+    char resolvedDir[PATH_MAX] = {0};
+    MKI_CHECK(realpath(FileSystem::DirName(filePath).c_str(), resolvedDir) != nullptr, filePath <<
+              " realpath resolved fail", return Status::FailStatus(1, "open file fail"));
+
     int fd = open(filePath.c_str(), O_RDWR | O_CREAT | O_TRUNC, mode);
     if (fd < 0) {
         return Status::FailStatus(1, "open file fail");
@@ -151,7 +156,11 @@ bool BinFile::WriteAttr(int &fd, const std::string &name, const std::string &val
 
 Status BinFile::Read(const std::string &filePath)
 {
-    std::string realPath = FileSystem::PathCheckAndRegular(filePath);
+    char resolvedPath[PATH_MAX] = {0};
+    MKI_CHECK(realpath(filePath.c_str(), resolvedPath) != nullptr, "realpath resolved fail",
+              return Status::FailStatus(1, "realpath resolved fail"));
+
+    std::string realPath = FileSystem::PathCheckAndRegular(resolvedPath);
     MKI_CHECK(!realPath.empty(), "bin file path invalid", return Status::FailStatus(1, "file path is invalid"));
     int64_t fileSize = FileSystem::FileSize(realPath);
     if (fileSize < 0 || fileSize > MAX_FILE_SIZE) {
@@ -169,6 +178,7 @@ Status BinFile::Read(const std::string &filePath)
 Status BinFile::ParseBinFile(std::ifstream &fd, size_t fileSize)
 {
     MKI_LOG(DEBUG) << "Begin to parse bin file";
+    bool foundAttrObjectLength = false;
     bool matchAttrEnd = false;
     std::string line;
     uint32_t lineNum = 0;
@@ -190,6 +200,13 @@ Status BinFile::ParseBinFile(std::ifstream &fd, size_t fileSize)
             break;
         } else if (attrName == ATTR_OBJECT_COUNT) {
             continue; // this attr is not used now
+        } else if (attrName == ATTR_OBJECT_LENGTH) {
+            MKI_CHECK(!foundAttrObjectLength, "object length is repeated", break);
+            foundAttrObjectLength = true;
+            uint64_t totalBinarySize = std::strtoull(attrValue.c_str(), nullptr, 10); // 10进制
+            MKI_CHECK(totalBinarySize <= static_cast<uint64_t>(MAX_FILE_SIZE), "totalBinarySize exceeded", break);
+            MKI_LOG(DEBUG) << "Parsed object length " << totalBinarySize;
+            binariesBuffer_.resize(totalBinarySize);
         } else if (attrName.at(0) == '$') {
             MKI_CHECK(ParseSystemAttr(attrName, attrValue).Ok(), "failed to parse attr", break);
         } else {
@@ -213,13 +230,7 @@ Status BinFile::ParseBinFile(std::ifstream &fd, size_t fileSize)
 
 Status BinFile::ParseSystemAttr(const std::string &attrName, const std::string &value)
 {
-    if (attrName == ATTR_OBJECT_LENGTH) {
-        uint64_t totalBinarySize = std::strtoull(value.c_str(), nullptr, 10); // 10 进制
-        MKI_CHECK(totalBinarySize <= static_cast<uint64_t>(MAX_FILE_SIZE),
-            "totalBinarySize exceeded", return Status::FailStatus(1, "totalBinarySize exceeded"));
-        MKI_LOG(DEBUG) << "Parsed object length " << totalBinarySize;
-        binariesBuffer_.resize(totalBinarySize);
-    } else if (StartsWith(attrName, ATTR_OBJECT_PREFIX)) {
+    if (StartsWith(attrName, ATTR_OBJECT_PREFIX)) {
         std::string objName = attrName;
         StrErase(objName, ATTR_OBJECT_PREFIX);
         std::vector<std::string> fields;
@@ -245,7 +256,7 @@ Status BinFile::ParseSystemAttr(const std::string &attrName, const std::string &
 
 void BinFile::GetAllAttrs(std::vector<std::pair<std::string, std::string>> &attrs) { attrs = attrs_; }
 
-void BinFile::GetAllObjects(std::vector<std::pair<std::string, std::pair<void *, uint64_t>>> &binaries)
+void BinFile::GetAllObjects(std::vector<std::pair<std::string, std::pair<char *, uint64_t>>> &binaries)
 {
     for (auto it : binaries_) {
         binaries.push_back({it.first, {binariesBuffer_.data() + it.second.offset, it.second.length}});

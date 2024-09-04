@@ -30,16 +30,20 @@ public:
     static std::string BaseName(const std::string &filePath);
     static std::string DirName(const std::string &path);
     static bool ReadFile(const std::string &filePath, uint8_t *buffer, uint64_t bufferSize);
-    static bool WriteFile(const void *codeBuf, uint64_t codeLen, const std::string &filePath,
+    static bool WriteFile(const char *codeBuf, uint64_t codeLen, const std::string &filePath,
                           const mode_t mode = FILE_MODE);
     static void DeleteFile(const std::string &filePath);
     static bool Rename(const std::string &filePath, const std::string &newFilePath);
     static bool MakeDir(const std::string &dirPath, int mode);
     static bool Makedirs(const std::string &dirPath, const mode_t mode);
-    static std::string PathCheckAndRegular(const std::string &path, bool symlinkCheck = true);
+    static std::string PathCheckAndRegular(const std::string &path, bool symlinkCheck = true,
+                                           bool parentReferenceCheck = true);
 
 private:
+    // A symlink with a trailing slash (/) is not recognized as a symlink,
+    // which is consistent with the operating system.
     static bool IsSymLink(const std::string &filePath);
+    static std::string RemoveTrailingSlash(const std::string &path);
     static void GetDirChildItemsImpl(const std::string &dirPath, bool matchFile, bool matchDir,
                                      std::vector<std::string> &itemPaths);
 };
