@@ -19,22 +19,22 @@
 
 -     cd Mind-KerenlInfra
 -     bash scripts/build.sh --namespace=AtbOps testframework
--     cp -r mki ../../ascend-op-common-lib/3rdparty/
--     cp -r mki ../../ascend-transformer-boost/3rdparty/
+-     cp -r output/mki ../ascend-op-common-lib/3rdparty/
+-     cp -r output/mki ../ascend-transformer-boost/3rdparty/
 
 
 2.  编译算子库， 并将编译产物拷贝到加速库的3rdparty目录
 
--     cd ../../ascend-op-common-lib/
+-     cd ascend-op-common-lib
 -     bash scripts/build.sh  testframework --no_werror
 -     cd output/
--     cp -r atbops ../../ascend-transformer-boost/3rdparty/
--     cp -r asdops ../../ascend-transformer-boost/3rdparty/
+-     cp -r output/atbops ../ascend-transformer-boost/3rdparty/
+-     cp -r output/asdops ../ascend-transformer-boost/3rdparty/
 
 
 3.  编译加速库
 
--     cd ../../ascend-transformer-boost/
+-     cd ascend-transformer-boost/
 -     source scripts/set_env.sh
 -     bash scripts/build.sh  testframework
 -     cd output/
@@ -50,11 +50,11 @@
 
 -     cd Mind-KerenlInfra
 -     bash scripts/build.sh --namespace=AtbOps testframework
--     cp -r mki ../../ascend-op-common-lib/3rdparty/
+-     cp -r output/mki ../ascend-op-common-lib/3rdparty/
 
 2.  编译算子库
 
--     cd ../../ascend-op-common-lib/
+-     cd ascend-op-common-lib/
 -     bash scripts/build.sh  testframework --no_werror
 
 3.  设施算子库环境， 并开始测试
