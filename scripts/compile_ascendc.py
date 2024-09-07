@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--dst', type=str, required=True)
     parser.add_argument('--code_root', type=str, required=True)
     parser.add_argument('--kernel', type=str, required=True)
-    parser.add_argument('--build_type', type=str)
+    parser.add_argument('--use_msdebug', type=str)
     return parser.parse_args()
 
 
@@ -33,7 +33,7 @@ def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
                    '-c']
-    if args.build_type == "msDebug":
+    if args.use_msdebug == "ON":
         compile_cmd += ['-O0', '-g', '--cce-ignore-always-inline=true']
     else:
         compile_cmd += ['-O2']
@@ -50,7 +50,7 @@ def gen_compile_cmd_v220(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
                    '-c']
-    if args.build_type == "msDebug":
+    if args.use_msdebug == "ON":
         compile_cmd += ['-O0', '-g', '--cce-ignore-always-inline=true']
     else:
         compile_cmd += ['-O3']
@@ -70,7 +70,7 @@ def gen_compile_cmd_v300(args, dst: str, sub_arch: str, compile_options):
     compile_cmd = [os.path.join(args.code_root, '3rdparty', 'compiler',
                                 'ccec_compiler', 'bin', 'ccec'),
                    '-c']
-    if args.build_type == "msDebug":
+    if args.use_msdebug == "ON":
         compile_cmd += ['-O0', '-g', '--cce-ignore-always-inline=true']
     else:
         compile_cmd += ['-O3']
