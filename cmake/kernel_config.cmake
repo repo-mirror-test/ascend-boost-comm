@@ -11,7 +11,7 @@ macro(add_kernel kernel soc channel srcs tac)
     if (BUILD_${op_name}_${tac}_${soc})
         string(TOLOWER ${soc} soc_lower)
         string(LENGTH ${soc} soc_length)
-        string(SUBSTRING ${CHIP_TYPE} 0 ${soc_length} chip_type_prefix)
+        string(SUBSTRING "${CHIP_TYPE}" 0 ${soc_length} chip_type_prefix)
         if ((NOT USE_MSDEBUG) OR (USE_MSDEBUG AND ("${soc_lower}" STREQUAL "${chip_type_prefix}")))
             set(${kernel}_${soc}_output
                 ${CMAKE_BINARY_DIR}/op_kernels/${soc}/${op_name}/${tac}/${kernel}.o)
