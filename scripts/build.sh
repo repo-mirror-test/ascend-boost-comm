@@ -335,7 +335,7 @@ function fn_main()
             echo "clear all build history."
             ;;
         *)
-            echo "build.sh testframework|release|dev|debug|unittest|clean"\
+            echo "build.sh testframework|release|example|dev|debug|unittest|clean"\
             "--output=<dir>|--force_clean|--use_cxx11_abi=0|--use_cxx11_abi=1"\
             "|--no_werror|--namespace=<namespace>"
             ;;
