@@ -52,6 +52,7 @@ const int32_t PROFILING_REPORT_FAILED = -1;
 constexpr uint64_t PROF_ACL_API              = 0x00000001ULL;
 constexpr uint64_t PROF_TASK_TIME_L0         = 0x00000800ULL;
 constexpr uint64_t PROF_TASK_TIME_L1         = 0x00000002ULL;
+constexpr uint64_t PROF_TASK_TIME_L2         = 0x00002000ULL;
 constexpr uint64_t PROF_AICORE_METRICS       = 0x00000004ULL;
 constexpr uint64_t PROF_AICPU_TRACE          = 0x00000008ULL;
 constexpr uint64_t PROF_L2CACHE              = 0x00000010ULL;
