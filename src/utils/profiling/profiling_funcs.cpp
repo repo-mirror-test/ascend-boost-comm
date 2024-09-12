@@ -124,14 +124,18 @@ int32_t ProfilingFuncs::MkiProfCommandHandle(uint32_t type, void *data, uint32_t
     const uint32_t profType = profilerConfig->type;
 
     if (profType == PROF_COMMANDHANDLE_TYPE_START) {
+        MKI_LOG(INFO) << "Open Profiling Switch";
         if ((profSwitch & PROF_TASK_TIME_L0) != PROF_CTRL_INVALID) {
             isProfilingLevel0Enable_ = true;
+            MKI_LOG(INFO) << "Profiling Level0 Enable";
         }
         if ((profSwitch & PROF_TASK_TIME_L1) != PROF_CTRL_INVALID) {
             isProfilingLevel1Enable_ = true;
+            MKI_LOG(INFO) << "Profiling Level1 Enable";
         }
     }
     if (profType == PROF_COMMANDHANDLE_TYPE_STOP) {
+        MKI_LOG(INFO) << "Close Profiling Switch";
         isProfilingLevel0Enable_ = false;
         isProfilingLevel1Enable_ = false;
     }
