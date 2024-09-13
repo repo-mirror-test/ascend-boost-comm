@@ -310,9 +310,9 @@ uint32_t PlatformManager::InitializePlatformManager()
     if (initFlag_) {
         return PLATFORM_SUCCESS;
     }
-    const char *mkiHomePath = Mki::GetEnv("MKI_HOME_PATH");
+    const char *mkiHomePath = Mki::GetEnv("ASDOPS_HOME_PATH");
     if (mkiHomePath == nullptr) {
-        MKI_LOG(ERROR) << "env MKI_HOME_PATH is invalid";
+        MKI_LOG(ERROR) << "env ASDOPS_HOME_PATH is invalid";
         return PLATFORM_FAILED;
     }
     std::string mkiHomePathStr = mkiHomePath;
