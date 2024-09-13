@@ -144,7 +144,7 @@ void LogSinkFile::Init()
     boostType_ = env && strlen(env) <= MAX_ENV_STRING_LEN && IsValidFileName(env) ? std::string(env) : "mki";
 
     env = std::getenv("ASDOPS_LOG_PATH");
-    std::string logRootDir = 
+    std::string logRootDir =
         env && strlen(env) <= MAX_ENV_STRING_LEN && IsValidFileName(env) ? std::string(env) : GetHomeDir();
     logRootDir = PathCheckAndRegular(logRootDir);
 

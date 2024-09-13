@@ -17,8 +17,7 @@
 #include <cstring>
 #include "mki/utils/assert/assert.h"
 
-namespace Mki
-{
+namespace Mki {
 constexpr size_t MAX_ENV_STRING_LEN = 12800;
 
 inline const char *GetEnv(const char *name)
