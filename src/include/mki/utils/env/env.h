@@ -15,26 +15,17 @@
 
 #include <cstdlib>
 #include <cstring>
-#include "mki/utils/log/log.h"
+#include "mki/utils/assert/assert.h"
 
 namespace Mki {
 constexpr size_t MAX_ENV_STRING_LEN = 12800;
 
 inline const char *GetEnv(const char *name)
 {
-    if (name == nullptr) {
-        MKI_LOG(WARN) << "env name is nullptr!";
-        return nullptr;
-    }
+    MKI_CHECK_NO_LOG(name != nullptr, return nullptr);
     const char *env = std::getenv(name);
-    if (name == nullptr) {
-        MKI_LOG(WARN) << "env" << name << " not exist!";
-        return nullptr;
-    }
-    if (strlen(env) > MAX_ENV_STRING_LEN) {
-        MKI_LOG(WARN) << "env " << name << " is too long!";
-        return nullptr;
-    }
+    MKI_CHECK_NO_LOG(env != nullptr, return nullptr);
+    MKI_CHECK_NO_LOG(strlen(env) <= MAX_ENV_STRING_LEN, return nullptr);
     return env;
 }
 } // namespace mki
