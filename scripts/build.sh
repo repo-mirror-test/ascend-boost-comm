@@ -19,6 +19,7 @@ cd ..
 export CODE_ROOT=$(pwd)
 export CACHE_DIR=$CODE_ROOT/build
 export OUTPUT_DIR=$CODE_ROOT/output
+export BUILD_CONFIG_DIR=$BUILD_DIR/../configs
 
 export THIRD_PARTY_DIR=$CODE_ROOT/3rdparty
 BUILD_TEST_FRAMEWORK=OFF
