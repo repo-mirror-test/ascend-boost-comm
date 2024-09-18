@@ -26,11 +26,12 @@ BUILD_TEST_FRAMEWORK=OFF
 COMPILE_OPTIONS=""
 DEVICE_CODE_PACK_SWITCH=ON
 USE_VERBOSE=OFF
+ENABLE_COVERAGE=OFF
 USE_CXX11_ABI=""
 IS_RELEASE=False
 BUILD_OPTION_LIST="testframework release example dev debug unittest clean help"
 BUILD_CONFIGURE_LIST=("--output=.*" "--use_cxx11_abi=0" "--use_cxx11_abi=1"
-                      "--verbose" "--no_werror" "--namespace=.*" "--msdebug")
+                      "--verbose" "--no_werror" "--coverage" "--namespace=.*" "--msdebug")
 
 # install cann
 function fn_install_cann_and_kernel()
@@ -278,6 +279,9 @@ function fn_main()
         "--verbose")
             USE_VERBOSE=ON
             ;;
+        "--coverage")
+            ENABLE_COVERAGE=ON
+            ;;
         --namespace=*)
             arg2=${arg2#*=}
             if [ -z $arg2 ];then
@@ -299,7 +303,7 @@ function fn_main()
     done
 
     fn_init_use_cxx11_abi
-    COMPILE_OPTIONS="${COMPILE_OPTIONS} -DUSE_CXX11_ABI=$USE_CXX11_ABI"
+    COMPILE_OPTIONS="${COMPILE_OPTIONS} -DUSE_CXX11_ABI=$USE_CXX11_ABI -DENABLE_COVERAGE=$ENABLE_COVERAGE"
     case "${arg1}" in
         "testframework")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DCMAKE_BUILD_TYPE=Debug -DBUILD_TEST_FRAMEWORK=ON"
@@ -339,7 +343,7 @@ function fn_main()
         *)
             echo "build.sh testframework|release|example|dev|debug|unittest|clean"\
             "--output=<dir>|--force_clean|--use_cxx11_abi=0|--use_cxx11_abi=1"\
-            "|--no_werror|--namespace=<namespace>|--msdebug"
+            "|--no_werror|--verbose|--coverage|--namespace=<namespace>|--msdebug"
             ;;
     esac
 }
