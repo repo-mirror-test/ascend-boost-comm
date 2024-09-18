@@ -78,6 +78,7 @@ public:
     // ConstTensor
     template <typename T_SRC, typename T_DST = T_SRC, typename T_CONT = SVector<T_SRC>>
     bool AddConstTensorData(uint64_t argIdx, const T_CONT &tensorData);
+    const MiniVector<ConstTensorInfo> &GetConstTensorInfos() const;
 
     size_t GetConstTensorCount() const;
     const ConstTensorInfo &GetConstTensorInfo(size_t id) const;
@@ -88,11 +89,12 @@ public:
 
     // Scratch
     MiniVector<uint64_t> &GetScratchSizes();
+    const MiniVector<uint64_t> &GetScratchSizes() const;
     uint64_t GetTotalScratchSize() const;
 
     // Memset
     void SetMemsetInfo(uint64_t argIdx, uint64_t size);
-    MiniVector<KernelInfo::MemsetInfo> &GetMemsetInfo();
+    const MiniVector<KernelInfo::MemsetInfo> &GetMemsetInfo() const;
 
 private:
     void ResetArgs();
