@@ -36,19 +36,26 @@ public:
         auto status = UpdateHwsyncArgs(args, argsNum, hwsyncIdx);
         MKI_CHECK(status.Ok(), "failed to update hwsync args", return status);
         // set const input
-        size_t constTensorCount = kernelInfo.GetConstTensorCount();
-        hostInfo_.reset(new (std::nothrow) RtHostInputInfoT[constTensorCount]);
-        MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr", return Status::FailStatus(-1));
-
         bool launchWithTiling = kernelInfo.GetLaunchWithTiling();
         const auto &constTensorInfos = kernelInfo.GetConstTensorInfos();
-        uint64_t constTensorOffset = launchWithTiling ? Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) +
-                                                        argsNum * sizeof(void *)
-                                                      : kernelInfo.GetConstTensorOffset();
-        status = launchWithTiling ? UpdateConstTensorArgs(args, hostInfo_.get(), constTensorOffset, constTensorInfos)
-                                  : UpdateConstTensorArgs(args, runInfo.GetTilingDeviceAddr(),
-                                                          constTensorOffset, constTensorInfos);
-        MKI_CHECK(status.Ok(), "failed to update const tensor args", return status);
+        if (launchWithTiling) {
+            constexpr size_t maxConstTensorCount = 1024;
+            size_t constTensorCount = kernelInfo.GetConstTensorCount();
+            if (constTensorCount > 0) {
+                MKI_CHECK(constTensorCount > maxConstTensorCount, "const tensor size check failed", return Status::FailStatus(-1));
+                hostInfo_.reset(new (std::nothrow) RtHostInputInfoT[constTensorCount]);
+                MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr", return Status::FailStatus(-1));
+                uint64_t constTensorOffset = Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) + argsNum * sizeof(void *);
+                status = UpdateConstTensorArgs(args, hostInfo_.get(), constTensorOffset, constTensorInfos);
+                MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling, return status);
+            }
+            argsEx_.hostInputInfoPtr = hostInfo_.get();
+            argsEx_.hostInputInfoNum = constTensorCount;
+        } else {
+            uint64_t constTensorOffset = kernelInfo.GetConstTensorOffset();
+            status = UpdateConstTensorArgs(args, runInfo.GetTilingDeviceAddr(), constTensorOffset, constTensorInfos);
+            MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling, return status);
+        }
         // set input / output / workspace
         const auto &workspaces = kernelInfo.GetScratchSizes();
         status = UpdateInOutWkspArgs(args, argsNum, workspaces, launchParam, runInfo.GetScratchDeviceAddr());
@@ -67,10 +74,6 @@ public:
         kernelParam_.argsEx = &argsEx_;
         argsEx_.args = argsPtr;
         argsEx_.argsSize = argsSize;
-        if (launchWithTiling) {
-            argsEx_.hostInputInfoPtr = hostInfo_.get();
-            argsEx_.hostInputInfoNum = constTensorCount;
-        }
         return status;
     }
 
