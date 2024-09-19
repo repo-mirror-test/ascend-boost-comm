@@ -42,7 +42,8 @@ public:
             constexpr size_t maxConstTensorCount = 1024;
             size_t constTensorCount = kernelInfo.GetConstTensorCount();
             if (constTensorCount > 0) {
-                MKI_CHECK(constTensorCount < maxConstTensorCount, "const tensor size check failed", return Status::FailStatus(-1));
+                MKI_CHECK(constTensorCount < maxConstTensorCount, "const tensor size check failed, is "
+                          << constTensorCount, return Status::FailStatus(-1));
                 hostInfo_.reset(new (std::nothrow) RtHostInputInfoT[constTensorCount]);
                 MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr", return Status::FailStatus(-1));
                 uint64_t constTensorOffset = Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) + argsNum * sizeof(void *);
