@@ -46,16 +46,19 @@ public:
                           << constTensorCount, return Status::FailStatus(-1));
                 hostInfo_.reset(new (std::nothrow) RtHostInputInfoT[constTensorCount]);
                 MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr", return Status::FailStatus(-1));
-                uint64_t constTensorOffset = Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) + argsNum * sizeof(void *);
+                uint64_t constTensorOffset =
+                    Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) + argsNum * sizeof(void *);
                 status = UpdateConstTensorArgs(args, hostInfo_.get(), constTensorOffset, constTensorInfos);
-                MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling, return status);
+                MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling,
+                          return status);
             }
             argsEx_.hostInputInfoPtr = hostInfo_.get();
             argsEx_.hostInputInfoNum = constTensorCount;
         } else {
             uint64_t constTensorOffset = kernelInfo.GetConstTensorOffset();
             status = UpdateConstTensorArgs(args, runInfo.GetTilingDeviceAddr(), constTensorOffset, constTensorInfos);
-            MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling, return status);
+            MKI_CHECK(status.Ok(), "failed to update const tensor args, tiling flag: " << launchWithTiling,
+                      return status);
         }
         // set input / output / workspace
         const auto &workspaces = kernelInfo.GetScratchSizes();
