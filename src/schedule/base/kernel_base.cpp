@@ -87,7 +87,7 @@ public:
     }
 
 private:
-    Status UpdateHwsyncArgs(void **args, uint64_t argsNum, int64_t hwsyncIdx)
+    Status UpdateHwsyncArgs(void **args, uint64_t argsNum, int64_t hwsyncIdx) const
     {
         if (hwsyncIdx >= 0 && static_cast<uint64_t>(hwsyncIdx) < argsNum) {
             uint64_t *addr = nullptr;
