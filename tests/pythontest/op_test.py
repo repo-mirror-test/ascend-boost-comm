@@ -206,13 +206,6 @@ def get_soc_name():
         logging.error("device_name %s is not supported", device_name)
         soc_version = None
     return soc_version
-    # available_soc_list = ("Ascend910B", "Ascend310P","Ascend910ProB","Ascend910A","Ascend910PremiumA","Ascend910")
-    # device_name = torch_npu.npu.get_device_name()
-    # for soc_name in available_soc_list:
-    #     if re.search(soc_name, device_name, re.I):
-    #         return soc_name
-    # logging.error("device_name %s is not supported", device_name)
-    # return None
 
 
 def only_soc(soc_name):
