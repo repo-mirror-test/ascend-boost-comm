@@ -152,7 +152,7 @@ Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::Memset
     static std::once_flag initedFlag;
     static MemsetKernel* memsetKernel = nullptr;
 
-    std::call_once(initedFlag, [&](){ memsetKernel = MemsetInit(); });
+    std::call_once(initedFlag, [&]() { memsetKernel = MemsetInit(); });
 
     MKI_CHECK(memsetKernel != nullptr, "memset kernel is nullptr", return Mki::Status::FailStatus(1));
     return memsetKernel->Run(args, argsNum, memsetInfo, stream);
