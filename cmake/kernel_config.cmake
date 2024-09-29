@@ -23,6 +23,7 @@ macro(add_kernel kernel soc channel srcs tac)
                 "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
                 "--kernel" "${kernel}"
                 "--use_msdebug" "${USE_MSDEBUG}"
+                "--no_warning"
             )
             add_custom_command(
                 OUTPUT ${${kernel}_${soc}_output}
