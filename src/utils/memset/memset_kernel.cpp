@@ -149,7 +149,7 @@ static MemsetKernel *MemsetInit()
 
 Status ClearTensors(void **args, uint64_t argsNum, MiniVector<KernelInfo::MemsetInfo> &memsetInfo, void *stream)
 {
-    static std::once_flag initedFlag = false;
+    static std::once_flag initedFlag;
     static MemsetKernel* memsetKernel = nullptr;
 
     std::call_once(initedFlag, [&](){ memsetKernel = MemsetInit(); });
