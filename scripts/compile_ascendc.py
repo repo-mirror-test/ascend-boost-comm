@@ -149,6 +149,7 @@ def get_common_options(args):
     options.append("-I" + os.path.join(tikcpp_path, "tikcfw", "interface"))
     if args.no_warning:
         options.append("-Wno-deprecated-declarations")
+        options.append("-Wno-array-bounds")
     return options
 
 
