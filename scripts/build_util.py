@@ -153,7 +153,6 @@ def write_to_cpp(binary_path, header, dst_cpp_path, kernel, target_version):
         f.write('};\n\n')
         f.write(f'REG_KERNEL({target_version}, {kernel}, {name});\n')
         f.write('}\n')
-    print(f"Generate target binary source file: {dst_cpp_path}")
     return True
 
 
