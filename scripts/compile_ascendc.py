@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('--code_root', type=str, required=True)
     parser.add_argument('--kernel', type=str, required=True)
     parser.add_argument('--use_msdebug', type=str)
+    parser.add_argument('--use_mssanitizer', type=str, required=True)
     parser.add_argument('--no_warning', action='store_true')
     return parser.parse_args()
 
@@ -42,6 +43,10 @@ def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
     compile_cmd += [args.srcs, "--cce-aicore-arch=%s" % sub_arch,
                     "--cce-aicore-only", "-o", dst,
                     "-mllvm", "-cce-aicore-fp-ceiling=2"]
+    if args.use_mssanitizer == "ON" and args.soc in ["ascend310p", "ascend910b"]:
+        compile_cmd += ["-g", "--cce-enable-sanitizer",
+                        "-mllvm", "-cce-aicore-long-call",
+                        "-mllvm", "-cce-aicore-jump-expand=true"]
     compile_cmd += ["-std=c++17"]
     compile_cmd += ["--cce-mask-opt"]
     return compile_cmd
@@ -63,6 +68,10 @@ def gen_compile_cmd_v220(args, dst: str, sub_arch: str, compile_options):
                     "-mllvm", "-cce-aicore-record-overflow=true",
                     "-mllvm", "-cce-aicore-addr-transform",
                     "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false"]
+    if args.use_mssanitizer == "ON":
+        compile_cmd += ["-g", "--cce-enable-sanitizer",
+                        "-mllvm", "-cce-aicore-long-call",
+                        "-mllvm", "-cce-aicore-jump-expand=true"]
     compile_cmd += ["-std=c++17"]
     return compile_cmd
 
