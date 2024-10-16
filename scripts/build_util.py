@@ -187,7 +187,7 @@ def copy_ascendc_code(binary_dir, target_version, output_path):
                     exit(1)
 
                 dst_cpp_path = os.path.join(output_operation_dir, file)[:-4] + 'cpp'
-                result = write_to_cpp(code_file, header, dst_cpp_path, kernel, target_version, False)
+                result = write_to_cpp(code_file, header, dst_cpp_path, kernel, target_version, True)
                 if not result:
                     logging.error("failed to write into file %s.", dst_cpp_path)
                     exit(1)
