@@ -217,6 +217,7 @@ def compile_ascendc_code(obj_path, dst_cpp_path, is_const: bool=True):
 def copy_tbe_code_all_version(input_paras):
     tbe_sections = input_paras["tbe_ini"].sections()
     for target_version in input_paras["target_version_list"]:
+        binary_id = 0
         output_path = os.path.join(
             input_paras["env_cache_dir"], "obj", target_version)
         if not os.path.exists(output_path):
@@ -247,7 +248,8 @@ def copy_tbe_code_all_version(input_paras):
 
                 shell_result = subprocess.run(['strings', os.path.realpath(code_file)], capture_output=True, text=True)
                 is_const = False if 'g_opSystemRunCfg' in shell_result.stdout else True
-                result = write_to_cpp(code_file, header, dst_cpp_path, op_key, target_version, is_const)
+                result = write_to_cpp(code_file, header, dst_cpp_path, '_'.join(['', binary_id, op_key]), target_version, is_const)
+                binary_id += 1
                 if not result:
                     logging.error("failed to write into file %s.", dst_cpp_path)
                     exit(1)
