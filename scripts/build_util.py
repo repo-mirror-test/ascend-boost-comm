@@ -248,7 +248,7 @@ def copy_tbe_code_all_version(input_paras):
 
                 shell_result = subprocess.run(['strings', os.path.realpath(code_file)], capture_output=True, text=True)
                 is_const = False if 'g_opSystemRunCfg' in shell_result.stdout else True
-                result = write_to_cpp(code_file, header, dst_cpp_path, '_'.join(['', binary_id, op_key]), target_version, is_const)
+                result = write_to_cpp(code_file, header, dst_cpp_path, '_'.join(['', str(binary_id), op_key]), target_version, is_const)
                 binary_id += 1
                 if not result:
                     logging.error("failed to write into file %s.", dst_cpp_path)
