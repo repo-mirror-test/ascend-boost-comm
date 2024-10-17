@@ -130,7 +130,7 @@ def get_header_from_file(file_path):
     return header, result
 
 
-def write_to_cpp(binary_path, header, dst_cpp_path, kernel, target_version, is_const):
+def write_to_cpp(binary_path, header, dst_cpp_path, kernel, target_version, is_const=True):
     try:
         with open(binary_path, 'rb') as f:
             data = f.read()
@@ -187,7 +187,7 @@ def copy_ascendc_code(binary_dir, target_version, output_path):
                     exit(1)
 
                 dst_cpp_path = os.path.join(output_operation_dir, file)[:-4] + 'cpp'
-                result = write_to_cpp(code_file, header, dst_cpp_path, kernel, target_version, True)
+                result = write_to_cpp(code_file, header, dst_cpp_path, kernel, target_version)
                 if not result:
                     logging.error("failed to write into file %s.", dst_cpp_path)
                     exit(1)
@@ -196,7 +196,7 @@ def copy_ascendc_code(binary_dir, target_version, output_path):
     return code_file_count
 
 
-def compile_ascendc_code(obj_path, dst_cpp_path, is_const: bool=True):
+def compile_ascendc_code(obj_path, dst_cpp_path, is_const=True):
     json_file = obj_path.rsplit('.')[0] + '.json'
     header, result = get_header_from_file(json_file)
     if not result:
@@ -238,7 +238,7 @@ def copy_tbe_code_all_version(input_paras):
                 code_file = os.path.join(
                     target_version_path, relative_op_path[:-4] + 'o')
                 object_name = os.path.basename(code_file)
-                dst_cpp_path = os.path.join(op_dir_path, object_name[:-1] + 'cpp')
+                dst_cpp_path = os.path.join(op_dir_path, object_name[:-2] + '_' + op_key.lower() + '.cpp')
 
                 header, ret = get_header_from_file(os.path.join(
                     target_version_path, relative_op_path))
@@ -248,7 +248,7 @@ def copy_tbe_code_all_version(input_paras):
 
                 shell_result = subprocess.run(['strings', os.path.realpath(code_file)], capture_output=True, text=True)
                 is_const = False if 'g_opSystemRunCfg' in shell_result.stdout else True
-                result = write_to_cpp(code_file, header, dst_cpp_path, '_'.join([str(binary_id), op_key]), target_version, is_const)
+                result = write_to_cpp(code_file, header, dst_cpp_path, op_key, target_version, is_const)
                 binary_id += 1
                 if not result:
                     logging.error("failed to write into file %s.", dst_cpp_path)
