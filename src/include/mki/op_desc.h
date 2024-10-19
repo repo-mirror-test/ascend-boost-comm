@@ -16,7 +16,7 @@
 
 namespace Mki {
 struct OpDesc {
-    int opId = 0;
+    int64_t opId = 0;
     std::string opName;
     Any specificParam;
 };
