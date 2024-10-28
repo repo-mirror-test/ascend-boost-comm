@@ -11,12 +11,11 @@
 #define MKI_KERNEL_INFO_H
 
 #include <cstdint>
-#include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/utils/status/status.h"
 #include "mki/utils/SVector/SVector.h"
 
 namespace Mki {
-class KernelInfo : public NonCopyable {
+class KernelInfo {
 public:
 struct ConstTensorInfo {
     uint64_t argIdx = 0;
@@ -95,6 +94,8 @@ public:
     const MiniVector<KernelInfo::MemsetInfo> &GetMemsetInfo() const;
 
 private:
+    KernelInfo(const KernelInfo &) = delete;
+    const KernelInfo &operator=(const KernelInfo &other) = delete;
     void ResetArgs();
     void ResetTilingInfo();
     void ResetConstTensorInfo();

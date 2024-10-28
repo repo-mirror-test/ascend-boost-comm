@@ -11,10 +11,9 @@
 #define MKI_UTILS_DL_DL_H
 #include <string>
 #include <atomic>
-#include "mki/utils/non_copyable/non_copyable.h"
 
 namespace Mki {
-class Dl : public NonCopyable {
+class Dl {
 public:
     explicit Dl(const std::string &dlFilePath);
     ~Dl();

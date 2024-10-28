@@ -12,10 +12,9 @@
 
 #include <cstdint>
 #include <string>
-#include "mki/utils/non_copyable/non_copyable.h"
 
 namespace Mki {
-class RunInfo : public NonCopyable {
+class RunInfo {
 public:
     RunInfo() = default;
     ~RunInfo();
@@ -35,6 +34,10 @@ public:
     std::string ToString() const;
 
     void Copy(const RunInfo &runInfo);
+
+private:
+    RunInfo(const RunInfo &) = delete;
+    const RunInfo &operator=(const RunInfo &other) = delete;
 
 private:
     // used by User

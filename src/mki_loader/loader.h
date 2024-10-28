@@ -12,13 +12,12 @@
 #include <unordered_map>
 #include <memory>
 #include <atomic>
-#include "mki/utils/non_copyable/non_copyable.h"
 #include "mki/operation.h"
 #include "mki/kernel.h"
 #include "mki/bin_handle.h"
 
 namespace OpSpace {
-class Loader : public Mki::NonCopyable {
+class Loader {
 public:
     Loader();
     ~Loader();
@@ -27,6 +26,8 @@ public:
     bool IsValid() const;
 
 private:
+    Loader(const Loader &) = delete;
+    const Loader &operator=(const Loader &other) = delete;
     void Load();
     bool LoadKernelBinarys();
     bool CreateOperations();

@@ -12,7 +12,6 @@
 #include <string>
 #include <atomic>
 #include "mki/tensor.h"
-#include "mki/utils/non_copyable/non_copyable.h"
 
 namespace Mki {
 using KernelHandle = void *const *;
@@ -34,7 +33,7 @@ struct KernelMetaInfo {
     uint32_t codeBufLen = 0;
 };
 
-class BinHandle : public NonCopyable {
+class BinHandle {
 public:
     explicit BinHandle(const BinaryBasicInfo *binInfo);
     ~BinHandle();
@@ -45,6 +44,8 @@ public:
     const char *GetKernelCompileInfo() const;
 
 private:
+    BinHandle(const BinHandle &) = delete;
+    const BinHandle &operator=(const BinHandle &other) = delete;
     bool CheckBinaryValid() const;
     bool CheckKernelInfo(const std::string &kernelName) const;
     bool RegisterBin(const std::string &kernelName);
