@@ -21,13 +21,13 @@ class Loader {
 public:
     Loader();
     ~Loader();
+    Loader(const Loader &) = delete;
+    Loader &operator=(const Loader &other) = delete;
     void GetAllOperations(std::unordered_map<std::string, Mki::Operation *> &ops) const;
     void GetOpKernels(const std::string &opName, Mki::KernelMap &kernels) const;
     bool IsValid() const;
 
 private:
-    Loader(const Loader &) = delete;
-    const Loader &operator=(const Loader &other) = delete;
     void Load();
     bool LoadKernelBinarys();
     bool CreateOperations();

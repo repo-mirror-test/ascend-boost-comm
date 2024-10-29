@@ -18,6 +18,8 @@ class RunInfo {
 public:
     RunInfo() = default;
     ~RunInfo();
+    RunInfo(const RunInfo &) = delete;
+    RunInfo &operator=(const RunInfo &other) = delete;
 
 public:
     void Reset();
@@ -34,10 +36,6 @@ public:
     std::string ToString() const;
 
     void Copy(const RunInfo &runInfo);
-
-private:
-    RunInfo(const RunInfo &) = delete;
-    const RunInfo &operator=(const RunInfo &other) = delete;
 
 private:
     // used by User

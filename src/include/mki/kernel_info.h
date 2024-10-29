@@ -39,6 +39,8 @@ struct MemsetInfo {
 public:
     KernelInfo() = default;
     ~KernelInfo();
+    KernelInfo(const KernelInfo &) = delete;
+    KernelInfo &operator=(const KernelInfo &other) = delete;
     void Copy(const KernelInfo &other);
     std::string ToString() const;
 
@@ -94,8 +96,6 @@ public:
     const MiniVector<KernelInfo::MemsetInfo> &GetMemsetInfo() const;
 
 private:
-    KernelInfo(const KernelInfo &) = delete;
-    const KernelInfo &operator=(const KernelInfo &other) = delete;
     void ResetArgs();
     void ResetTilingInfo();
     void ResetConstTensorInfo();

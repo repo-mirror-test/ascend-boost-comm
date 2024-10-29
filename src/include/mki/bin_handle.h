@@ -38,14 +38,14 @@ public:
     explicit BinHandle(const BinaryBasicInfo *binInfo);
     ~BinHandle();
     KernelHandle GetHandle() const;
+    BinHandle(const BinHandle &) = delete;
+    BinHandle &operator=(const BinHandle &other) = delete;
     bool Init(const std::string &kernelName);
     uint32_t GetKernelTilingSize() const;
     int32_t GetKernelCoreType() const;
     const char *GetKernelCompileInfo() const;
 
 private:
-    BinHandle(const BinHandle &) = delete;
-    const BinHandle &operator=(const BinHandle &other) = delete;
     bool CheckBinaryValid() const;
     bool CheckKernelInfo(const std::string &kernelName) const;
     bool RegisterBin(const std::string &kernelName);

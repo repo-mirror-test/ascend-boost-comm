@@ -17,11 +17,11 @@ class Dl {
 public:
     explicit Dl(const std::string &dlFilePath);
     ~Dl();
+    Dl(const Dl &) = delete;
+    Dl &operator=(const Dl &) = delete;
     void *GetSymbol(const std::string &symbolName) const;
     bool IsValid() const;
 private:
-    Dl(const Dl &) = delete;
-    const Dl &operator=(const Dl &) = delete;
     std::string GetNewMemFdFileName() const;
     std::atomic_bool dlSuccess_{false};
 private:
