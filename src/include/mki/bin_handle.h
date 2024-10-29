@@ -37,9 +37,9 @@ class BinHandle {
 public:
     explicit BinHandle(const BinaryBasicInfo *binInfo);
     ~BinHandle();
-    KernelHandle GetHandle() const;
     BinHandle(const BinHandle &) = delete;
     BinHandle &operator=(const BinHandle &other) = delete;
+    KernelHandle GetHandle() const;
     bool Init(const std::string &kernelName);
     uint32_t GetKernelTilingSize() const;
     int32_t GetKernelCoreType() const;
