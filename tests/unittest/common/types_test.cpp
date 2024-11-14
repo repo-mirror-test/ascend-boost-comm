@@ -84,7 +84,7 @@ TEST(GetStrWithDTypeTest, HandleInvalidInput){
 
 TEST(GetFormatWithStrTest, HandleValidInput){
 	EXPECT_EQ(GetFormatWithStr("nchw"), TensorFormat::TENSOR_FORMAT_NCHW);
-	EXPECT_EQ(GetFormatWithStr("nchc"), TensorFormat::TENSOR_FORMAT_NHWC);
+	EXPECT_EQ(GetFormatWithStr("nhwc"), TensorFormat::TENSOR_FORMAT_NHWC);
 	EXPECT_EQ(GetFormatWithStr("nd"), TensorFormat::TENSOR_FORMAT_ND);
 	EXPECT_EQ(GetFormatWithStr("nc1hc0"), TensorFormat::TENSOR_FORMAT_NC1HWC0);
 	EXPECT_EQ(GetFormatWithStr("fractal_z"), TensorFormat::TENSOR_FORMAT_FRACTAL_Z);
@@ -104,7 +104,7 @@ TEST(GetFormatWithStrTest, HandleInvalidInput){
 
 TEST(GetStrWithFormatTest, HandleValidInput){
 	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_NCHW), "nchw");
-	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_NHWC), "nchc");
+	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_NHWC), "nhwc");
 	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_ND), "nd");
 	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_NC1HWC0), "nc1hc0");
 	EXPECT_EQ(GetStrWithFormat(TensorFormat::TENSOR_FORMAT_FRACTAL_Z), "fractal_z");
