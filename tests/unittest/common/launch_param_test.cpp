@@ -71,7 +71,6 @@ TEST_F(LaunchParamTest, Reset) {
     launchParam.AddOutTensor(tensor2);
     EXPECT_EQ(launchParam.GetInTensorCount(), 1);
     EXPECT_EQ(launchParam.GetOutTensorCount(), 1);
-
     launchParam.Reset();
     EXPECT_EQ(launchParam.GetInTensorCount(), 0);
     EXPECT_EQ(launchParam.GetOutTensorCount(), 0);
@@ -81,9 +80,7 @@ TEST_F(LaunchParamTest, AssignmentOperator) {
     Mki::LaunchParam launchParam2;
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
-
     launchParam2 = launchParam;
-
     EXPECT_EQ(launchParam2.GetInTensorCount(), 1);
     EXPECT_EQ(launchParam2.GetOutTensorCount(), 1);
     EXPECT_EQ(launchParam2.GetInTensor(0).dataSize, tensor1.dataSize);
