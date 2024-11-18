@@ -40,7 +40,7 @@ protected:
 
 TEST_F(LaunchParamTest, AddInputTensor)
 {
-    EXPECT_EQ(launchParam.GetInTensorCount(), 0);
+    EXPECT_EQ(launchParam.GetInTensorCount(), 0); // 验证添加的输入张量数量是否为0
     launchParam.AddInTensor(tensor1);
     EXPECT_EQ(launchParam.GetInTensorCount(), 1); // 验证添加的输入张量数量是否为1
     launchParam.AddInTensor(tensor2);
@@ -57,11 +57,11 @@ TEST_F(LaunchParamTest, GetInputTensor)
 
 TEST_F(LaunchParamTest, AddOutputTensor)
 {
-    EXPECT_EQ(launchParam.GetOutTensorCount(), 0);
+    EXPECT_EQ(launchParam.GetOutTensorCount(), 0); // 验证输出张量数量是否为0
     launchParam.AddOutTensor(tensor1);
-    EXPECT_EQ(launchParam.GetOutTensorCount(), 1);
+    EXPECT_EQ(launchParam.GetOutTensorCount(), 1); // 验证输出张量数量是否为1
     launchParam.AddOutTensor(tensor2);
-    EXPECT_EQ(launchParam.GetOutTensorCount(), 2);
+    EXPECT_EQ(launchParam.GetOutTensorCount(), 2); // 验证输出张量数量是否为2
 }
 
 TEST_F(LaunchParamTest, GetOutputTensor)
@@ -76,11 +76,11 @@ TEST_F(LaunchParamTest, Reset)
 {
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
-    EXPECT_EQ(launchParam.GetInTensorCount(), 1);
-    EXPECT_EQ(launchParam.GetOutTensorCount(), 1);
+    EXPECT_EQ(launchParam.GetInTensorCount(), 1); // 输入张量数量设置为1
+    EXPECT_EQ(launchParam.GetOutTensorCount(), 1); // 输出张量数量设置为1
     launchParam.Reset();
-    EXPECT_EQ(launchParam.GetInTensorCount(), 0);
-    EXPECT_EQ(launchParam.GetOutTensorCount(), 0);
+    EXPECT_EQ(launchParam.GetInTensorCount(), 0); // 验证输入张量数量是否为0
+    EXPECT_EQ(launchParam.GetOutTensorCount(), 0); // 验证输出张量数量是否为0
 }
 
 TEST_F(LaunchParamTest, AssignmentOperator)
@@ -89,8 +89,8 @@ TEST_F(LaunchParamTest, AssignmentOperator)
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
     launchParam2 = launchParam;
-    EXPECT_EQ(launchParam2.GetInTensorCount(), 1);
-    EXPECT_EQ(launchParam2.GetOutTensorCount(), 1);
+    EXPECT_EQ(launchParam2.GetInTensorCount(), 1); // 验证输入张量数量是否为1
+    EXPECT_EQ(launchParam2.GetOutTensorCount(), 1); // 验证输出张量数量是否为1
     EXPECT_EQ(launchParam2.GetInTensor(0).dataSize, tensor1.dataSize);
     EXPECT_EQ(launchParam2.GetOutTensor(0).dataSize, tensor2.dataSize);
 }
