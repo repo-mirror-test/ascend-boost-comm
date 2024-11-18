@@ -77,8 +77,8 @@ TEST(GetStrWithDTypeTest, HandleValidInput) {
 }
 
 TEST(GetStrWithDTypeTest, HandleInvalidInput) {
-    int g_invalidValue = 999;
-    EXPECT_EQ(GetStrWithDType(g_invalidValue), "undefined");
+    int invalidValue = 999;
+    EXPECT_EQ(GetStrWithDType(invalidValue), "undefined");
 }
 
 TEST(GetFormatWithStrTest, HandleValidInput) {
