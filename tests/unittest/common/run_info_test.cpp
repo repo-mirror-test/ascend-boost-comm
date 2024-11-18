@@ -16,7 +16,8 @@ protected:
     Mki::RunInfo runInfo;
 };
 
-TEST_F(RunInfoTest, ResetTest) {
+TEST_F(RunInfoTest, ResetTest)
+{
     uint8_t addr = 1;
     runInfo.SetScratchDeviceAddr(&addr);
     runInfo.SetTilingDeviceAddr(&addr);
@@ -26,7 +27,8 @@ TEST_F(RunInfoTest, ResetTest) {
     EXPECT_EQ(runInfo.GetTilingDeviceAddr(), nullptr);
 }
 
-TEST_F(RunInfoTest, SetStreamTest) {
+TEST_F(RunInfoTest, SetStreamTest)
+{
     int stream = 42;
     runInfo.SetStream(&stream);
     EXPECT_EQ(runInfo.GetStream(), &stream);
@@ -34,7 +36,8 @@ TEST_F(RunInfoTest, SetStreamTest) {
     EXPECT_EQ(runInfo.GetStream(), &stream);  // Should still be the same as before
 }
 
-TEST_F(RunInfoTest, SetScratchDeviceAddrTest) {
+TEST_F(RunInfoTest, SetScratchDeviceAddrTest)
+{
     uint8_t addr = 1;
     runInfo.SetScratchDeviceAddr(&addr);
     EXPECT_EQ(runInfo.GetScratchDeviceAddr(), &addr);
@@ -42,7 +45,8 @@ TEST_F(RunInfoTest, SetScratchDeviceAddrTest) {
     EXPECT_EQ(runInfo.GetScratchDeviceAddr(), &addr);  // Should still be the same as before
 }
 
-TEST_F(RunInfoTest, SetTilingDeviceAddrTest) {
+TEST_F(RunInfoTest, SetTilingDeviceAddrTest)
+{
     uint8_t addr = 1;
     runInfo.SetTilingDeviceAddr(&addr);
     EXPECT_EQ(runInfo.GetTilingDeviceAddr(), &addr);
@@ -50,7 +54,8 @@ TEST_F(RunInfoTest, SetTilingDeviceAddrTest) {
     EXPECT_EQ(runInfo.GetTilingDeviceAddr(), &addr);  // Should still be the same as before
 }
 
-TEST_F(RunInfoTest, ToStringTest) {
+TEST_F(RunInfoTest, ToStringTest)
+{
     uint8_t sAddr = 1;
     uint8_t tAddr = 2;
     int stream = 42;
@@ -63,7 +68,8 @@ TEST_F(RunInfoTest, ToStringTest) {
     EXPECT_NE(str.find("tilingDeviceAddr: "), std::string::npos);
 }
 
-TEST_F(RunInfoTest, CopyTest) {
+TEST_F(RunInfoTest, CopyTest)
+{
     uint8_t sAddr = 1;
     uint8_t tAddr = 2;
     int stream = 42;
