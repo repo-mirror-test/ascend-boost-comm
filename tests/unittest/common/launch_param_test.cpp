@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 #include "mki/launch_param.h"
 
-namespace{
+namespace {
 class LaunchParamTest : public ::testing::Test {
 protected:
     Mki::LaunchParam launchParam;
@@ -18,30 +18,30 @@ protected:
 
     void SetUp() override {
         tensor1.desc = Mki::TensorDesc{};
-        tensor1.data = malloc(128);
-        tensor1.dataSize = 128;
-        tensor1.hostData = malloc(128);
+        tensor1.data = malloc(128); // Allocate 128 bytes for tensor1.data
+        tensor1.dataSize = 128; // Set tensor1.dataSize to 128
+        tensor1.hostData = malloc(128); // Allocate 128 bytes for tensor1.hostData
 
-        tensor2.desc = Mki::TensorDesc{};
-        tensor2.data = malloc(256);
-        tensor2.dataSize = 256;
-        tensor2.hostData = malloc(256);
-	}
+        tensor2.desc = Mki::TensorDesc{}; // Initialize tensor2.desc
+        tensor2.data = malloc(256); // Allocate 256 bytes for tensor2.data
+        tensor2.dataSize = 256; // Set tensor2.dataSize to 256
+        tensor2.hostData = malloc(256); // Allocate 256 bytes for tensor2.hostData
+    }
 
     void TearDown() override {
         free(tensor1.data);
         free(tensor1.hostData);
         free(tensor2.data);
         free(tensor2.hostData);
-	}
+    }
 };
 
 TEST_F(LaunchParamTest, AddInputTensor) {
     EXPECT_EQ(launchParam.GetInTensorCount(), 0);
     launchParam.AddInTensor(tensor1);
-    EXPECT_EQ(launchParam.GetInTensorCount(), 1);
+    EXPECT_EQ(launchParam.GetInTensorCount(), 1); // 验证添加的输入张量数量是否为1
     launchParam.AddInTensor(tensor2);
-    EXPECT_EQ(launchParam.GetInTensorCount(), 2);
+    EXPECT_EQ(launchParam.GetInTensorCount(), 2); // 验证添加的输入张量数量是否为2
 }
 
 TEST_F(LaunchParamTest, GetInputTensor) {
