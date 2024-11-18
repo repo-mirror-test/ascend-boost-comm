@@ -117,7 +117,7 @@ TEST(GetStrWithFormatTest, HandleValidInput) {
 }
 
 TEST(GetStrWithFormatTest, HandleInvalidInput) {
-    int invalid_value = 999;
-    EXPECT_EQ(GetStrWithFormat(invalid_value), "undefined");
+    int invalidValue = 999;
+    EXPECT_EQ(GetStrWithFormat(invalidValue), "undefined");
 }
 } // namespace
