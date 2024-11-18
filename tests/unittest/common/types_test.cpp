@@ -29,7 +29,7 @@ TEST(GetTensorElementSizeTest, HandleValidInput) {
 }
 
 TEST(GetTensorElementSizeTest, HandleInvalidInput) {
-	TensorDType invalid_value = static_cast<TensorDType>(999);
+    TensorDType invalid_value = static_cast<TensorDType>(999);
     EXPECT_EQ(GetTensorElementSize(invalid_value), 0);
 }
 
@@ -77,8 +77,8 @@ TEST(GetStrWithDTypeTest, HandleValidInput) {
 }
 
 TEST(GetStrWithDTypeTest, HandleInvalidInput) {
-    int invalid_value = 999;
-    EXPECT_EQ(GetStrWithDType(invalid_value), "undefined");
+    int g_invalid_value = 999;
+    EXPECT_EQ(GetStrWithDType(g_invalidValue), "undefined");
 }
 
 TEST(GetFormatWithStrTest, HandleValidInput) {
