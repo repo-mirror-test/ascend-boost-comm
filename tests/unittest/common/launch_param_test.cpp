@@ -16,7 +16,8 @@ protected:
     Mki::LaunchParam launchParam;
     Mki::Tensor tensor1, tensor2;
 
-    void SetUp() override {
+    void SetUp() override
+    {
         tensor1.desc = Mki::TensorDesc{};
         tensor1.data = malloc(128); // Allocate 128 bytes for tensor1.data
         tensor1.dataSize = 128; // Set tensor1.dataSize to 128
@@ -28,7 +29,8 @@ protected:
         tensor2.hostData = malloc(256); // Allocate 256 bytes for tensor2.hostData
     }
 
-    void TearDown() override {
+    void TearDown() override
+    {
         free(tensor1.data);
         free(tensor1.hostData);
         free(tensor2.data);
@@ -36,7 +38,8 @@ protected:
     }
 };
 
-TEST_F(LaunchParamTest, AddInputTensor) {
+TEST_F(LaunchParamTest, AddInputTensor)
+{
     EXPECT_EQ(launchParam.GetInTensorCount(), 0);
     launchParam.AddInTensor(tensor1);
     EXPECT_EQ(launchParam.GetInTensorCount(), 1); // 验证添加的输入张量数量是否为1
@@ -44,14 +47,16 @@ TEST_F(LaunchParamTest, AddInputTensor) {
     EXPECT_EQ(launchParam.GetInTensorCount(), 2); // 验证添加的输入张量数量是否为2
 }
 
-TEST_F(LaunchParamTest, GetInputTensor) {
+TEST_F(LaunchParamTest, GetInputTensor)
+{
     launchParam.AddInTensor(tensor1);
     launchParam.AddInTensor(tensor2);
     EXPECT_EQ(launchParam.GetInTensor(0).dataSize, tensor1.dataSize);
     EXPECT_EQ(launchParam.GetInTensor(1).dataSize, tensor2.dataSize);
 }
 
-TEST_F(LaunchParamTest, AddOutputTensor) {
+TEST_F(LaunchParamTest, AddOutputTensor)
+{
     EXPECT_EQ(launchParam.GetOutTensorCount(), 0);
     launchParam.AddOutTensor(tensor1);
     EXPECT_EQ(launchParam.GetOutTensorCount(), 1);
@@ -59,14 +64,16 @@ TEST_F(LaunchParamTest, AddOutputTensor) {
     EXPECT_EQ(launchParam.GetOutTensorCount(), 2);
 }
 
-TEST_F(LaunchParamTest, GetOutputTensor) {
+TEST_F(LaunchParamTest, GetOutputTensor)
+{
     launchParam.AddOutTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
     EXPECT_EQ(launchParam.GetOutTensor(0).dataSize, tensor1.dataSize);
     EXPECT_EQ(launchParam.GetOutTensor(1).dataSize, tensor2.dataSize);
 }
 
-TEST_F(LaunchParamTest, Reset) {
+TEST_F(LaunchParamTest, Reset)
+{
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
     EXPECT_EQ(launchParam.GetInTensorCount(), 1);
@@ -76,7 +83,8 @@ TEST_F(LaunchParamTest, Reset) {
     EXPECT_EQ(launchParam.GetOutTensorCount(), 0);
 }
 
-TEST_F(LaunchParamTest, AssignmentOperator) {
+TEST_F(LaunchParamTest, AssignmentOperator)
+{
     Mki::LaunchParam launchParam2;
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
@@ -87,7 +95,8 @@ TEST_F(LaunchParamTest, AssignmentOperator) {
     EXPECT_EQ(launchParam2.GetOutTensor(0).dataSize, tensor2.dataSize);
 }
 
-TEST_F(LaunchParamTest, ToString) {
+TEST_F(LaunchParamTest, ToString)
+{
     launchParam.AddInTensor(tensor1);
     launchParam.AddOutTensor(tensor2);
 
