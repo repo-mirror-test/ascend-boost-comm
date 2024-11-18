@@ -77,4 +77,4 @@ TEST(ToStringTest, HandleMultipleElementsDims) {
     td.dims = {1, 2, 3};
     EXPECT_EQ(td.ToString(), "dtype:undefined, format:undefined, dims:[1, 2, 3]");
 }
-} //namespace
+} // namespace
