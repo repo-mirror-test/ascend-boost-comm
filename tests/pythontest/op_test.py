@@ -186,7 +186,7 @@ class OpTest(unittest.TestCase):
 
 def get_soc_name():
     device_name = torch_npu.npu.get_device_name()
-    if re.search("Ascend910B", device_name, re.I) and len(device_name) > 10:
+    if (re.search("Ascend910B", device_name, re.I) and len(device_name) > 10) or re.search("Ascend910_93", device_name, re.I):
         soc_version = "Ascend910B"
     elif re.search("Ascend310P", device_name, re.I):
         soc_version = "Ascend310P"
