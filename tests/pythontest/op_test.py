@@ -213,8 +213,10 @@ def only_soc(soc_name):
 
 
 only_910b = only_soc("Ascend910B")
+only_910b4 = only_soc("Ascend910B4")
 only_310p = only_soc("Ascend310P")
 only_910a = only_soc("Ascend910A")
 skip_910a = unittest.skipIf(get_soc_name() == "Ascend910A","don't support 910a")
 only_310b = only_soc("Ascend310B")
 skip_310b = unittest.skipIf(get_soc_name() == "Ascend310B", "don't support 310b")
+only_310p_and_910a = unittest.skipIf(get_soc_name() != "Ascend310P" and get_soc_name() != "Ascend910A","only support 310p and 910a")
