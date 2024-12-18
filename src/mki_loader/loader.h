@@ -35,6 +35,7 @@ private:
     bool LoadKernelBinarys();
     bool CreateOperations();
     bool CreateKernels();
+    bool CreateAicpuKernels();
     bool OpBaseAddKernels() const;
 
 private:
