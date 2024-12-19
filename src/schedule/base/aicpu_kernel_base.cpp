@@ -44,8 +44,8 @@ public:
                                 MKIRT_MEMCOPY_HOST_TO_HOST);
         MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for soName fail, errCode:" << ret,
                   return Status::FailStatus(ERROR_INVALID_VALUE));
-        ret = Mki::MkiRtMemCopy((void*)((uint64_t)args + tensorOffset + soNameSize + 1), kernelNameSize, deviceKernelName,
-                                kernelNameSize, MKIRT_MEMCOPY_HOST_TO_HOST);
+        ret = Mki::MkiRtMemCopy((void*)((uint64_t)args + tensorOffset + soNameSize + 1), kernelNameSize,
+                                deviceKernelName, kernelNameSize, MKIRT_MEMCOPY_HOST_TO_HOST);
         MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for kernelName fail, errCode:" << ret,
                   return Status::FailStatus(ERROR_INVALID_VALUE));
 

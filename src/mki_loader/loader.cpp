@@ -105,7 +105,7 @@ bool Loader::GetAicpuDeviceKernelSo(uint32_t &fileSize)
     MKI_LOG(DEBUG) << "fileSize: " << fileSize;
 
     // Load file to HOST
-    std::unique_ptr<uint8_t[]> aicpuKernelSo(new (std::nothrow) uint8_t[fileSize]);
+    std::unique_ptr<uint8_t[]> aicpuKernelSo = std::make_unique<uint8_t[]>(fileSize);
     MKI_CHECK(aicpuKernelSo != nullptr, "alloc host mem for aicpu kernel so failed", return false);
 
     FILE *inputFile = nullptr;
