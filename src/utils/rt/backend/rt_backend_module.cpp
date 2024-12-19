@@ -211,7 +211,7 @@ int RtBackend::AicpuFunctionLaunchExWithArgs(const char * const opName, const Mk
     CHECK_FUN_PARA_RETURN(param);
     CHECK_FUN_PARA_RETURN(param->aicpuArgsEx);
     constexpr uint32_t KERNEL_TYPE_AICPU_CUSTOM = 4;
-    constexpr uint32_t RT_KERNEL_CUSTOM_AICPU = 8
+    constexpr uint32_t RT_KERNEL_CUSTOM_AICPU = 8;
     CHECK_STATUS_WITH_DESC_RETURN(rtAicpuKernelLaunchExWithArgs(KERNEL_TYPE_AICPU_CUSTOM, opName, param->blockDim,
                                                                 param->aicpuArgsEx, nullptr,
                                                                 stream, RT_KERNEL_CUSTOM_AICPU),

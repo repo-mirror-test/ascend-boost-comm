@@ -8,7 +8,7 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 #include "loader.h"
-#include <sys/stat.h>
+#include <fstream>
 #include "mki/base/operation_base.h"
 #include "mki/base/kernel_base.h"
 #include "mki/bin_handle.h"
@@ -96,27 +96,22 @@ bool Loader::GetAicpuDeviceKernelSo(uint32_t &fileSize)
     MKI_CHECK(!searchPath.empty(), "ASDOPS_HOME_PATH not exists!", return false);
     searchPath += "/lib/libasdops_aicpu_kernels.so";
 
-    // Get FileSize
-    struct stat buf;
-    MKI_CHECK(stat(searchPath.c_str(), &buf) >= 0, "failed to access aicpu kernel so", return false);
-    MKI_CHECK(buf.st_size < std::numeric_limits<uint32_t>::max(),
-                "file size " << buf.st_size << " is larger than expected ~4GB", return false);
-    fileSize = static_cast<uint32_t>(buf.st_size);
-    MKI_LOG(DEBUG) << "fileSize: " << fileSize;
+    // Open .so file
+    std::ifstream istrm(searchPath, std::ios::in | std::ios::binary | std::ios::ate);
+    MKI_CHECK(istrm.is_open(), "failed to open aicpu kernel so", return false);
 
-    // Load file to HOST
-    std::unique_ptr<uint8_t[]> aicpuKernelSo = std::make_unique<uint8_t[]>(fileSize);
+    MKI_CHECK(istrm.tellg() < std::numeric_limits<uint32_t>::max(),
+              "file size " << istrm.tellg() << " is larger than expected ~4GB", return false);
+    fileSize = static_cast<uint32_t>(istrm.tellg());
+
+    // Alloc mem for .so file
+    std::unique_ptr<char[]> aicpuKernelSo = std::make_unique<char[]>(fileSize);
     MKI_CHECK(aicpuKernelSo != nullptr, "alloc host mem for aicpu kernel so failed", return false);
 
-    FILE *inputFile = nullptr;
-    inputFile = fopen(searchPath.c_str(), "rb");
-    MKI_CHECK(inputFile != nullptr, "FILE not exists!", return false);
-    do {
-        fseek(inputFile, 0, SEEK_SET);
-        ret = fread(aicpuKernelSo.get(), sizeof(uint8_t), fileSize, inputFile);
-    } while (ret != static_cast<int64_t>(fileSize));
-    fclose(inputFile);
-    MKI_LOG(DEBUG) << "aicpu kernels binary file stream closed";
+    // Load .so file to HOST
+    istrm.seekg(0, std::ios::beg);
+    istrm.read(aicpuKernelSo.get(), fileSize);
+    MKI_CHECK(istrm.good(), "failed to read aicpu kernel so", return false);
 
     // memcpy .so to DEVICE
     uint8_t *soDevAddr{nullptr};
