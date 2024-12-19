@@ -15,7 +15,7 @@ add_compile_options(
 )
 
 if(NAMESPACE STREQUAL "")
-    set(NAMESPACE "OpSpaceDefault")
+    set(NAMESPACE "Mki")
     message(WARNING "NAMESPACE is not set, please set the namespace option by '--namespace=<namespace-name>'")
 endif()
 
