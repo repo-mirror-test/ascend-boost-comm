@@ -79,31 +79,34 @@ public:
 
 class OpSchedule final : public Mki::OpScheduleBase {
 public:
-    OpSchedule() { AddAllOperations(OperationRegister::GetOperationCreators(),
-                                    KernelRegister::GetKernelCreators(),
-                                    KernelBinaryRegister::GetKernelBinaryMap()); }
+    OpSchedule()
+    {
+        AddAllOperations(OperationRegister::GetOperationCreators(),
+                         KernelRegister::GetKernelCreators(),
+                         KernelBinaryRegister::GetKernelBinaryMap());
+    }
     ~OpSchedule() override {}
 };
 
-#define REG_OPERATION(opName)                                                                                           \
-    Mki::Operation *GetOperation##opName()                                                                              \
-    {                                                                                                                   \
-        static opName op##opName(#opName);                                                                              \
-        return &op##opName;                                                                                             \
-    }                                                                                                                   \
+#define REG_OPERATION(opName)                                                                                       \
+    Mki::Operation *GetOperation##opName()                                                                          \
+    {                                                                                                               \
+        static opName op##opName(#opName);                                                                          \
+        return &op##opName;                                                                                         \
+    }                                                                                                               \
     static OperationRegister op##opName##register = OperationRegister(#opName, GetOperation##opName)
 
-#define REG_KERNEL_BASE(kerName)                                                                                        \
-    Mki::Kernel const *GetKernel##kerName(const Mki::BinHandle *binHandle)                                              \
-    {                                                                                                                   \
-        static kerName ker##kerName(#kerName, binHandle);                                                               \
-        SetKernelSelfCreator(ker##kerName, [=](){ return new (std::nothrow) kerName(#kerName, binHandle); });           \
-        return &ker##kerName;                                                                                           \
-    }                                                                                                                   \
+#define REG_KERNEL_BASE(kerName)                                                                                    \
+    Mki::Kernel const *GetKernel##kerName(const Mki::BinHandle *binHandle)                                          \
+    {                                                                                                               \
+        static kerName ker##kerName(#kerName, binHandle);                                                           \
+        SetKernelSelfCreator(ker##kerName, [=](){ return new (std::nothrow) kerName(#kerName, binHandle); });       \
+        return &ker##kerName;                                                                                       \
+    }                                                                                                               \
     static KernelRegister ker##kerName##register = KernelRegister(OperationPlaceHolder, #kerName, GetKernel##kerName)
 
-#define REG_KERNEL(soc, kerName, binary)                                                                                \
-    static KernelBinaryRegister bin##kerName##soc##register =                                                           \
+#define REG_KERNEL(soc, kerName, binary)                                                                            \
+    static KernelBinaryRegister bin##kerName##soc##register =                                                       \
            KernelBinaryRegister(#soc, #kerName, binary, sizeof(binary))
 } // namespace OpSpace
 
