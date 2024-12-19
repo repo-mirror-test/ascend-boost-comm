@@ -98,6 +98,7 @@ typedef struct {
 } RtArgsExT;
 
 #pragma pack(push, 1)
+
 typedef struct {
     uint64_t kernelSoBuf;        // the starting address of custom operator so buf
     uint32_t kernelSoBufLen;     // the length of custom operator so buf

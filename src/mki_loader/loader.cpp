@@ -19,6 +19,15 @@
 #include "mki/utils/rt/rt.h"
 #include "mki_loader/op_register.h"
 
+namespace {
+void DevPtrDeleter(uint8_t* ptr)
+{
+    if (ptr) {
+        (void)Mki::MkiRtMemFreeDevice(ptr);
+    }
+}
+}
+
 namespace Mki {
 Loader::Loader(const OperationCreators &operationCreators, const KernelCreators &kernelCreators,
                const BinaryBasicInfoMap &binaryMap)
@@ -79,6 +88,103 @@ bool Loader::CreateKernels()
     return true;
 }
 
+bool Loader::GetAicpuDeviceKernelSo(uint32_t &fileSize)
+{
+    int ret = 0;
+    // Parse FileName
+    std::string searchPath = Mki::GetEnv("ASDOPS_HOME_PATH");
+    MKI_CHECK(!searchPath.empty(), "ASDOPS_HOME_PATH not exists!", return false);
+    searchPath += "/lib/libasdops_aicpu_kernels.so";
+
+    // Get FileSize
+    struct stat buf;
+    MKI_CHECK(stat(searchPath.c_str(), &buf) >= 0, "failed to access aicpu kernel so", return false);
+    MKI_CHECK(buf.st_size < std::numeric_limits<uint32_t>::max(),
+                "file size " << buf.st_size << " is larger than expected ~4GB", return false);
+    fileSize = static_cast<uint32_t>(buf.st_size);
+    MKI_LOG(DEBUG) << "fileSize: " << fileSize;
+
+    // Load file to HOST
+    std::unique_ptr<uint8_t[]> aicpuKernelSo(new (std::nothrow) uint8_t[fileSize]);
+    MKI_CHECK(aicpuKernelSo != nullptr, "alloc host mem for aicpu kernel so failed", return false);
+
+    FILE *inputFile = nullptr;
+    inputFile = fopen(searchPath.c_str(), "rb");
+    MKI_CHECK(inputFile != nullptr, "FILE not exists!", return false);
+    do {
+        fseek(inputFile, 0, SEEK_SET);
+        ret = fread(aicpuKernelSo.get(), sizeof(uint8_t), fileSize, inputFile);
+    } while (ret != static_cast<int64_t>(fileSize));
+    fclose(inputFile);
+    MKI_LOG(DEBUG) << "aicpu kernels binary file stream closed";
+
+    // memcpy .so to DEVICE
+    uint8_t *soDevAddr{nullptr};
+    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soDevAddr), fileSize, MKIRT_MEM_DEFAULT);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for aicpuSoHandle_ fail, errCode:" << ret, return false);
+    aicpuSoHandle_ = std::unique_ptr<uint8_t[], RtPtrDeleter>(soDevAddr, DevPtrDeleter);
+
+    ret = Mki::MkiRtMemCopy(aicpuSoHandle_.get(), fileSize, aicpuKernelSo.get(), fileSize,
+                            MKIRT_MEMCOPY_HOST_TO_DEVICE);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for aicpuSoHandle_ fail, errCode:" << ret, return false);
+    return true;
+}
+
+bool Loader::LoadAicpuKernelBinarys()
+{
+    uint32_t fileSize = 0;
+    MKI_CHECK(GetAicpuDeviceKernelSo(fileSize), "Failed to get aicpu kernels binary", return false);
+
+    int ret = 0;
+    // memcpy .so name to DEVICE
+    const char *soName = "libasdops_aicpu_kernels.so";
+    uint32_t soNameLen = strlen(soName);
+    uint8_t *soNameDevAddr{nullptr};
+    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soNameDevAddr), soNameLen, MKIRT_MEM_DEFAULT);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for soNameDevAddr fail, errCode:" << ret, return false);
+    aicpuSoNameHandle_ = std::unique_ptr<uint8_t[], RtPtrDeleter>(soNameDevAddr, DevPtrDeleter);
+
+    ret = Mki::MkiRtMemCopy(aicpuSoNameHandle_.get(), soNameLen, soName, soNameLen, MKIRT_MEMCOPY_HOST_TO_DEVICE);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for soDevAddr fail, errCode:" << ret, return false);
+
+    // Prep so loading args
+    RtLoadOpFromBufArgs opArgs;
+    opArgs.kernelSoBuf = reinterpret_cast<uint64_t>(aicpuSoHandle_.get());
+    opArgs.kernelSoBufLen = fileSize;
+    opArgs.kernelSoName = reinterpret_cast<uint64_t>(aicpuSoNameHandle_.get());
+    opArgs.kernelSoNameLen = soNameLen;
+    uint32_t argsSize = sizeof(RtLoadOpFromBufArgs);
+
+    // launch to reg
+    MkiRtStream stream = nullptr;
+    ret = Mki::MkiRtStreamCreate(&stream, 0);
+    MKI_CHECK(ret == MKIRT_SUCCESS && stream != nullptr,
+                "MkiRtStreamCreate for LoadOpFromBuf fail, errCode:" << ret, return false);
+
+    RtArgsExT argsInfo = {};
+    argsInfo.args = &opArgs;
+    argsInfo.isNoNeedH2DCopy = 0;
+    argsInfo.argsSize = argsSize;
+
+    RtKernelLaunchNamesT launchName = {};
+    launchName.soName = nullptr;
+    launchName.kernelName = "loadOpFromBuf";
+    launchName.opName = "";
+
+    MkiRtAicpuKernelParam kernelParam = {};
+    kernelParam.blockDim = 1;
+    kernelParam.argsEx = &argsInfo;
+
+    ret = Mki::MkiRtAicpuFunctionLaunchWithFlag(&launchName, &kernelParam, stream);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtAicpuFunctionLaunchWithFlag for LoadOpFromBuf fail, errCode:" << ret,
+                return false);
+    ret = Mki::MkiRtStreamSynchronize(stream);
+    MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtStreamSynchronize for LoadOpFromBuf fail, errCode:" << ret, return false);
+    Mki::MkiRtStreamDestroy(stream);
+
+    return true;
+}
+
 bool Loader::CreateAicpuKernels()
 {
     auto &kernelCreators = AicpuKernelRegister::GetKernelCreators();
@@ -96,91 +202,7 @@ bool Loader::CreateAicpuKernels()
     }
 
     if (kernelCreators.size() != 0) {
-        int ret = 0;
-        // Parse FileName
-        std::string searchPath = Mki::GetEnv("ASDOPS_HOME_PATH");
-        MKI_CHECK(!searchPath.empty(), "ASDOPS_HOME_PATH not exists!", return false);
-        searchPath += "/lib/libasdops_aicpu_kernels.so";
-        MKI_LOG(INFO) << "serachPath: " << searchPath;
-
-        // Get FileSize
-        struct stat buf;
-        MKI_CHECK(stat(searchPath.c_str(), &buf) >= 0, "failed to access aicpu kernels binary", return false);
-        uint32_t fileSize = (unsigned long)buf.st_size;
-        MKI_LOG(DEBUG) << "fileSize: " << fileSize;
-
-        // Load file to HOST
-        uint32_t *aicpuKernelSo{nullptr};
-        ret = Mki::MkiRtMemMallocHost((void **)&aicpuKernelSo, fileSize);
-        MKI_CHECK(ret == 0, "MkiRtMemMallocHost for aicpu kernel so failed", return false);
-
-        FILE *inputFile = nullptr;
-        inputFile = fopen(searchPath.c_str(), "rb");
-        MKI_CHECK(inputFile != nullptr, "FILE not exists!", return false);
-        do{
-            fseek(inputFile, 0, SEEK_SET);
-            ret = fread(aicpuKernelSo, sizeof(uint8_t), fileSize, inputFile);
-        } while(ret != (int)fileSize);
-        fclose(inputFile);
-        MKI_LOG(DEBUG) << "aicpu kernels binary file stream closed";
-
-        // memcpy .so to DEVICE
-        uint32_t *soDevAddr{nullptr};
-        ret = Mki::MkiRtMemMallocDevice((void **)&soDevAddr, fileSize, MKIRT_MEM_DEFAULT);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for soDevAddr fail, errCode:" << ret, return false);
-        ret = Mki::MkiRtMemCopy(soDevAddr, fileSize, aicpuKernelSo, fileSize, MKIRT_MEMCOPY_HOST_TO_DEVICE);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for soDevAddr fail, errCode:" << ret, return false);
-
-        // memcpy .so name to DEVICE
-        const char *soName = "libasdops_aicpu_kernels.so";
-        uint32_t soNameLen = strlen(soName);
-        uint32_t *soNameDevAddr{nullptr};
-        ret = Mki::MkiRtMemMallocDevice((void **)&soNameDevAddr, soNameLen, MKIRT_MEM_DEFAULT);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for soNameDevAddr fail, errCode:" << ret, return false);
-        ret = Mki::MkiRtMemCopy(soNameDevAddr, soNameLen, soName, soNameLen, MKIRT_MEMCOPY_HOST_TO_DEVICE);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for soDevAddr fail, errCode:" << ret, return false);
-
-        // Prep so loading args
-        RtLoadOpFromBufArgs opArgs;
-        opArgs.kernelSoBuf = (uint64_t)soDevAddr;
-        opArgs.kernelSoBufLen = fileSize;
-        opArgs.kernelSoName = (uint64_t)soNameDevAddr;
-        opArgs.kernelSoNameLen = soNameLen;
-        uint32_t argsSize = sizeof(RtLoadOpFromBufArgs);
-
-        // memcpy so loading args to DEVICE
-        uint32_t *opArgsHostAddr{nullptr};
-        ret = Mki::MkiRtMemMallocHost((void **)&opArgsHostAddr, argsSize);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for soNameDevAddr fail, errCode:" << ret, return false);
-        ret = Mki::MkiRtMemCopy(opArgsHostAddr, argsSize, &opArgs, argsSize, MKIRT_MEMCOPY_HOST_TO_HOST);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemCopy for soDevAddr fail, errCode:" << ret, return false);
-
-        // launch to reg
-        MkiRtStream stream = nullptr;
-        ret = Mki::MkiRtStreamCreate(&stream, 0);
-        MKI_CHECK(ret == MKIRT_SUCCESS && stream != nullptr,
-                  "MkiRtStreamCreate for LoadOpFromBuf fail, errCode:" << ret, return false);
-
-        RtArgsExT argsInfo = {};
-        argsInfo.args = opArgsHostAddr;
-        argsInfo.isNoNeedH2DCopy = 0;
-        argsInfo.argsSize = argsSize;
-
-        RtKernelLaunchNamesT launchName = {};
-        launchName.soName = nullptr;
-        launchName.kernelName = "loadOpFromBuf";
-        launchName.opName = "";
-
-        MkiRtAicpuKernelParam kernelParam = {};
-        kernelParam.blockDim = 1;
-        kernelParam.argsEx = &argsInfo;
-
-        ret = Mki::MkiRtAicpuFunctionLaunchWithFlag(&launchName, &kernelParam, stream);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtAicpuFunctionLaunchWithFlag for LoadOpFromBuf fail, errCode:" << ret,
-                  return false);
-        ret = Mki::MkiRtStreamSynchronize(stream);
-        MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtStreamSynchronize for LoadOpFromBuf fail, errCode:" << ret, return false);
-        Mki::MkiRtStreamDestroy(stream);
+        return LoadAicpuKernelBinarys();
     }
 
     return true;
