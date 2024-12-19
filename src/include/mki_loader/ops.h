@@ -29,21 +29,21 @@ public:
     /**
      * @brief Get the All Operations object
      *
-     * @return std::vector<Operation *> &
+     * @return std::vector<Mki::Operation *> &
      */
     std::vector<Mki::Operation *> GetAllOperations() const;
     /**
      * @brief Get the Operation By Name object
      *
      * @param[const std::string&] opName
-     * @return Operation*
+     * @return Mki::Operation*
      */
     Mki::Operation *GetOperationByName(const std::string &opName) const;
     /**
      * @brief Get the Kernel Instance By Name
      *
      * @param[const std::string&] opName
-     * @return Kernel*
+     * @return Mki::Kernel*
      */
     Mki::Kernel *GetKernelInstance(const std::string &kernelName) const;
 
