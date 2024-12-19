@@ -15,9 +15,8 @@
 #include "mki/kernel.h"
 #include "mki/operation.h"
 
-namespace OpSpace {
-using namespace Mki;
-class OpSchedule;
+namespace Mki {
+class OpScheduleBase;
 
 class Ops {
 public:
