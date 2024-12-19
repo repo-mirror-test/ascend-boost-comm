@@ -29,14 +29,14 @@ public:
     Operation *GetOperationByName(const std::string &opName) const;
     Kernel *GetKernelInstance(const std::string &kernelName) const;
 
+protected:
+    void AddAllOperations(const OperationCreators &opCreators, const KernelCreators &kerCreators,
+                          const BinaryBasicInfoMap &binMap);
+
 private:
     void AddOperationByName(Operation *op);
     void AddOperationKernels(const Operation *op);
     void AddKernel(Kernel const *kernel);
-
-protected:
-    void AddAllOperations(const OperationCreators &opCreators, const KernelCreators &kerCreators,
-                          const BinaryBasicInfoMap &binMap);
 
 private:
     std::unique_ptr<Loader> loader_;
