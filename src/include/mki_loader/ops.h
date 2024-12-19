@@ -14,8 +14,6 @@
 #include <memory>
 #include "mki/kernel.h"
 #include "mki/operation.h"
-#include "mki/tensor.h"
-#include "mki/run_info.h"
 
 namespace OpSpace {
 using namespace Mki;
@@ -34,29 +32,29 @@ public:
      *
      * @return std::vector<Operation *> &
      */
-    std::vector<Operation *> GetAllOperations() const;
+    std::vector<Mki::Operation *> GetAllOperations() const;
     /**
      * @brief Get the Operation By Name object
      *
      * @param[const std::string&] opName
      * @return Operation*
      */
-    Operation *GetOperationByName(const std::string &opName) const;
+    Mki::Operation *GetOperationByName(const std::string &opName) const;
     /**
      * @brief Get the Kernel Instance By Name
      *
      * @param[const std::string&] opName
      * @return Kernel*
      */
-    Kernel *GetKernelInstance(const std::string &kernelName) const;
+    Mki::Kernel *GetKernelInstance(const std::string &kernelName) const;
 
 private:
     Ops();
     ~Ops();
 
 private:
-    std::unique_ptr<OpSchedule> opSchedule_;
+    std::unique_ptr<Mki::OpScheduleBase> opSchedule_;
 };
-} // namespace OpSpace
+} // namespace Mki
 
 #endif
