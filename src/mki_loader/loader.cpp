@@ -29,9 +29,14 @@ void DevPtrDeleter(uint8_t* ptr)
 }
 
 namespace Mki {
-Loader::Loader(const OperationCreators &operationCreators, const KernelCreators &kernelCreators,
+Loader::Loader(const OperationCreators &operationCreators,
+               const KernelCreators &kernelCreators,
+               const AicpuKernelCreators &aicpuKernelCreators,
                const BinaryBasicInfoMap &binaryMap)
-    : operationCreators_(operationCreators), kernelCreators_(kernelCreators), binaryMap_(binaryMap) { Load(); }
+    : operationCreators_(operationCreators),
+      kernelCreators_(kernelCreators),
+      aicpuKernelCreators_(aicpuKernelCreators),
+      binaryMap_(binaryMap) { Load(); }
 
 Loader::~Loader() {}
 
@@ -182,8 +187,7 @@ bool Loader::LoadAicpuKernelBinarys()
 
 bool Loader::CreateAicpuKernels()
 {
-    auto &kernelCreators = AicpuKernelRegister::GetKernelCreators();
-    for (const auto &creatorInfo : kernelCreators) {
+    for (const auto &creatorInfo : aicpuKernelCreators_) {
         const auto &kernelName = creatorInfo.kernelName;
 
         auto kernelCreator = creatorInfo.func;
@@ -196,7 +200,7 @@ bool Loader::CreateAicpuKernels()
         opKernel[kernelName] = kernel;
     }
 
-    if (kernelCreators.size() != 0) {
+    if (aicpuKernelCreators_.size() != 0) {
         return LoadAicpuKernelBinarys();
     }
 

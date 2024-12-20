@@ -62,12 +62,6 @@ public:
 
 class AicpuKernelRegister {
 public:
-    struct CreatorInfo {
-        NewAicpuKernelFunc func;
-        std::string opName;
-        std::string kernelName;
-    };
-
     AicpuKernelRegister(const char *opName, const char *kerName, NewAicpuKernelFunc func) noexcept
     {
         MKI_CHECK(opName != nullptr, "opName is nullptr", return);
@@ -77,9 +71,9 @@ public:
         MKI_NAMESPACE_LOG(DEBUG, OpSpace) << " register aicpu kernel " << kerName << " of operation " << opName;
     }
 
-    static std::vector<CreatorInfo> &GetKernelCreators()
+    static AicpuKernelCreators &GetKernelCreators()
     {
-        static std::vector<CreatorInfo> kernelCreators;
+        static AicpuKernelCreators kernelCreators;
         return kernelCreators;
     }
 };
@@ -109,6 +103,7 @@ public:
     {
         AddAllOperations(OperationRegister::GetOperationCreators(),
                          KernelRegister::GetKernelCreators(),
+                         AicpuKernelRegister::GetKernelCreators(),
                          KernelBinaryRegister::GetKernelBinaryMap());
     }
     ~OpSchedule() override {}

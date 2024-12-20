@@ -23,7 +23,7 @@ class Loader {
 using RtPtrDeleter = std::function<void(uint8_t *)>;
 public:
     Loader(const OperationCreators &operationCreators, const KernelCreators &kernelCreators,
-           const BinaryBasicInfoMap &binaryMap);
+           const AicpuKernelCreators &aicpuKernelCreators, const BinaryBasicInfoMap &binaryMap);
     ~Loader();
     Loader() = delete;
     Loader(const Loader &) = delete;
@@ -47,6 +47,7 @@ private:
 private:
     const OperationCreators &operationCreators_;
     const KernelCreators &kernelCreators_;
+    const AicpuKernelCreators &aicpuKernelCreators_;
     const BinaryBasicInfoMap &binaryMap_;
 
     std::atomic_bool loadSuccess_{false};
