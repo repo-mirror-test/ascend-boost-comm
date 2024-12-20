@@ -19,9 +19,9 @@
 #include "mki/utils/log/log.h"
 #include "mki_loader/op_schedule_base.h"
 
-#define _MACRO_TO_STR(name) #name
-#define MACRO_TO_STR(name) _MACRO_TO_STR(name)
-#define MKI_NAMESPACE_LOG(level, spaceName) MKI_LOG(level) << (_MACRO_TO_STR(spaceName))
+#define MACRO_TO_STR_INTERNAL(name) #name
+#define MACRO_TO_STR(name) MACRO_TO_STR_INTERNAL(name)
+#define MKI_NAMESPACE_LOG(level, spaceName) MKI_LOG(level) << (MACRO_TO_STR_INTERNAL(spaceName))
 
 namespace OpSpace {
 using namespace Mki;
