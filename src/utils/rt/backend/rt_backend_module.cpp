@@ -54,7 +54,7 @@ int RtBackend::ModuleCreate(MkiRtModuleInfo *moduleInfo, MkiRtModule *module)
     *module = moduleProxy;
 
     const uint32_t maxLen = 100;
-    char getVersion[maxLen];
+    char *getVersion = nullptr;
     auto ret = MkiRtDeviceGetSocVersion(getVersion, maxLen);
     if (ret != MKIRT_SUCCESS) {
         MKI_LOG(ERROR) << "Failed to get soc version";

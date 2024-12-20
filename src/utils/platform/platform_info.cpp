@@ -31,7 +31,7 @@ void PlatformInfo::Init()
     }
 
     const uint32_t maxLen = 100;
-    char version[maxLen];
+    char *version = nullptr;
     if (MkiRtDeviceGetSocVersion(version, maxLen) != MKIRT_SUCCESS) {
         MKI_LOG(ERROR) << "Failed to get soc version";
         return;

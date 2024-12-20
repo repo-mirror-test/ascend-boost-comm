@@ -8,12 +8,12 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/utils/memset/kernel)
 set_source_files_properties(${BINARY_SRC_LIST} PROPERTIES GENERATED TRUE)
 add_library(mki_static STATIC ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki_static ${BINARY_TARGET_LIST})
-target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa runtime)
+target_link_libraries(mki_static PUBLIC dl pthread c_sec mmpa runtime ascendcl)
 target_compile_definitions(mki_static PRIVATE ${NAMESPACE}=Mki)
 
 add_library(mki SHARED ${SOURCE_FILES} ${BINARY_SRC_LIST})
 add_dependencies(mki ${BINARY_TARGET_LIST})
-target_link_libraries(mki PUBLIC dl pthread c_sec mmpa profapi runtime)
+target_link_libraries(mki PUBLIC dl pthread c_sec mmpa profapi runtime ascendcl)
 target_compile_definitions(mki PRIVATE ${NAMESPACE}=Mki)
 
 add_library(mki_loader STATIC ${LOADER_SOURCE_FILES})
@@ -30,6 +30,7 @@ add_custom_command(
     VERBATIM)
 
 add_custom_target(${NAMESPACE}_ops_h ALL DEPENDS ops.h)
+include_directories(${ASCEND_HOME_PATH}/include)
 
 # install libs and includes
 install(TARGETS mki_static DESTINATION lib)
