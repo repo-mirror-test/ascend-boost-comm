@@ -89,7 +89,6 @@ def gen_compile_cmd_v300(args, dst: str, sub_arch: str, compile_options):
                     "-mllvm", "-cce-aicore-addr-transform",
                     "-mllvm", "--cce-aicore-or-combine=false",
                     "-mllvm", "-instcombine-code-sinking=false",
-                    "-Xclang", "-fcce-vf-vl=256",
                     "-mllvm", "-cce-aicore-jump-expand=false",
                     "-mllvm", "-cce-aicore-mask-opt=false"]
     compile_cmd += ["-std=c++17"]
@@ -124,7 +123,7 @@ def gen_json(args, kernels):
     json_template["binFileName"] = args.kernel
     for kernel in kernels:
         json_template["kernelList"].append({"kernelName": kernel})
-    if args.soc == "ascend910" or args.soc == "ascend310p":
+    if args.soc == "ascend910" or args.soc == "ascend310p" or args.soc == "ascend310b":
         json_template["coreType"] = "AiCore"
         json_template["core_type"] = "AIC"
         json_template["magic"] = "RT_DEV_BINARY_MAGIC_ELF"
