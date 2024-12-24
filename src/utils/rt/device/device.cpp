@@ -43,14 +43,14 @@ int MkiRtDeviceGetSocVersion(std::string &version, uint32_t maxLen)
 {
     const char* version2 = aclrtGetSocName();
 
-    version = version2;
+    // version = version2;
 
-    MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
-    MKI_LOG(INFO) << "DeviceVersion2: " << version2; // 打印 version2
+    // MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
+    // MKI_LOG(INFO) << "DeviceVersion2: " << version2; // 打印 version2
 
-    if (version.empty()) {
-        return -1;
-    }
+    // if (version.empty()) {
+    //     return -1;
+    // }
 
     return 0;
 }
