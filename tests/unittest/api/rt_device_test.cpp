@@ -21,14 +21,12 @@ TEST(RtDeviceTest, RtDeviceSetSocVersionTest)
 
 TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
 {
-    char* getVersion = nullptr;
+    std::string getVersion;
     uint32_t maxLen = 100;
     int status = MkiRtDeviceGetSocVersion(getVersion, maxLen);
     EXPECT_EQ(status, MKIRT_SUCCESS);
-    // MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
-    if (getVersion != nullptr) {
+    if (!getVersion.empty()) {
         MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
-        delete[] getVersion;
     }
 }
 } // namespace Mki

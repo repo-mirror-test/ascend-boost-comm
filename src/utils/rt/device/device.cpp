@@ -34,40 +34,21 @@ int MkiRtDeviceSetSocVersion(const char *version)
     return BackendFactory::GetBackend()->DeviceSetSocVersion(version);
 }
 
-int MkiRtDeviceGetSocVersion(char* &version, uint32_t maxLen)
+int MkiRtDeviceGetSocVersion(std::string &version, uint32_t maxLen)
 {
     const char* version2 = aclrtGetSocName();
-    // 如果 version 是一个已分配的指针，则先释放它
-    if (version != nullptr) {
-        delete[] version;
-    }
 
-    version = new char[strlen(version2) + 1];
-    strcpy(version, version2);
+    version = version2;
 
     MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
     MKI_LOG(INFO) << "DeviceVersion2: " << version2; // 打印 version2
 
     if (strlen(version2) == 0) {
-        return 1;  // 返回错误码
+        return 1;
     }
 
-    // 假设后续有其他操作，这里只是一个示例
     return 0;
 }
-// int MkiRtDeviceGetSocVersion(char *version, uint32_t maxLen)
-// {
-//     const char* version2 = aclrtGetSocName();
-//     version = new char[strlen(version2) + 1];
-//     strcpy(version, version2);
-//     MKI_LOG(INFO) << "DeviceVersion1: " << version;
-//     MKI_LOG(INFO) << "DeviceVersion2: " << version2;
-//     if (strlen(version2) == 0) {
-//         return 1;
-//     }
-//     // return BackendFactory::GetBackend()->DeviceGetSocVersion(version, maxLen);
-//     return 0;
-// }
 
 int MkiRtDeviceGetBareTgid(uint32_t *pid)
 {
