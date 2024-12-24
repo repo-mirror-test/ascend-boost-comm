@@ -34,7 +34,7 @@ TEST(PlatformInfoTest, SupportL0c2out) {
     // }
     // Mki::PlatformInfo& platformInfo = Mki::PlatformInfo::PlatformInfo::Instance();
     // bool result = platformInfo.SupportL0c2out();
-    ASSERT_TRUE(true);
+    // ASSERT_TRUE(true);
 }
 
 TEST(PlatformInfoTest, SupportL0c2out0) {
