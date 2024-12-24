@@ -140,6 +140,7 @@ bool PlatformInfo::SupportL0c2out() { return GetAicoreIntrinsic("Intrinsic_fix_p
 
 bool PlatformInfo::GetAicoreIntrinsic(const std::string &intrinsicName)
 {
+    return true;
     std::string val;
     (void)platformConfigs_.GetPlatformSpec("AICoreintrinsicDtypeMap", intrinsicName, val);
     if (!val.empty()) {
