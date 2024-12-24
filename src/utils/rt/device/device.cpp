@@ -34,27 +34,26 @@ int MkiRtDeviceSetSocVersion(const char *version)
     return BackendFactory::GetBackend()->DeviceSetSocVersion(version);
 }
 
-int MkiRtDeviceGetSocVersion(char *version, uint32_t maxLen)
-{
-    return BackendFactory::GetBackend()->DeviceGetSocVersion(version, maxLen);
-}
-
-// int MkiRtDeviceGetSocVersion(std::string &version, uint32_t maxLen)
+// int MkiRtDeviceGetSocVersion(char *version, uint32_t maxLen)
 // {
-    // const char* version2 = aclrtGetSocName();
-
-    // version = version2;
-
-    // MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
-    // MKI_LOG(INFO) << "DeviceVersion2: " << version2; // 打印 version2
-
-    // if (strlen(version2) == 0) {
-    //     return 1;
-    // }
-
-    // return 0;
-    
+//     return BackendFactory::GetBackend()->DeviceGetSocVersion(version, maxLen);
 // }
+
+int MkiRtDeviceGetSocVersion(std::string &version, uint32_t maxLen)
+{
+    const char* version2 = aclrtGetSocName();
+
+    version = version2;
+
+    MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
+    MKI_LOG(INFO) << "DeviceVersion2: " << version2; // 打印 version2
+
+    if (version.empty()) {
+        return -1;
+    }
+
+    return 0;
+}
 
 int MkiRtDeviceGetBareTgid(uint32_t *pid)
 {
