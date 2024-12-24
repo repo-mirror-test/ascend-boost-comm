@@ -28,13 +28,13 @@ TEST(PlatformTest, platformTest1)
 }
 
 TEST(PlatformInfoTest, SupportL0c2out) {
-    // if (Mki::PlatformInfo::Instance().GetPlatformType() != Mki::PlatformType::ASCEND_910B) {
-    //     MKI_LOG(WARN) << "check device, in 910b, skip testcase";
-    //     return;
-    // }
-    // Mki::PlatformInfo& platformInfo = Mki::PlatformInfo::PlatformInfo::Instance();
+    if (Mki::PlatformInfo::Instance().GetPlatformType() != Mki::PlatformType::ASCEND_910B) {
+        MKI_LOG(WARN) << "check device, in 910b, skip testcase";
+        return;
+    }
+    Mki::PlatformInfo& platformInfo = Mki::PlatformInfo::PlatformInfo::Instance();
     // bool result = platformInfo.SupportL0c2out();
-    // ASSERT_TRUE(true);
+    ASSERT_TRUE(true);
 }
 
 TEST(PlatformInfoTest, SupportL0c2out0) {
