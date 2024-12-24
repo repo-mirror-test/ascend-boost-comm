@@ -37,6 +37,7 @@ void PlatformInfo::Init()
         MKI_LOG(ERROR) << "Failed to get soc version";
         return;
     }
+    MKI_LOG(INFO) << "version: " << version;
     std::string socVersion(version);
     MKI_LOG(INFO) << "PlatformInfo get soc version: " << socVersion;
 
