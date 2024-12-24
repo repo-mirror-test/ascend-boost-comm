@@ -46,6 +46,7 @@ function fn_install_cann_and_kernel()
         ./Ascend910B-opp_kernel-*.run --full --quiet --nox11 --install-path=${cann_install_path}
         ./Ascend310P-opp_kernel-*.run --full --quiet --nox11 --install-path=${cann_install_path}
         ./Ascend910-opp_kernel-*.run --full --quiet --nox11 --install-path=${cann_install_path}
+        ./Ascend310B-opp_kernel-*.run --full --quiet --nox11 --install-path=${cann_install_path}
         ./CANN-hccl-*.run --full --quiet --nox11 --install-path=${cann_install_path}
     fi
     set +e
@@ -268,12 +269,6 @@ function fn_main()
             ENABLE_COVERAGE=ON
             ;;
         --namespace=*)
-            arg2=${arg2#*=}
-            if [ -z $arg2 ];then
-                echo "the namespace is not set. This should be set like --namespace=Mki"
-            else
-                COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNAMESPACE:STRING=$arg2"
-            fi
             ;;
         "--no_werror")
             COMPILE_OPTIONS="${COMPILE_OPTIONS} -DNO_WERROR=ON"
