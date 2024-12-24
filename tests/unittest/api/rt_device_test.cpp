@@ -19,14 +19,22 @@ TEST(RtDeviceTest, RtDeviceSetSocVersionTest)
     EXPECT_EQ(status, MKIRT_SUCCESS);
 }
 
+// TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
+// {
+//     std::string getVersion;
+//     uint32_t maxLen = 100;
+//     int status = MkiRtDeviceGetSocVersion(getVersion, maxLen);
+//     EXPECT_EQ(status, MKIRT_SUCCESS);
+//     if (!getVersion.empty()) {
+//         MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
+//     }
+// }
 TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
 {
-    std::string getVersion;
+    char getVersion[100];
     uint32_t maxLen = 100;
     int status = MkiRtDeviceGetSocVersion(getVersion, maxLen);
     EXPECT_EQ(status, MKIRT_SUCCESS);
-    if (!getVersion.empty()) {
-        MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
-    }
+    MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
 }
 } // namespace Mki

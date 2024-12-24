@@ -56,8 +56,6 @@ int RtBackend::DeviceSetSocVersion(const char *version)
 
 int RtBackend::DeviceGetSocVersion(char *version, uint32_t maxLen)
 {
-    // const char* version2 = aclrtGetSocName();
-    // std::cout << version2 << endl;
     CHECK_STATUS_RETURN(rtGetSocVersion(version, maxLen));
 }
 
