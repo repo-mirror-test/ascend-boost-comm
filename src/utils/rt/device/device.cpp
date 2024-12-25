@@ -42,7 +42,10 @@ int MkiRtDeviceSetSocVersion(const char *version)
 int MkiRtDeviceGetSocVersion(std::string &version, uint32_t maxLen)
 {
     const char* version2 = aclrtGetSocName();
-
+    if (version2 == nullptr) {
+        MKI_LOG(ERROR) << "Failed to get SOC name";
+        return -1;  // 或者错误码
+    }
     version = version2;
 
     MKI_LOG(INFO) << "DeviceVersion1: " << version; // 打印 version
