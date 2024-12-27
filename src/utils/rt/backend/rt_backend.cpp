@@ -118,7 +118,8 @@ int RtBackend::MemCopy(void *dst, uint64_t dstLen, const void *srcPtr, uint64_t 
 int RtBackend::MemCopyAsync(void *dst, uint64_t dstLen, const void *srcPtr, uint64_t srcLen,
                             MkiRtMemCopyType copyType, void *stream)
 {
-    CHECK_STATUS_RETURN(aclrtMemcpyAsync(dst, dstLen, srcPtr, srcLen, static_cast<aclrtMemcpyKind>(copyType), static_cast<aclrtStream>(stream)));
+    CHECK_STATUS_RETURN(aclrtMemcpyAsync(dst, dstLen, srcPtr, srcLen, static_cast<aclrtMemcpyKind>(copyType),
+                                        static_cast<aclrtStream>(stream)));
 }
 
 int RtBackend::MemSetAsync(void *dst, uint64_t destMax, uint32_t value, uint64_t count, void *stream)
