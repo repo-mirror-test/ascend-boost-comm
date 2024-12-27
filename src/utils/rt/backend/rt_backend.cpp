@@ -39,13 +39,13 @@ int RtBackend::DeviceGetCurrent(int32_t *devId)
 int RtBackend::DeviceSetCurrent(int32_t devId)
 {
     MKI_LOG(INFO) << "rt SetDevice start, devId:" << devId;
-    CHECK_STATUS_WITH_DESC_RETURN(aclrtSetDevice(devId), "rt SetDevice");
+    CHECK_STATUS_WITH_DESC_RETURN(aclrtSetDevice(devId), "aclrt SetDevice");
 }
 
 int RtBackend::DeviceResetCurrent(int32_t devId)
 {
     MKI_LOG(INFO) << "rt ResetDevice start, devId:" << devId;
-    CHECK_STATUS_WITH_DESC_RETURN(aclrtResetDevice(devId), "rt DeviceReset");
+    CHECK_STATUS_WITH_DESC_RETURN(aclrtResetDevice(devId), "aclrt DeviceReset");
 }
 
 int RtBackend::DeviceSetSocVersion(const char *version)
@@ -71,9 +71,7 @@ int RtBackend::DeviceGetPairDevicesInfo(uint32_t devId, uint32_t otherDevId, int
 
 int RtBackend::StreamCreate(MkiRtStream *stream, int32_t priority)
 {
-    
-    // CHECK_STATUS_WITH_DESC_RETURN(rtStreamCreate(stream, priority), "rt Create Stream");
-    CHECK_STATUS_WITH_DESC_RETURN(aclrtCreateStream(stream), "rt Create Stream");
+    CHECK_STATUS_WITH_DESC_RETURN(aclrtCreateStream(stream), "aclrt Create Stream");
 }
 
 int RtBackend::StreamDestroy(MkiRtStream stream)

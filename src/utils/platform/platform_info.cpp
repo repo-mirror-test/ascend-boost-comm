@@ -31,7 +31,6 @@ void PlatformInfo::Init()
     }
 
     const uint32_t maxLen = 100;
-    // char version[maxLen];
     std::string version;
     if (MkiRtDeviceGetSocVersion(version, maxLen) != MKIRT_SUCCESS) {
         MKI_LOG(ERROR) << "Failed to get soc version";
@@ -140,7 +139,6 @@ bool PlatformInfo::SupportL0c2out() { return GetAicoreIntrinsic("Intrinsic_fix_p
 
 bool PlatformInfo::GetAicoreIntrinsic(const std::string &intrinsicName)
 {
-    return true;
     std::string val;
     (void)platformConfigs_.GetPlatformSpec("AICoreintrinsicDtypeMap", intrinsicName, val);
     if (!val.empty()) {

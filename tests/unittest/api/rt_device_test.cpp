@@ -29,12 +29,5 @@ TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
         MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
     }
 }
-// TEST(RtDeviceTest, RtDeviceGetSocVersionTest)
-// {
-//     char getVersion[100];
-//     uint32_t maxLen = 100;
-//     int status = MkiRtDeviceGetSocVersion(getVersion, maxLen);
-//     EXPECT_EQ(status, MKIRT_SUCCESS);
-//     MKI_LOG(INFO) << "DeviceVersion: " << getVersion;
-// }
+
 } // namespace Mki
