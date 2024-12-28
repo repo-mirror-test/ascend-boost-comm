@@ -12,18 +12,18 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <acl/acl.h>
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/log/log.h"
 #include "mki/utils/file_system/file_system.h"
 #include "mki/utils/rt/backend/help_macro.h"
-#include <acl/acl.h>
 
 namespace Mki {
 int RtBackend::DeviceGetCount(int32_t *devCount)
 {
-    MKI_LOG(INFO) << "Rt GetDeviceCount Func start";
+    MKI_LOG(INFO) << "aclrt GetDeviceCount Func start";
 
-    CHECK_STATUS_RETURN(aclrtGetDeviceCount((std::uint32_t *)devCount));
+    CHECK_STATUS_RETURN(aclrtGetDeviceCount(reinterpret_cast<uint32_t*>(devCount)));
 }
 
 int RtBackend::DeviceGetIds(int32_t *devIds, int32_t devIdNum)
@@ -89,10 +89,10 @@ int RtBackend::StreamGetId(MkiRtStream stream, int32_t *streamId)
     CHECK_STATUS_WITH_DESC_RETURN(rtGetStreamId(stream, streamId), "rt GetStreamId");
 }
 
-int RtBackend::MemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType)
+int RtBackend::MemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType)
 {
     MKI_LOG(INFO) << "aclrtMalloc start, size:" << size << ", memType:" << memType;
-    CHECK_STATUS_WITH_DESC_RETURN(aclrtMalloc(devPtr, size, static_cast<aclrtMemMallocPolicy>(memType)), "aclrtMalloc");
+    CHECK_STATUS_WITH_DESC_RETURN(aclrtMalloc(devPtr, size, memType), "aclrtMalloc");
 }
 
 int RtBackend::MemFreeDevice(void *devPtr)

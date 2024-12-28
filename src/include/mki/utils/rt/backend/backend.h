@@ -9,6 +9,7 @@
  */
 #ifndef MKI_UTILS_RT_BACKEND_BACKEND_H
 #define MKI_UTILS_RT_BACKEND_BACKEND_H
+#include <acl/acl.h>
 #include "mki/utils/rt/base/types.h"
 
 namespace Mki {
@@ -35,7 +36,7 @@ public:
     virtual int StreamGetId(MkiRtStream stream, int32_t *streamId) = 0;
 
 public:
-    virtual int MemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType = MKIRT_MEM_DEFAULT) = 0;
+    virtual int MemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType = ACL_MEM_MALLOC_HUGE_FIRST) = 0;
     virtual int MemFreeDevice(void *devPtr) = 0;
     virtual int MemMallocHost(void **hostPtr, uint64_t size) = 0;
     virtual int MemFreeHost(void *hostPtr) = 0;

@@ -11,7 +11,7 @@
 #include "mki/utils/rt/backend/backend_factory.h"
 
 namespace Mki {
-int MkiRtMemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType)
+int MkiRtMemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType)
 {
     return BackendFactory::GetBackend()->MemMallocDevice(devPtr, size, memType);
 }

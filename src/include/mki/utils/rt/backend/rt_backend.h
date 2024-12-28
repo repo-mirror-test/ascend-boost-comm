@@ -9,8 +9,8 @@
  */
 #ifndef MKI_UTILS_RT_BACKEND_RTBACKEND_H
 #define MKI_UTILS_RT_BACKEND_RTBACKEND_H
-#include "mki/utils/rt/backend/backend.h"
 #include <acl/acl_rt.h>
+#include "mki/utils/rt/backend/backend.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -111,7 +111,7 @@ public:
     int StreamGetId(MkiRtStream stream, int32_t *streamId) override;
 
 public:
-    int MemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType) override;
+    int MemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType) override;
     int MemFreeDevice(void *devPtr) override;
     int MemMallocHost(void **hostPtr, uint64_t size) override;
     int MemFreeHost(void *hostPtr) override;

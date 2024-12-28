@@ -9,12 +9,13 @@
  */
 #ifndef MKI_UTILS_RT_MEMORY_MEMORY_H
 #define MKI_UTILS_RT_MEMORY_MEMORY_H
+#include <acl/acl.h>
 #include "mki/utils/rt/base/types.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 namespace Mki {
-int MkiRtMemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType);
+int MkiRtMemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType);
 int MkiRtMemFreeDevice(void *devPtr);
 int MkiRtMemMallocHost(void **hostPtr, uint64_t size);
 int MkiRtMemFreeHost(void *hostPtr);
