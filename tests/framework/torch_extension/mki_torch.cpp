@@ -160,7 +160,7 @@ std::string MkiTorch::AddWorkspace(const Mki::KernelInfo &kernelInfo, Mki::RunIn
     }
     MKI_LOG(INFO) << "Workspace size: " << bufferSize;
     uint8_t *deviceBuffer = nullptr;
-    int ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceBuffer), bufferSize, MKIRT_MEM_DEFAULT);
+    int ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceBuffer), bufferSize, ACL_MEM_MALLOC_HUGE_FIRST);
     if (ret != MKIRT_SUCCESS) {
         MKI_LOG(ERROR) << "MkiRtMemMallocDevice fail, errCode:" << ret << ", errName:" << Mki::MkiRtErrorName(ret)
                        << "errDesc:" << Mki::MkiRtErrorDesc(ret);
@@ -196,7 +196,7 @@ std::string MkiTorch::InitTilingAtMkiTorch(std::shared_ptr<Mki::Kernel> kernel, 
     MKI_CHECK(status.Ok(), "failed to init op", return "failed to init op");
 
     int st = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&deviceLaunchBuffer_),
-                                       launchBufferSize, MKIRT_MEM_DEFAULT);
+                                       launchBufferSize, ACL_MEM_MALLOC_HUGE_FIRST);
     MKI_CHECK(st == MKIRT_SUCCESS, "MkiRtMemMallocDevice error", return "MkiRtMemMallocDevice error");
 
     st = Mki::MkiRtMemCopy(deviceLaunchBuffer_, launchBufferSize,
