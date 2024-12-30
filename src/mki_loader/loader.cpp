@@ -9,7 +9,6 @@
  */
 #include "loader.h"
 #include <fstream>
-#include <acl/acl.h>
 #include "mki/base/operation_base.h"
 #include "mki/base/kernel_base.h"
 #include "mki/bin_handle.h"
@@ -121,7 +120,7 @@ bool Loader::GetAicpuDeviceKernelSo(uint32_t &fileSize)
 
     // memcpy .so to DEVICE
     uint8_t *soDevAddr{nullptr};
-    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soDevAddr), fileSize, ACL_MEM_MALLOC_HUGE_FIRST);
+    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soDevAddr), fileSize, MKIRT_MEM_DEFAULT);
     MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for aicpuSoHandle_ fail, errCode:" << ret, return false);
     aicpuSoHandle_ = std::unique_ptr<uint8_t[], RtPtrDeleter>(soDevAddr, DevPtrDeleter);
 
@@ -141,7 +140,7 @@ bool Loader::LoadAicpuKernelBinarys()
     const char *soName = "libasdops_aicpu_kernels.so";
     uint32_t soNameLen = strlen(soName);
     uint8_t *soNameDevAddr{nullptr};
-    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soNameDevAddr), soNameLen, ACL_MEM_MALLOC_HUGE_FIRST);
+    ret = Mki::MkiRtMemMallocDevice(reinterpret_cast<void **>(&soNameDevAddr), soNameLen, MKIRT_MEM_DEFAULT);
     MKI_CHECK(ret == MKIRT_SUCCESS, "MkiRtMemMallocDevice for soNameDevAddr fail, errCode:" << ret, return false);
     aicpuSoNameHandle_ = std::unique_ptr<uint8_t[], RtPtrDeleter>(soNameDevAddr, DevPtrDeleter);
 

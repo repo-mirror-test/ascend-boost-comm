@@ -32,7 +32,7 @@ void MallocDevice(uint8_t **p, uint64_t len)
     MKI_LOG(INFO) << "malloc " << len << " bytes for memset";
     std::vector<uint8_t> src(len, 0x78);
     void *vp = nullptr;
-    int st = MkiRtMemMallocDevice(&vp, len, ACL_MEM_MALLOC_HUGE_FIRST);
+    int st = MkiRtMemMallocDevice(&vp, len, MKIRT_MEM_DEFAULT);
     ASSERT_EQ(st, MKIRT_SUCCESS);
     st = MkiRtMemCopy(vp, len, src.data(), len, MKIRT_MEMCOPY_HOST_TO_DEVICE);
     ASSERT_EQ(st, MKIRT_SUCCESS);

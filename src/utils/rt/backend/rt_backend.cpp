@@ -89,10 +89,10 @@ int RtBackend::StreamGetId(MkiRtStream stream, int32_t *streamId)
     CHECK_STATUS_WITH_DESC_RETURN(rtGetStreamId(stream, streamId), "rt GetStreamId");
 }
 
-int RtBackend::MemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType)
+int RtBackend::MemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType)
 {
     MKI_LOG(INFO) << "aclrtMalloc start, size:" << size << ", memType:" << memType;
-    CHECK_STATUS_WITH_DESC_RETURN(aclrtMalloc(devPtr, size, memType), "aclrtMalloc");
+    CHECK_STATUS_WITH_DESC_RETURN(aclrtMalloc(devPtr, size, static_cast<aclrtMemMallocPolicy>(memType)), "aclrtMalloc");
 }
 
 int RtBackend::MemFreeDevice(void *devPtr)

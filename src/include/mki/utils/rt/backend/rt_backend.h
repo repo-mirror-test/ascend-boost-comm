@@ -111,7 +111,7 @@ public:
     int StreamGetId(MkiRtStream stream, int32_t *streamId) override;
 
 public:
-    int MemMallocDevice(void **devPtr, uint64_t size, aclrtMemMallocPolicy memType) override;
+    int MemMallocDevice(void **devPtr, uint64_t size, MkiRtMemType memType) override;
     int MemFreeDevice(void *devPtr) override;
     int MemMallocHost(void **hostPtr, uint64_t size) override;
     int MemFreeHost(void *hostPtr) override;
