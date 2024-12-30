@@ -9,7 +9,6 @@
  */
 #ifndef MKI_UTILS_RT_MEMORY_MEMORY_H
 #define MKI_UTILS_RT_MEMORY_MEMORY_H
-#include <acl/acl.h>
 #include "mki/utils/rt/base/types.h"
 #ifdef __cplusplus
 extern "C" {
