@@ -70,6 +70,7 @@ public:
 
 public:
     virtual int GetC2cCtrlAddr(uint64_t *addr, uint32_t *len) = 0;
+    virtual int CtxGetOverflowAddr(void **addr) = 0;
 };
 }
 
