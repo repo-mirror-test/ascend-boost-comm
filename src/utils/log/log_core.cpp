@@ -7,14 +7,14 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
-#include "mki/utils/log/log_core.h"
-#include "mki/utils/cfg/cfg_core.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>
 #include <unordered_map>
 #include <iostream>
 #include <algorithm>
+#include "mki/utils/log/log_core.h"
+#include "mki/utils/cfg/cfg_core.h"
 #include "mki/utils/log/log_sink_stdout.h"
 #include "mki/utils/log/log_sink_file.h"
 #include "mki/utils/log/log.h"

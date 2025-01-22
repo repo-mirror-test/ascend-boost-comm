@@ -7,8 +7,6 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
-#include "mki/utils/log/log_sink_file.h"
-#include "mki/utils/cfg/cfg_core.h"
 #include <string>
 #include <cstdlib>
 #include <cstring>
@@ -25,6 +23,8 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 #include <securec.h>
+#include "mki/utils/cfg/cfg_core.h"
+#include "mki/utils/log/log_sink_file.h"
 #include "mki/utils/log/log_core.h"
 #include "mki/utils/env/env.h"
 

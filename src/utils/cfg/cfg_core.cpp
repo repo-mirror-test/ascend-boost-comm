@@ -10,9 +10,10 @@
 #include <map>
 #include <iostream>
 #include <cstring>
-#include "mki/utils/cfg/cfg_core.h"
+
 #include "mki/utils/inifile/ini_file.h"
 #include "mki/utils/log/log_core.h"
+#include "mki/utils/cfg/cfg_core.h"
 
 namespace Mki {
 const size_t MKI_MAX_ENV_STRING_LEN = 12800;
