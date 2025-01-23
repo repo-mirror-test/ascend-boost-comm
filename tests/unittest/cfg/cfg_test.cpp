@@ -30,7 +30,7 @@ TEST(TestCfg, ParseCfgIniSuccess)
     CfgCore cfgCore;
     Status st = cfgCore.LoadFromFile(fileName);
     cfgCore.ParseLogData();
-    ASSERT_EQ(st.OK(), true);
+    ASSERT_EQ(st.Ok(), true);
     EXPECT_EQ(cfgCore.GetLogCfg().isLogToStdOut, true);
     std::remove(fileName.c_str());
 }
@@ -50,7 +50,7 @@ TEST(TestCfg, GetCfgIniLogItems)
     CfgCore cfgCore;
     Status st = cfgCore.LoadFromFile(fileName);
     cfgCore.ParseLogData();
-    ASSERT_EQ(st.OK(), true);
+    ASSERT_EQ(st.Ok(), true);
     EXPECT_EQ(cfgCore.GetLogCfg().isLogToStdOut, false);
     EXPECT_EQ(cfgCore.GetLogCfg().logLevel, "DEBUG");
     EXPECT_EQ(cfgCore.GetLogCfg().isLogToFile, true);
