@@ -12,7 +12,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <iostream>
-#include <mki/utils/cfg/cfg_core.h"
+#include "mki/utils/cfg/cfg_core.h"
 
 namespace Mki {
 
