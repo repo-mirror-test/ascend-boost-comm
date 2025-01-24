@@ -361,7 +361,7 @@ uint64_t KernelBase::GetTilingSize(const LaunchParam &launchParam) const
 Status KernelBase::InitImpl(const LaunchParam &launchParam)
 {
     UNUSED_VALUE(launchParam);
-    MKI_CHECK(false, "InitImpl has to be overriden!", return Status::FailStatus(-1));
+    MKI_CHECK(false, "InitImpl has to be overriden!", return Status::FailStatus(ERROR_INVALID_VALUE));
 }
 
 Kernel *KernelBase::Clone() const
