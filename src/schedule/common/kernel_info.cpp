@@ -113,7 +113,7 @@ Status KernelInfo::AllocTilingHost(uint64_t len)
     MKI_CHECK(launchWithTiling_, "launch with tiling mode off",
         return Status::FailStatus(ERROR_ALLOC_HOST));
     constexpr uint64_t maxTilingSize = 1024 * 1024; // 1mb
-    MKI_CHECK(len > 0 && len <= maxTilingSize,
+    MKI_CHECK(len <= maxTilingSize,
         "failed to check tiling len " << len, return Status::FailStatus(ERROR_ALLOC_HOST));
     MKI_CHECK(tilingExtInfo_.hostTilingAddr == nullptr,
         "Tiling is already alloced", return Status::FailStatus(ERROR_ALLOC_HOST));
