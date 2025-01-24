@@ -21,7 +21,7 @@ constexpr uint32_t MAX_FILE_LINE_NUM = 20000;
 bool IniFile::ParseIniFileToMap(const std::string &iniFilePath,
     std::map<std::string, std::map<std::string, std::string>> &contentInfoMap, bool symCheck)
 {
-    std::string realPath = FileSystem::PathCheckAndRegularNoLog(iniFilePath, symCheck);
+    std::string realPath = FileSystem::PathCheckAndRegular(iniFilePath, symCheck);
     MKI_CHECK((FileSystem::FileSize(realPath) > 0 && FileSystem::FileSize(realPath) <= MAX_FILE_SIZE),
         "File size is invalid", return false);
     std::ifstream ifs(realPath);
@@ -77,7 +77,7 @@ bool IniFile::ParseIniFileToMap(const std::string &iniFilePath,
 bool IniFile::ParseIniFileToMapNoLog(const std::string &iniFilePath,
     std::map<std::string, std::map<std::string, std::string>> &contentInfoMap, bool symCheck)
 {
-    std::string realPath = FileSystem::PathCheckAndRegular(iniFilePath, symCheck);
+    std::string realPath = FileSystem::PathCheckAndRegularNoLog(iniFilePath, symCheck);
     if (FileSystem::FileSize(realPath) <= 0 || FileSystem::FileSize(realPath) > MAX_FILE_SIZE) {
         std::cout << "File size is invalid" << std::endl;
         return false;
