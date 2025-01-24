@@ -14,11 +14,11 @@
 #include <iostream>
 #include <algorithm>
 #include "mki/utils/env/env.h"
-#include "mki/utils/log/log_core.h"
+#include "mki/utils/cfg/cfg_core.h"
 #include "mki/utils/log/log_sink_stdout.h"
 #include "mki/utils/log/log_sink_file.h"
 #include "mki/utils/log/log.h"
-#include "mki/utils/cfg/cfg_core.h"
+#include "mki/utils/log/log_core.h"
 
 namespace Mki {
 static bool GetLogToStdoutFromEnvCfg(bool controlledByCfg)
