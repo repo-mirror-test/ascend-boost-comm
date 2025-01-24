@@ -21,8 +21,8 @@ TEST(TestCfg, ParseCfgIniSuccess)
     char buf[256];
     auto result = getcwd(buf, sizeof(buf));
     ASSERT_NE(result, nullptr);
-    std::string current_path(buf);
-    std::string fileName = current_path + "/test_cfg.ini";
+    std::string currentPath(buf);
+    std::string fileName = currentPath + "/test_cfg.ini";
     std::ofstream file(fileName);
     file << "[LOG] \n LOG_TO_STDOUT=1 \n";
     file.close();
@@ -40,8 +40,8 @@ TEST(TestCfg, GetCfgIniLogItems)
     char buf[256];
     auto result = getcwd(buf, sizeof(buf));
     ASSERT_NE(result, nullptr);
-    std::string current_path(buf);
-    std::string fileName = current_path + "/test_cfg.ini";
+    std::string currentPath(buf);
+    std::string fileName = currentPath + "/test_cfg.ini";
     std::ofstream file(fileName);
     file << "[LOG] \n LOG_TO_STDOUT=0 \n LOG_LEVEL=DEBUG \n LOG_TO_FILE=1 \n"
             "LOG_TO_FILE_FLUSH=1 \n LOG_TO_BOOST_TYPE=test \n LOG_PATH=test1";
