@@ -123,7 +123,8 @@ Status KernelInfo::AllocTilingHost(uint64_t len)
         "failed to new tiling, len " << len, return Status::FailStatus(ERROR_ALLOC_HOST));
 
     int ret = memset_s(tilingExtInfo_.hostTilingAddr, len, 0, len);
-    MKI_CHECK(ret == EOK, "memset_s hostTilingAddr Error! Error Code: " << ret, return Status::FailStatus(ERROR_ALLOC_HOST));
+    MKI_CHECK(ret == EOK, "memset_s hostTilingAddr Error! Error Code: " << ret, 
+        return Status::FailStatus(ERROR_ALLOC_HOST));
 
     MKI_LOG(INFO) << "alloc " << len << " bytes tiling host";
     tilingExtInfo_.hostTilingSize = len;
