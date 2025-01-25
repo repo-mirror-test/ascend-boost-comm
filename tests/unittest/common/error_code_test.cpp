@@ -72,7 +72,7 @@ TEST_F(MKIErrorCodeTest, CheckAllocTilingHost)
 
 TEST_F(MKIErrorCodeTest, CheckInitImpl)
 {
-    EXPECT_EQ(testKernelBase->inlineCheckInitImpl(launchParam).Code(), -1); //Mki::ErrorType::ERROR_INVALID_VALUE);
+    EXPECT_EQ(testKernelBase->inlineCheckInitImpl(launchParam).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
 }
 
 TEST_F(MKIErrorCodeTest, CheckInitArgs)
