@@ -48,11 +48,12 @@ public:
             constexpr size_t maxConstTensorCount = 1024;
             size_t constTensorCount = kernelInfo.GetConstTensorCount();
             if (constTensorCount > 0) {
-                MKI_CHECK(constTensorCount < maxConstTensorCount, 
-                          "const tensor size check failed, is "<< constTensorCount, 
+                MKI_CHECK(constTensorCount < maxConstTensorCount,
+                          "const tensor size check failed, is "<< constTensorCount,
                           return Status::FailStatus(ERROR_INVALID_VALUE));
                 hostInfo_.reset(new (std::nothrow) RtHostInputInfoT[constTensorCount]);
-                MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr", return Status::FailStatus(ERROR_INVALID_VALUE));
+                MKI_CHECK(hostInfo_ != nullptr, "hostInfo size nullptr",
+                          return Status::FailStatus(ERROR_INVALID_VALUE));
                 uint64_t constTensorOffset =
                     Utils::GetTensorAlignedSize(kernelInfo.GetTilingUsedSize()) + argsNum * sizeof(void *);
                 status = UpdateConstTensorArgs(args, hostInfo_.get(), constTensorOffset, constTensorInfos);
@@ -150,7 +151,7 @@ private:
     {
         void *overflowAddr = nullptr;
         int32_t st = MkiRtCtxGetOverflowAddr(&overflowAddr);
-        MKI_CHECK(st == MKIRT_SUCCESS, "Mki Get RtC2cCtrlAddr failed: %d" << st, 
+        MKI_CHECK(st == MKIRT_SUCCESS, "Mki Get RtC2cCtrlAddr failed: %d" << st,
                   return Status::FailStatus(ERROR_RUN_TIME_ERROR));
         args[argsNum - OVERFLOW_ADDR_NEG_IDX] = overflowAddr;
         MKI_LOG(DEBUG) << "args info: overflow addr " << (argsNum - OVERFLOW_ADDR_NEG_IDX);
@@ -274,7 +275,7 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     }
 
     auto status = InitImpl(launchParam);
-    MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(), 
+    MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(),
               return Status::FailStatus(ERROR_INVALID_VALUE));
 
     auto kernelParamNum = GetKernelArgsNum(launchParam);
@@ -295,13 +296,13 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     uint8_t *args = kernelInfo_.GetArgs();
     auto ret = memcpy_s(args + baseSize, argsSize - baseSize,
                         kernelInfo_.GetTilingHostAddr(), kernelInfo_.GetTilingUsedSize());
-    MKI_CHECK(ret == EOK, "failed to copy tiling", 
+    MKI_CHECK(ret == EOK, "failed to copy tiling",
               return Status::FailStatus(ERROR_MEMERY_COPY_ERROR));
     MKI_LOG(INFO) << "copy tiling data " << tilingUsedSize << " to args offset " << baseSize;
     if (constTensorSize > 0) {
         ret = memcpy_s(args + baseSize + tilingUsedSize, argsSize - baseSize - tilingUsedSize,
                        kernelInfo_.GetTilingHostAddr() + kernelInfo_.GetConstTensorOffset(), constTensorSize);
-        MKI_CHECK(ret == EOK, "failed to copy const tensor", 
+        MKI_CHECK(ret == EOK, "failed to copy const tensor",
                   return Status::FailStatus(ERROR_MEMERY_COPY_ERROR));
         MKI_LOG(INFO) << "copy const data " << constTensorSize << " to args offset " << baseSize + tilingUsedSize;
     }
@@ -368,7 +369,7 @@ uint64_t KernelBase::GetTilingSize(const LaunchParam &launchParam) const
 Status KernelBase::InitImpl(const LaunchParam &launchParam)
 {
     UNUSED_VALUE(launchParam);
-    MKI_CHECK(false, "InitImpl has to be overriden!", 
+    MKI_CHECK(false, "InitImpl has to be overriden!",
               return Status::FailStatus(ERROR_INVALID_VALUE));
 }
 
