@@ -60,7 +60,8 @@ protected:
     }
 };
 
-TEST_F(MKIErrorCodeTest, CheckLaunchParam) {
+TEST_F(MKIErrorCodeTest, CheckLaunchParam)
+{
     EXPECT_EQ(testKernelBase->InlineCheckInit(launchParam).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
     EXPECT_EQ(testKernelBase->CanSupport(launchParam) ?
               Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_INVALID_VALUE,
@@ -93,7 +94,8 @@ TEST_F(MKIErrorCodeTest, CheckInitArgs)
     EXPECT_EQ(kernelInfo.InitArgs(maxInvalidValue).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
 }
 
-TEST_F(MKIErrorCodeTest, CheckUpdateHwsyncArgs) {
+TEST_F(MKIErrorCodeTest, CheckUpdateHwsyncArgs)
+{
     uint32_t *len = nullptr;
     int st = Mki::MkiRtGetC2cCtrlAddr(nullptr, len);
     EXPECT_EQ((st == 0) ? Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_RUN_TIME_ERROR,
