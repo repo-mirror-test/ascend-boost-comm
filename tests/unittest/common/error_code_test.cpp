@@ -15,17 +15,21 @@
 #include "mki/utils/rt/other/other.h"
 
 namespace {
-class TestKernelBase: public Mki::KernelBase {
-    public:
-        explicit TestKernelBase(const std::string &kernelName, const Mki::BinHandle *handle) noexcept
-            : KernelBase(kernelName, handle) {}
-        Mki::Status InlineCheckInit(const Mki::LaunchParam &launchParam) {
-            return Init(launchParam);
-        }
-        Mki::Status InlineCheckInitImpl(const Mki::LaunchParam &launchParam) {
-            return InitImpl(launchParam);
-        }
-    };
+class TestKernelBase : public Mki::KernelBase {
+public:
+    explicit TestKernelBase(const std::string &kernelName, const Mki::BinHandle *handle) noexcept
+        : KernelBase(kernelName, handle) {}
+    Mki::Status InlineCheckInit(const Mki::LaunchParam &launchParam)
+    {
+        return Init(launchParam);
+    }
+
+    Mki::Status InlineCheckInitImpl(const Mki::LaunchParam &launchParam)
+    {
+        return InitImpl(launchParam);
+    }
+};
+
 class MKIErrorCodeTest : public ::testing::Test {
 protected:
     
@@ -38,7 +42,6 @@ protected:
     const std::string opName = "test";
     Mki::MiniVector<Mki::KernelInfo::MemsetInfo> memsetInfo;
     
-
     void SetUp() override
     {
         binInfo = new Mki::BinaryBasicInfo;
@@ -57,12 +60,11 @@ protected:
     }
 };
 
-TEST_F(MKIErrorCodeTest, CheckLaunchParam)
-{
+TEST_F(MKIErrorCodeTest, CheckLaunchParam) {
     EXPECT_EQ(testKernelBase->InlineCheckInit(launchParam).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
-    EXPECT_EQ(testKernelBase->CanSupport(launchParam) ? \
-        Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_INVALID_VALUE, 
-        Mki::ErrorType::ERROR_INVALID_VALUE);
+    EXPECT_EQ(testKernelBase->CanSupport(launchParam) ?
+              Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_INVALID_VALUE,
+              Mki::ErrorType::ERROR_INVALID_VALUE);
 }
 
 TEST_F(MKIErrorCodeTest, CheckAllocTilingHost)
@@ -85,18 +87,17 @@ TEST_F(MKIErrorCodeTest, CheckInitImpl)
 
 TEST_F(MKIErrorCodeTest, CheckInitArgs)
 {
-    constexpr int MIN_INVALID_VALUE = -1;
-    EXPECT_EQ(kernelInfo.InitArgs(MIN_INVALID_VALUE).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
-    constexpr int MAX_INVALID_VALUE = 1024 * 1024 + 1;
-    EXPECT_EQ(kernelInfo.InitArgs(MAX_INVALID_VALUE).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
-
+    constexpr int minInvalidValue = -1;
+    EXPECT_EQ(kernelInfo.InitArgs(minInvalidValue).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
+    constexpr int maxInvalidValue = 1024 * 1024 + 1;
+    EXPECT_EQ(kernelInfo.InitArgs(maxInvalidValue).Code(), Mki::ErrorType::ERROR_INVALID_VALUE);
 }
 
-TEST_F(MKIErrorCodeTest, CheckUpdateHwsyncArgs)
-{
+TEST_F(MKIErrorCodeTest, CheckUpdateHwsyncArgs) {
     uint32_t *len = nullptr;
     int st = Mki::MkiRtGetC2cCtrlAddr(nullptr, len);
-    EXPECT_EQ((st == 0) ? Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_RUN_TIME_ERROR, Mki::ErrorType::ERROR_RUN_TIME_ERROR);
+    EXPECT_EQ((st == 0) ? Mki::ErrorType::NO_ERROR : Mki::ErrorType::ERROR_RUN_TIME_ERROR,
+              Mki::ErrorType::ERROR_RUN_TIME_ERROR);
 }
 
 } // namespace
