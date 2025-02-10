@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Huawei Technologies Co., Ltd.
- * MindKernelInfra is licensed under Mulan PSL v2.
+ * AscendOpCommonLib is licensed under Mulan PSL v2.
  * You can use this software according to the terms and conditions of the Mulan PSL v2.
  * You may obtain a copy of Mulan PSL v2 at:
  *          http://license.coscl.org.cn/MulanPSL2
@@ -9,15 +9,17 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  */
-#ifndef MKI_LAUNCH_PARAM_H
-#define MKI_LAUNCH_PARAM_H
+#ifndef ASDOPS_LAUNCH_PARAM_H
+#define ASDOPS_LAUNCH_PARAM_H
 
 #include <string>
-#include "mki/types.h"
-#include "mki/tensor.h"
-#include "mki/utils/any/any.h"
+#include <mki/launch_param.h>
+#include "asdops/types.h"
+#include "asdops/tensor.h"
+#include "asdops/op_desc.h"
+#include "asdops/utils/svector/svector.h"
 
-namespace Mki {
+namespace AsdOps {
 class LaunchParam {
 public:
     LaunchParam() = default;
@@ -25,14 +27,11 @@ public:
     LaunchParam &operator=(const LaunchParam &other);
     ~LaunchParam();
 
+public:
     void Reset();
 
-    void SetParam(const Any &srcParam);
-
-    template <typename T> const T &GetParam() const { return AnyCast<T>(specificParam_); }
-    template <typename T> T &GetParam() { return AnyCast<T>(specificParam_); }
-    const Any &GetParam() const { return specificParam_; }
-    Any &GetParam() { return specificParam_; }
+    const OpDesc &GetOpDesc() const;
+    void SetOpDesc(const OpDesc &opDesc);
 
     void AddInTensor(const Tensor &tensor);
     size_t GetInTensorCount() const;
@@ -47,14 +46,23 @@ public:
     Tensor &GetOutTensor(size_t pos);
     const SVector<Tensor> &GetOutTensors() const;
     SVector<Tensor> &GetOutTensors();
-
     std::string ToString() const;
+    const Mki::LaunchParam &GetMkiLaunchParam() const;
+
+    void SetInputLens(SVector<int> &lens);
+    size_t GetInputLenCount() const;
+    int GetInputLen(size_t pos) const;
+    const SVector<int> &GetInputLens() const;
+
+    void SetOutputLens(SVector<int> &lens);
+    size_t GetOutputLenCount() const;
+    int GetOutputLen(size_t pos) const;
+    const SVector<int> &GetOutputLens() const;
 
 private:
-    Any specificParam_;
-    SVector<Tensor> inTensors_;
-    SVector<Tensor> outTensors_;
+    OpDesc opDesc_;
+    Mki::LaunchParam launchParam_;
 };
-} // namespace Mki
+} // namespace AsdOps
 
 #endif
