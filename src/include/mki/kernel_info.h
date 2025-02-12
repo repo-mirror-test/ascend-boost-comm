@@ -93,6 +93,7 @@ public:
     size_t GetConstTensorCount() const;
     const ConstTensorInfo &GetConstTensorInfo(size_t id) const;
     const MiniVector<ConstTensorInfo> &GetConstTensorInfos() const;
+    bool isIndexInConstTensorInfos(uint64_t argIdx) const;
 
     // LaunchWithTiling
     void SetLaunchWithTiling(bool flag);

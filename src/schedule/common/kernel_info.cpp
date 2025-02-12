@@ -265,6 +265,17 @@ const MiniVector<KernelInfo::ConstTensorInfo> &KernelInfo::GetConstTensorInfos()
     return constTensorInfo_;
 }
 
+bool KernelInfo::isIndexInConstTensorInfos(uint64_t argIdx) const
+{
+    for (auto &it : constTensorInfo_)
+    {
+        if (it.argIdx == argIdx) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void KernelInfo::SetLaunchWithTiling(bool flag)
 {
     if (launchWithTiling_ == flag) {
