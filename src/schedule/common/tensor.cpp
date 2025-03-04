@@ -45,6 +45,10 @@ int64_t TensorDesc::Numel() const
 
 bool TensorDesc::IsContiguous() const
 {
+    if (offset != 0) {
+        return false;
+    }
+
     if (Numel() <= 0) {
         MKI_LOG(ERROR) << "Tensor size is overflow or tensor dims is invalid, cannot check contiguous";
         return true;

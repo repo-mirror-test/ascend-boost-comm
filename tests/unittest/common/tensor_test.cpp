@@ -106,4 +106,12 @@ TEST(IsContiguousTest, NotContiguousStridesTest) {
     td.strides = {8, 4, 1};
     EXPECT_TRUE(!td.IsContiguous());
 }
+
+TEST(IsContiguousTest, NotContiguousOffsetTest) {
+    Mki::TensorDesc td;
+    td.dims = {1, 2, 3};
+    td.strides = {6, 3, 1};
+    td.offset = 10;
+    EXPECT_TRUE(!td.IsContiguous());
+}
 } // namespace
