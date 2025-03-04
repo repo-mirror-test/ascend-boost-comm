@@ -45,16 +45,16 @@ int64_t TensorDesc::Numel() const
 
 bool TensorDesc::IsContiguous() const
 {
-    if(Numel() <= 0) {
+    if (Numel() <= 0) {
         MKI_LOG(ERROR) << "Tensor size is overflow or tensor dims is invalid, cannot check contiguous";
         return true;
     }
-    
-    if(strides.empty()) {
+
+    if (strides.empty()) {
         return true;
     }
  
-    if(strides.size() != dims.size()) {
+    if (strides.size() != dims.size()) {
         MKI_LOG(ERROR) << "strides size is different from dims size";
         return true;
     }
@@ -96,7 +96,7 @@ std::string TensorDesc::ToString() const
         }
     }
     ss << "]";
-    if(IsContiguous()){
+    if (IsContiguous()) {
         return ss.str();
     }
     ss << ", strides:[";

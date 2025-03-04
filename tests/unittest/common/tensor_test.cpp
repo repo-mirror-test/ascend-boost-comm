@@ -81,7 +81,7 @@ TEST(ToStringTest, HandleMultipleElementsDims) {
 TEST(ToStringTest, HandleMultipleElementsDimsWithStrideAndOffset) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
-    td.strides = {8 ,4, 1};
+    td.strides = {8, 4, 1};
     td.offset = 10;
     EXPECT_EQ(td.ToString(), "dtype:undefined, format:undefined, dims:[1, 2, 3], strides:[8 4, 1], offset:10");
 }
@@ -96,14 +96,14 @@ TEST(IsContiguousTest, EmptyStridesTest) {
 TEST(IsContiguousTest, ContiguousStridesTest) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
-    td.strides = {6 ,3, 1};
+    td.strides = {6, 3, 1};
     EXPECT_TRUE(td.IsContiguous()); 
 }
  
 TEST(IsContiguousTest, NotContiguousStridesTest) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
-    td.strides = {8 ,4, 1};
+    td.strides = {8, 4, 1};
     EXPECT_TRUE(!td.IsContiguous()); 
 }
 } // namespace
