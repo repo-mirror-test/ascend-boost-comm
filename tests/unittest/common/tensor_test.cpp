@@ -90,20 +90,20 @@ TEST(IsContiguousTest, EmptyStridesTest) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
     td.strides = {};
-    EXPECT_TRUE(td.IsContiguous()); 
+    EXPECT_TRUE(td.IsContiguous());
 }
  
 TEST(IsContiguousTest, ContiguousStridesTest) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
     td.strides = {6, 3, 1};
-    EXPECT_TRUE(td.IsContiguous()); 
+    EXPECT_TRUE(td.IsContiguous());
 }
  
 TEST(IsContiguousTest, NotContiguousStridesTest) {
     Mki::TensorDesc td;
     td.dims = {1, 2, 3};
     td.strides = {8, 4, 1};
-    EXPECT_TRUE(!td.IsContiguous()); 
+    EXPECT_TRUE(!td.IsContiguous());
 }
 } // namespace
