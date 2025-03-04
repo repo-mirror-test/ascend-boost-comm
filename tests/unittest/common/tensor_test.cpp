@@ -83,7 +83,7 @@ TEST(ToStringTest, HandleMultipleElementsDimsWithStrideAndOffset) {
     td.dims = {1, 2, 3};
     td.strides = {8, 4, 1};
     td.offset = 10;
-    EXPECT_EQ(td.ToString(), "dtype:undefined, format:undefined, dims:[1, 2, 3], strides:[8 4, 1], offset:10");
+    EXPECT_EQ(td.ToString(), "dtype:undefined, format:undefined, dims:[1, 2, 3], strides:[8, 4, 1], offset:10");
 }
 
 TEST(IsContiguousTest, EmptyStridesTest) {
