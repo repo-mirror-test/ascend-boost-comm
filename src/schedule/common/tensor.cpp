@@ -43,6 +43,27 @@ int64_t TensorDesc::Numel() const
     return CalNumel(dims, 0, dims.size());
 }
 
+bool TensorDesc::IsContiguous() const
+{
+    if(strides.empty()) {
+        return true;
+    }
+ 
+    if(strides.size() != dims.size()) {
+        MKI_LOG(ERROR) << "strides size is different from dims size";
+        return true;
+    }
+ 
+    uint32_t nextStride = 1;
+    for (int32_t idx = strides.size() - 1; idx >= 0; idx--) {
+        if (strides[idx] != nextStride) {
+            return false;
+        }
+        nextStride *= dims[idx];
+    }
+    return true;
+}
+
 void TensorDesc::View(const Mki::SVector<int64_t> &newDims)
 {
     int64_t elementCount = CalNumel(newDims, 0, newDims.size());
@@ -70,11 +91,24 @@ std::string TensorDesc::ToString() const
         }
     }
     ss << "]";
-
+    if(IsContiguous()){
+        return ss.str();
+    }
+    ss << ", strides:[";
+    for (size_t i = 0; i < strides.size(); ++i) {
+        if (i == 0) {
+            ss << strides.at(i);
+        } else {
+            ss << ", " << strides.at(i);
+        }
+    }
+    ss << "], offset: " << offset;
     return ss.str();
 }
 
 int64_t Tensor::Numel() const { return desc.Numel(); }
+
+bool Tensor::IsContiguous() const { return desc.IsContiguous(); }
 
 void Tensor::View(const Mki::SVector<int64_t> &newDims) { return desc.View(newDims); }
 
