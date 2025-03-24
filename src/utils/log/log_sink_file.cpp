@@ -250,7 +250,6 @@ void LogSinkFile::MakeLogDir()
 {
     struct stat st;
     if (stat(logDir_.c_str(), &st) == 0) { // 目录已经存在，就不创建
-        std::cout << "mki_log log dir:" << logDir_ << " exist" << std::endl;
         return;
     }
 
