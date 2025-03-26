@@ -15,6 +15,7 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include <sys/stat.h>
 #include <pwd.h>
 #include <fcntl.h>
