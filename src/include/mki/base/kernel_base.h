@@ -62,7 +62,7 @@ private:
     const BinHandle *handle_{nullptr};
     KernelSelfCreator creator_{nullptr};
     friend void SetKernelSelfCreator(KernelBase &kernel, KernelSelfCreator func);
-    std::shared_ptr<KernelParamBuilder> builder_ = nullptr;
+    std::shared_ptr<KernelParamBuilder> builder_{nullptr};
 };
 
 void SetKernelSelfCreator(KernelBase &kernel, KernelBase::KernelSelfCreator func);
