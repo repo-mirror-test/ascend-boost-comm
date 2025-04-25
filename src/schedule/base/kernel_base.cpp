@@ -383,10 +383,12 @@ Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
     MKI_LOG(INFO) << "Ready to run, KernelInfo:\n" << kernelInfo_.ToString();
     MKI_CHECK(handle_ != nullptr, "handle is nullptr", return Status::FailStatus(ERROR_INVALID_VALUE));
     MkiRtKernelParam kernelParam = builder_->GetKernelParam();
+#ifdef _DEBUG
     MKI_LOG(DEBUG) << "ARGS CONTENT IS:";
     for (size_t i = 0; i < kernelParam.argsEx->argsSize / sizeof(void*); i++) {
         MKI_LOG(DEBUG) << ((void**)(kernelParam.argsEx->args))[i];
     }
+#endif
     kernelParam.argsEx->args = args;
     if (isDeviceAddr) {
         kernelParam.argsEx->isNoNeedH2DCopy = 1;
