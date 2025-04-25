@@ -372,7 +372,7 @@ Kernel *KernelBase::Clone() const
 
 Status KernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, void *hostBuffer)
 {
-    builder_.reset(new(KernelParamBuilder)); // 确认是否需要每次创建
+    builder_.reset(new(KernelParamBuilder));
     uint64_t argsNum = GetKernelArgsNum(launchParam);
     Status status = builder_->Init(launchParam, runinfo, argsNum, kernelInfo_, hostBuffer);
     return status;
