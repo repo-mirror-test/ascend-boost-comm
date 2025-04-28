@@ -26,11 +26,11 @@ namespace Mki {
 class KernelParamBuilder {
 public:
     Status Init(const LaunchParam &launchParam, const RunInfo &runInfo, uint64_t argsNum, const KernelInfo &kernelInfo,
-                void *hostBuffer = nullptr)
+                uint8_t *hostBuffer = nullptr)
     {
         uint8_t *argsPtr = kernelInfo.GetArgs();
         if (hostBuffer) {
-            argsPtr = reinterpret_cast<uint8_t*>(hostBuffer);
+            argsPtr = hostBuffer;
         }
         uint64_t argsSize = kernelInfo.GetArgsSize();
         MKI_CHECK(argsPtr != nullptr, "kernel info args is nullptr, please check first error before.",
@@ -374,7 +374,8 @@ Status KernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, v
 {
     builder_.reset(new(KernelParamBuilder));
     uint64_t argsNum = GetKernelArgsNum(launchParam);
-    Status status = builder_->Init(launchParam, runinfo, argsNum, kernelInfo_, hostBuffer);
+    uint8_t *hostBufferPtr = reinterpret_cast<uint8_t*>(hostBuffer);
+    Status status = builder_->Init(launchParam, runinfo, argsNum, kernelInfo_, hostBufferPtr);
     return status;
 }
 
