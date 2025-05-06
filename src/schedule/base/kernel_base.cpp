@@ -369,7 +369,8 @@ uint64_t KernelBase::GetKernelArgsNum(const LaunchParam &launchParam)
     size_t inputNum = launchParam.GetInputLenCount() > 0 ? launchParam.GetInputLenCount() : launchParam.GetInTensorCount();
     size_t outputNum = launchParam.GetOutputLenCount() > 0 ? launchParam.GetOutputLenCount() : launchParam.GetOutTensorCount();
     uint64_t inputOutputNum = inputNum + outputNum;
-    uint64_t constInputNum = kernelInfo_.GetConstTensorCount() - launchParam.GetInputTensorListNum() - launchParam.GetOutputTensorListNum();
+    uint64_t constInputNum =
+        kernelInfo_.GetConstTensorCount() - launchParam.GetInputTensorListNum() - launchParam.GetOutputTensorListNum();
     uint64_t workspaceNum = kernelInfo_.GetScratchSizes().size();
     uint64_t hwsyncNum = kernelInfo_.GetHwsyncIdx() < 0 ? 0 : 1;
     MKI_LOG(DEBUG) << "kernel param: " << inputOutputNum << " in/out, " << constInputNum << " const in, "
