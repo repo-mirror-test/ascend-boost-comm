@@ -11,6 +11,7 @@
 #define MKI_LAUNCH_PARAM_H
 
 #include <string>
+#include <acl/acl.h>
 #include "mki/types.h"
 #include "mki/tensor.h"
 #include "mki/utils/any/any.h"
@@ -33,6 +34,7 @@ public:
     Any &GetParam() { return specificParam_; }
 
     void AddInTensor(const Tensor &tensor);
+    void AddInTensor(const aclTensor &tensor);
     size_t GetInTensorCount() const;
     const Tensor &GetInTensor(size_t pos) const;
     Tensor &GetInTensor(size_t pos);
@@ -40,6 +42,7 @@ public:
     SVector<Tensor> &GetInTensors();
 
     void AddOutTensor(const Tensor &tensor);
+    void AddOutTensor(const aclTensor &tensor);
     size_t GetOutTensorCount() const;
     const Tensor &GetOutTensor(size_t pos) const;
     Tensor &GetOutTensor(size_t pos);

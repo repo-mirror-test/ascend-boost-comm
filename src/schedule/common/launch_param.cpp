@@ -14,6 +14,20 @@
 #include "mki/utils/stringify/stringify.h"
 
 namespace Mki {
+namespace {
+void ConvertAclTensorToMkiTensor(const aclTensor &srcTensor, Tensor &dstTensor)
+{
+    dstTensor.data = srcTensor.GetData();
+    dstTensor.desc.format = srcTensor.GetStorageFormat();
+    dstTensor.desc.dtype = srcTensor.GetDataType();
+    auto const &shape = srcTensor.GetStorageShape();
+    dstTensor.desc.dims.resize(0);
+    for (size_t i = 0; i < shape.GetDimNum(); i++) {
+        dstTensor.desc.dims.push_back(shape.GetDim(i));
+    }
+}
+}
+
 using ToStringFunc = std::function<std::string(const Any &)>;
 
 LaunchParam::LaunchParam(const LaunchParam &other) { *this = other; }
@@ -47,6 +61,13 @@ void LaunchParam::SetParam(const Any &srcParam) { specificParam_ = srcParam; }
 
 void LaunchParam::AddInTensor(const Tensor &tensor) { inTensors_.push_back(tensor); }
 
+void LaunchParam::AddInTensor(const aclTensor &tensor)
+{
+    Tensor inTensor;
+    ConvertAclTensorToMkiTensor(tensor, inTensor);
+    inTensors_.push_back(inTensor);
+}
+
 size_t LaunchParam::GetInTensorCount() const { return inTensors_.size(); }
 
 Tensor &LaunchParam::GetInTensor(size_t pos) { return inTensors_.at(pos); }
@@ -58,6 +79,12 @@ const SVector<Tensor> &LaunchParam::GetInTensors() const { return inTensors_; }
 SVector<Tensor> &LaunchParam::GetInTensors() { return inTensors_; }
 
 void LaunchParam::AddOutTensor(const Tensor &tensor) { outTensors_.push_back(tensor); }
+void LaunchParam::AddOutTensor(const Tensor &tensor)
+{
+    Tensor outTensor;
+    ConvertAclTensorToMkiTensor(tensor, outTensor);
+    outTensors_.push_back(outTensor);
+}
 
 size_t LaunchParam::GetOutTensorCount() const { return outTensors_.size(); }
 
