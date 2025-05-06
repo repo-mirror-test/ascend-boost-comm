@@ -15,12 +15,13 @@
 
 namespace Mki {
 namespace {
-void ConvertAclTensorToMkiTensor(const aclTensor &srcTensor, Tensor &dstTensor)
+void ConvertAclTensorToMkiTensor(const aclTensor *srcTensor, Tensor &dstTensor)
 {
-    dstTensor.data = srcTensor.GetData();
-    dstTensor.desc.format = srcTensor.GetStorageFormat();
-    dstTensor.desc.dtype = srcTensor.GetDataType();
-    auto const &shape = srcTensor.GetStorageShape();
+    dstTensor.hostData = srcTensor->GetData();
+    dstTensor.data = srcTensor->GetStorageAddr();
+    dstTensor.desc.format = static_cast<Mki::TensorFormat>(srcTensor->GetStorageFormat());
+    dstTensor.desc.dtype = static_cast<Mki::TensorDType>(srcTensor->GetDataType());
+    auto const &shape = srcTensor->GetStorageShape();
     dstTensor.desc.dims.resize(0);
     for (size_t i = 0; i < shape.GetDimNum(); i++) {
         dstTensor.desc.dims.push_back(shape.GetDim(i));
@@ -61,7 +62,7 @@ void LaunchParam::SetParam(const Any &srcParam) { specificParam_ = srcParam; }
 
 void LaunchParam::AddInTensor(const Tensor &tensor) { inTensors_.push_back(tensor); }
 
-void LaunchParam::AddInTensor(const aclTensor &tensor)
+void LaunchParam::AddInTensor(const aclTensor *tensor)
 {
     Tensor inTensor;
     ConvertAclTensorToMkiTensor(tensor, inTensor);
@@ -79,7 +80,8 @@ const SVector<Tensor> &LaunchParam::GetInTensors() const { return inTensors_; }
 SVector<Tensor> &LaunchParam::GetInTensors() { return inTensors_; }
 
 void LaunchParam::AddOutTensor(const Tensor &tensor) { outTensors_.push_back(tensor); }
-void LaunchParam::AddOutTensor(const Tensor &tensor)
+
+void LaunchParam::AddOutTensor(const aclTensor *tensor)
 {
     Tensor outTensor;
     ConvertAclTensorToMkiTensor(tensor, outTensor);
