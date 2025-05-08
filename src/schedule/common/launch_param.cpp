@@ -10,6 +10,7 @@
 #include "mki/launch_param.h"
 #include <functional>
 #include <map>
+#include <aclnn/opdev/common_types.h>
 #include "mki/utils/log/log.h"
 #include "mki/utils/stringify/stringify.h"
 
@@ -110,5 +111,10 @@ std::string LaunchParam::ToString() const
     }
     ss << std::endl;
     return ss.str();
+}
+
+void *GetStorageAddr(const aclTensor *tensor)
+{
+    return tensor->GetStorageAddr();
 }
 } // namespace Mki

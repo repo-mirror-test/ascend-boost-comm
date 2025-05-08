@@ -11,10 +11,11 @@
 #define MKI_LAUNCH_PARAM_H
 
 #include <string>
-#include <aclnn/opdev/common_types.h>
 #include "mki/types.h"
 #include "mki/tensor.h"
 #include "mki/utils/any/any.h"
+
+class aclTensor;
 
 namespace Mki {
 class LaunchParam {
@@ -56,6 +57,8 @@ private:
     SVector<Tensor> inTensors_;
     SVector<Tensor> outTensors_;
 };
+
+void *GetStorageAddr(const aclTensor *tensor);
 } // namespace Mki
 
 #endif
