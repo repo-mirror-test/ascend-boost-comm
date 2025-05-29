@@ -12,20 +12,22 @@
 #include <map>
 #include <aclnn/opdev/common_types.h>
 #include "mki/utils/log/log.h"
+#include "mki/utils/assert/assert.h"
 #include "mki/utils/stringify/stringify.h"
 
 namespace Mki {
 namespace {
 void ConvertAclTensorToMkiTensor(const aclTensor *srcTensor, Tensor &dstTensor)
 {
+    MKI_CHECK(srcTensor != nullptr, "src aclTensor is nullptr", return);
     dstTensor.hostData = srcTensor->GetData();
     dstTensor.data = srcTensor->GetStorageAddr();
     dstTensor.desc.format = static_cast<Mki::TensorFormat>(srcTensor->GetStorageFormat());
     dstTensor.desc.dtype = static_cast<Mki::TensorDType>(srcTensor->GetDataType());
     auto const &shape = srcTensor->GetStorageShape();
-    dstTensor.desc.dims.resize(0);
+    dstTensor.desc.dims.resize(shape.GetDimNum());
     for (size_t i = 0; i < shape.GetDimNum(); i++) {
-        dstTensor.desc.dims.push_back(shape.GetDim(i));
+        dstTensor.desc.dims.at(i) = shape.GetDim(i);
     }
 }
 }
@@ -115,6 +117,7 @@ std::string LaunchParam::ToString() const
 
 void *GetStorageAddr(const aclTensor *tensor)
 {
+    MKI_CHECK(tensor != nullptr, "input aclTensor is nullptr", return nullptr);
     return tensor->GetStorageAddr();
 }
 } // namespace Mki
