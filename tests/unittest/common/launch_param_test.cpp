@@ -58,8 +58,8 @@ TEST_F(LaunchParamTest, AddInputAclTensor)
     aclTensor *tensor2 = aclCreateTensor(viewDims, 2, ACL_FLOAT16, strides, 0, ACL_FORMAT_ND, storageDims, 2, nullptr);
     launchParam.AddInTensor(tensor1);
     EXPECT_EQ(launchParam.GetInTensorCount(), 1); // 验证添加的输入张量数量是否为1
-    EXPECT_EQ(launchParam.GetInTensor(0).desc.dims[0], 2);
-    EXPECT_EQ(launchParam.GetInTensor(0).desc.dims[1], 4);
+    EXPECT_EQ(launchParam.GetInTensor(0).desc.dims[0], 2); // 2 验证第一维为2
+    EXPECT_EQ(launchParam.GetInTensor(0).desc.dims[1], 4); // 4 验证第一维为4
     EXPECT_EQ(launchParam.GetInTensor(0).desc.dtype, Mki::TENSOR_DTYPE_FLOAT16);
     EXPECT_EQ(launchParam.GetInTensor(0).desc.format, Mki::TENSOR_FORMAT_ND);
     launchParam.AddInTensor(tensor2);
@@ -102,8 +102,8 @@ TEST_F(LaunchParamTest, AddOutputAclTensor)
     aclTensor *tensor2 = aclCreateTensor(viewDims, 2, ACL_FLOAT16, strides, 0, ACL_FORMAT_ND, storageDims, 2, nullptr);
     launchParam.AddOutTensor(tensor1);
     EXPECT_EQ(launchParam.GetOutTensorCount(), 1); // 验证添加的输入张量数量是否为1
-    EXPECT_EQ(launchParam.GetOutTensor(0).desc.dims[0], 2);
-    EXPECT_EQ(launchParam.GetOutTensor(0).desc.dims[1], 4);
+    EXPECT_EQ(launchParam.GetOutTensor(0).desc.dims[0], 2); // 2 验证第一维为2
+    EXPECT_EQ(launchParam.GetOutTensor(0).desc.dims[1], 4); // 4 验证第一维为4
     EXPECT_EQ(launchParam.GetOutTensor(0).desc.dtype, Mki::TENSOR_DTYPE_FLOAT16);
     EXPECT_EQ(launchParam.GetOutTensor(0).desc.format, Mki::TENSOR_FORMAT_ND);
     launchParam.AddOutTensor(tensor2);
