@@ -17,9 +17,9 @@
 
 namespace Mki {
 namespace {
-void ConvertAclTensorToMkiTensor(const aclTensor *srcTensor, Tensor &dstTensor)
+bool ConvertAclTensorToMkiTensor(const aclTensor *srcTensor, Tensor &dstTensor)
 {
-    MKI_CHECK(srcTensor != nullptr, "src aclTensor is nullptr", return);
+    MKI_CHECK(srcTensor != nullptr, "src aclTensor is nullptr", return false);
     dstTensor.hostData = srcTensor->GetData();
     dstTensor.data = srcTensor->GetStorageAddr();
     dstTensor.desc.format = static_cast<Mki::TensorFormat>(srcTensor->GetStorageFormat());
@@ -29,6 +29,7 @@ void ConvertAclTensorToMkiTensor(const aclTensor *srcTensor, Tensor &dstTensor)
     for (size_t i = 0; i < shape.GetDimNum(); i++) {
         dstTensor.desc.dims.at(i) = shape.GetDim(i);
     }
+    return true;
 }
 }
 
@@ -68,8 +69,9 @@ void LaunchParam::AddInTensor(const Tensor &tensor) { inTensors_.push_back(tenso
 void LaunchParam::AddInTensor(const aclTensor *tensor)
 {
     Tensor inTensor;
-    ConvertAclTensorToMkiTensor(tensor, inTensor);
-    inTensors_.push_back(inTensor);
+    if (ConvertAclTensorToMkiTensor(tensor, inTensor)) {
+        inTensors_.push_back(inTensor);
+    }
 }
 
 size_t LaunchParam::GetInTensorCount() const { return inTensors_.size(); }
@@ -87,8 +89,9 @@ void LaunchParam::AddOutTensor(const Tensor &tensor) { outTensors_.push_back(ten
 void LaunchParam::AddOutTensor(const aclTensor *tensor)
 {
     Tensor outTensor;
-    ConvertAclTensorToMkiTensor(tensor, outTensor);
-    outTensors_.push_back(outTensor);
+    if (ConvertAclTensorToMkiTensor(tensor, outTensor)) {
+        outTensors_.push_back(outTensor);
+    }
 }
 
 size_t LaunchParam::GetOutTensorCount() const { return outTensors_.size(); }
