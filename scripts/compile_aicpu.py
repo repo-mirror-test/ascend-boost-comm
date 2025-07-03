@@ -88,7 +88,7 @@ def compile_aicpu_kernels(args, output_dir):
 
     # Compiling
     for src in args.srcs:
-        dst = "{}.o".format(os.path.join(intermediate_dir, src.split("/")[-1]))
+        dst = f"{os.path.join(intermediate_dir, src.split("/")[-1])}.o"
         compile_cmd = ' '.join(gen_compile_cmd(args, src, dst, options))
         if(exe_cmd(compile_cmd)) != 0:
             return -1
