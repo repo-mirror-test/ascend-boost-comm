@@ -319,7 +319,7 @@ function fn_main()
     else
         cfg_flag=0
         for item in ${BUILD_CONFIGURE_LIST[*]};do
-            if [[ $1 =~ "$item" ]];then
+            if [[ "$1" =~ "$item" ]];then
                 cfg_flag=1
                 break 1
             fi
