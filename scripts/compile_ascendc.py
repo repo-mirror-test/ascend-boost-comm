@@ -49,6 +49,8 @@ def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
                         "-mllvm", "-cce-aicore-jump-expand=true"]
     compile_cmd += ["-std=c++17"]
     compile_cmd += ["--cce-mask-opt"]
+    compile_cmd += ["-DASCENDC_DUMP=1"]
+    compile_cmd += ["-DASCENDC_DEBUG"]
     return compile_cmd
 
 

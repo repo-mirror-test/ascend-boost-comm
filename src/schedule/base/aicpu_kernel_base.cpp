@@ -188,11 +188,12 @@ Status AicpuKernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &runin
     return Status::FailStatus(ERROR_INVALID_VALUE, "Mki BuildArgs fail");
 }
 
-Status AicpuKernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
+Status AicpuKernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runinfo)
 {
     (void)args;
     (void)stream;
     (void)isDeviceAddr;
+    (void)runinfo;
     MKI_LOG(ERROR) << "RunWithArgs in AicpuKernel is not implemented!";
     return Status::FailStatus(ERROR_INVALID_VALUE, "Mki RunWithArgs fail");
 }

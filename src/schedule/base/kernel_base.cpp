@@ -8,6 +8,7 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 #include "mki/base/kernel_base.h"
+#include <acl/acl.h>
 #include <securec.h>
 #include "mki/utils/assert/assert.h"
 #include "mki/utils/checktensor/check_tensor.h"
@@ -20,6 +21,11 @@
 namespace {
 constexpr uint32_t TILING_ADDR_NEG_IDX = 2;
 constexpr uint32_t OVERFLOW_ADDR_NEG_IDX = 1;
+constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
+}
+namespace Adx {
+    void AdumpPrintWorkSpace(const void*dumpBufferAddr, const size_t dumpBufferSize,
+                             aclrtStream stream, const char *opType);
 }
 
 namespace Mki {
@@ -281,6 +287,8 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     }
 
     auto status = InitImpl(launchParam);
+    // 由于Adump 功能需要多分配75MB内存在workspace最后
+    kernelInfo.GetScratchSizes().push_back(ALL_DUMPSIZE);
     MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(),
               return Status::FailStatus(ERROR_INVALID_VALUE));
 
@@ -330,7 +338,7 @@ Status KernelBase::Run(const LaunchParam &launchParam, RunInfo &runInfo)
 {
     Status st = BuildArgs(launchParam, runInfo, nullptr);
     MKI_CHECK(st.Ok(), "build args failed, abort running", return st);
-    return RunWithArgs(kernelInfo_.GetArgs(), runInfo.GetStream(), false);
+    return RunWithArgs(kernelInfo_.GetArgs(), runInfo.GetStream(), false, runInfo);
 }
 
 bool KernelBase::CanSupport(const LaunchParam &launchParam) const
@@ -380,7 +388,7 @@ Status KernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, v
     return status;
 }
 
-Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
+Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runInfo)
 {
     MKI_LOG(INFO) << "Ready to run, KernelInfo:\n" << kernelInfo_.ToString();
     MKI_CHECK(handle_ != nullptr, "handle is nullptr", return Status::FailStatus(ERROR_INVALID_VALUE));
@@ -409,6 +417,12 @@ Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
         MKI_CHECK(st == MKIRT_SUCCESS, "Mki RtFunction LaunchWithFlag fail",
                     return Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction Launch fail"));
     }
+
+    // Adapt Dump tensor and printf
+    // 后面需要将workspace最后的75MB放到Adump中
+    aclrtSynchronizeStream(stream);
+    uint8_t *dumpWorkspaceAddr = runinfo.GetScratchDeviceAddr() + ALL_DUMPSIZE;
+    Adx::AdumpPrintWorkSpace(dumpWorkspaceAddr, ALL_DUMPSIZE, stream, "device_kernel");
     return Status::OkStatus();
 }
 

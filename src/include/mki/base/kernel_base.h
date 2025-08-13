@@ -42,7 +42,7 @@ public:
     KernelType GetType() const override;
     KernelHandle GetBinaryHandle() const;
     Status BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, void *hostBuffer) override;
-    Status RunWithArgs(void *args, void *stream, bool isDeviceAddr) override;
+    Status RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runinfo) override;
 
 protected:
     virtual Status InitImpl(const LaunchParam &launchParam);

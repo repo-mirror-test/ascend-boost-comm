@@ -47,7 +47,7 @@ public:
     void setStrideTilingWs(const uint64_t numPtr);
     const uint64_t getStrideTilingWs() const;
     Status BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, void *hostBuffer) override;
-    Status RunWithArgs(void *args, void *stream, bool isDeviceAddr) override;
+    Status RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runinfo) override;
 
 protected:
     virtual Status InitImpl(const LaunchParam &launchParam);
