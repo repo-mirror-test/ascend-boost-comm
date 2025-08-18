@@ -287,8 +287,10 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     }
 
     auto status = InitImpl(launchParam);
+#ifdef DUSE_ASCENDC_DUMP
     // 由于Adump 功能需要多分配75MB内存在workspace最后
-    kernelInfo.GetScratchSizes().push_back(ALL_DUMPSIZE);
+    kernelInfo_.GetScratchSizes().push_back(ALL_DUMPSIZE);
+#endif
     MKI_CHECK(status.Ok(), "Failed to init run info " << status.ToString(),
               return Status::FailStatus(ERROR_INVALID_VALUE));
 
@@ -420,9 +422,13 @@ Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunI
 
     // Adapt Dump tensor and printf
     // 后面需要将workspace最后的75MB放到Adump中
-    aclrtSynchronizeStream(stream);
-    uint8_t *dumpWorkspaceAddr = runinfo.GetScratchDeviceAddr() + ALL_DUMPSIZE;
-    Adx::AdumpPrintWorkSpace(dumpWorkspaceAddr, ALL_DUMPSIZE, stream, "device_kernel");
+#ifdef DUSE_ASCENDC_DUMP
+    int st = aclrtSynchronizeStream(stream);
+    if (st == 0) {
+        uint8_t *dumpWorkspaceAddr = runInfo.GetScratchDeviceAddr() + kernelInfo_.GetTotalScratchSize() - ALL_DUMPSIZE;
+        Adx::AdumpPrintWorkSpace(dumpWorkspaceAddr, ALL_DUMPSIZE, stream, "device_kernel");
+    }
+#endif
     return Status::OkStatus();
 }
 

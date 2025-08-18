@@ -39,7 +39,7 @@ link_directories(
 add_subdirectory(src)
 
 if(USE_ASCENDC_DUMP)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_ASCENDC_DUMP")
+    add_definitions(-DUSE_ASCENDC_DUMP)
 endif()
 
 if(BUILD_TEST_FRAMEWORK)

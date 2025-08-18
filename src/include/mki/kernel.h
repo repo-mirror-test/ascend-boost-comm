@@ -50,7 +50,7 @@ public:
     virtual const KernelInfo &GetKernelInfo() const = 0;
     virtual KernelType GetType() const = 0;
     virtual Status BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, void *hostBuffer) = 0;
-    virtual Status RunWithArgs(void *args, void *stream, bool isDeviceAddr) = 0;
+    virtual Status RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runinfo) = 0;
 };
 } // namespace Mki
 #endif

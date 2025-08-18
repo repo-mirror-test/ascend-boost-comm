@@ -18,17 +18,33 @@ macro(add_kernel kernel soc channel srcs tac)
                 ${CMAKE_BINARY_DIR}/op_kernels/${soc}/${op_name}/${tac}/${kernel}.o)
             set(multiValueArgs INCLUDE_DIRECTORIES)
             cmake_parse_arguments(arg_add_kernel "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-            set(PYTHON_ARGS 
-                "--soc" "${soc}"
-                "--channel" "${channel}"
-                "--srcs" "${CMAKE_CURRENT_LIST_DIR}/${srcs}"
-                "--dst" "${${kernel}_${soc}_output}"
-                "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
-                "--kernel" "${kernel}"
-                "--use_msdebug" "${USE_MSDEBUG}"
-                "--use_mssanitizer" "${USE_MSSANITIZER}"
-                "--no_warning"
-            )
+            # 需要添加if判断是否开启AscendC dump
+            if (USE_ASCENDC_DUMP)
+                set(PYTHON_ARGS 
+                    "--soc" "${soc}"
+                    "--channel" "${channel}"
+                    "--srcs" "${CMAKE_CURRENT_LIST_DIR}/${srcs}"
+                    "--dst" "${${kernel}_${soc}_output}"
+                    "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
+                    "--kernel" "${kernel}"
+                    "--use_msdebug" "${USE_MSDEBUG}"
+                    "--use_mssanitizer" "${USE_MSSANITIZER}"
+                    "--no_warning"
+                    "--use_ascendc_dump"
+                )
+            else()
+                set(PYTHON_ARGS 
+                    "--soc" "${soc}"
+                    "--channel" "${channel}"
+                    "--srcs" "${CMAKE_CURRENT_LIST_DIR}/${srcs}"
+                    "--dst" "${${kernel}_${soc}_output}"
+                    "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
+                    "--kernel" "${kernel}"
+                    "--use_msdebug" "${USE_MSDEBUG}"
+                    "--use_mssanitizer" "${USE_MSSANITIZER}"
+                    "--no_warning"
+                )
+            endif()
             if(NOT "${arg_add_kernel_INCLUDE_DIRECTORIES}" STREQUAL "")
                 set(PYTHON_ARGS ${PYTHON_ARGS} "--include_directories" "${arg_add_kernel_INCLUDE_DIRECTORIES}")
             endif()
