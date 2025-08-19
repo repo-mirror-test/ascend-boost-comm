@@ -36,11 +36,11 @@ link_directories(
     $ENV{ASCEND_HOME_PATH}/lib64
 )
 
-add_subdirectory(src)
-
 if(USE_ASCENDC_DUMP)
     add_definitions(-DUSE_ASCENDC_DUMP)
 endif()
+
+add_subdirectory(src)
 
 if(BUILD_TEST_FRAMEWORK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests/framework)

@@ -21,12 +21,16 @@
 namespace {
 constexpr uint32_t TILING_ADDR_NEG_IDX = 2;
 constexpr uint32_t OVERFLOW_ADDR_NEG_IDX = 1;
-constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
+#ifdef USE_ASCENDC_DUMP
+    constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
+#endif
 }
-namespace Adx {
-    void AdumpPrintWorkSpace(const void*dumpBufferAddr, const size_t dumpBufferSize,
-                             aclrtStream stream, const char *opType);
-}
+#ifdef USE_ASCENDC_DUMP
+    namespace Adx {
+        void AdumpPrintWorkSpace(const void*dumpBufferAddr, const size_t dumpBufferSize,
+                                aclrtStream stream, const char *opType);
+    }
+#endif
 
 namespace Mki {
 class KernelParamBuilder {
@@ -287,7 +291,7 @@ Status KernelBase::Init(const LaunchParam &launchParam)
     }
 
     auto status = InitImpl(launchParam);
-#ifdef DUSE_ASCENDC_DUMP
+#ifdef USE_ASCENDC_DUMP
     // 由于Adump 功能需要多分配75MB内存在workspace最后
     kernelInfo_.GetScratchSizes().push_back(ALL_DUMPSIZE);
 #endif
@@ -420,9 +424,9 @@ Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunI
                     return Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction Launch fail"));
     }
 
+#ifdef USE_ASCENDC_DUMP
     // Adapt Dump tensor and printf
-    // 后面需要将workspace最后的75MB放到Adump中
-#ifdef DUSE_ASCENDC_DUMP
+    // 在原来的workspace后添加75MB
     int st = aclrtSynchronizeStream(stream);
     if (st == 0) {
         uint8_t *dumpWorkspaceAddr = runInfo.GetScratchDeviceAddr() + kernelInfo_.GetTotalScratchSize() - ALL_DUMPSIZE;
