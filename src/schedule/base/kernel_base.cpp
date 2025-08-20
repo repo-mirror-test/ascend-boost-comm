@@ -27,7 +27,8 @@ constexpr uint32_t OVERFLOW_ADDR_NEG_IDX = 1;
 }
 #ifdef USE_ASCENDC_DUMP
     namespace Adx {
-        void AdumpPrintWorkSpace(const void *dumpBufferAddr, const size_t dumpBufferSize, aclrtStream stream, const char *opType);
+        void AdumpPrintWorkSpace(const void *dumpBufferAddr, const size_t dumpBufferSize,
+                                 aclrtStream stream, const char *opType);
     }
 #endif
 
