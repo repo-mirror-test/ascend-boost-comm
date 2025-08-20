@@ -20,10 +20,24 @@ macro(add_kernel kernel soc channel srcs tac)
             cmake_parse_arguments(arg_add_kernel "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
             # 需要添加if判断是否开启AscendC dump
             if (USE_ASCENDC_DUMP)
+                get_filename_component(KERNEL_FILE_PATH ${CMAKE_CURRENT_LIST_DIR}/${srcs} DIRECTORY)
+                message(STATUS "KERNEL_FILE_PATH: ${KERNEL_FILE_PATH}")
+                set(decorated_${kernel}_srcs ${CMAKE_BINARY_DIR}/op_kernels/${soc}/${op_name}/${srcs})
+                set(DUMP_PYTHON_ARGS
+                    "--srcs" "${CMAKE_CURRENT_LIST_DIR}/${srcs}"
+                    "--dst" "${decorated_${kernel}_srcs}"
+                )
+                set (ASCENDC_DUMP_INCLUDE_DIRECTORIES ${arg_add_kernel_INCLUDE_DIRECTORIES} ${KERNEL_FILE_PATH})
+                add_custom_command(
+                    OUTPUT ${decorated_${kernel}_srcs}
+                    DEPENDS ${srcs}
+                    WORKING_DIRECTORY ${OPS_PROJECT_ROOT_DIR}
+                    COMMAND python3 ${MKI_SCRIPT_DIR}/generate_kernel_api.py ${DUMP_PYTHON_ARGS}
+                )
                 set(PYTHON_ARGS 
                     "--soc" "${soc}"
                     "--channel" "${channel}"
-                    "--srcs" "${CMAKE_CURRENT_LIST_DIR}/${srcs}"
+                    "--srcs" "${decorated_${kernel}_srcs}"
                     "--dst" "${${kernel}_${soc}_output}"
                     "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
                     "--kernel" "${kernel}"
@@ -31,6 +45,13 @@ macro(add_kernel kernel soc channel srcs tac)
                     "--use_mssanitizer" "${USE_MSSANITIZER}"
                     "--no_warning"
                     "--use_ascendc_dump"
+                )
+                set(PYTHON_ARGS ${PYTHON_ARGS} "--include_directories" "${ASCENDC_DUMP_INCLUDE_DIRECTORIES}")
+                add_custom_command(
+                    OUTPUT ${${kernel}_${soc}_output}
+                    DEPENDS ${decorated_${kernel}_srcs}
+                    WORKING_DIRECTORY ${OPS_PROJECT_ROOT_DIR}
+                    COMMAND python3 ${MKI_SCRIPT_DIR}/compile_ascendc.py ${PYTHON_ARGS}
                 )
             else()
                 set(PYTHON_ARGS 
@@ -44,16 +65,16 @@ macro(add_kernel kernel soc channel srcs tac)
                     "--use_mssanitizer" "${USE_MSSANITIZER}"
                     "--no_warning"
                 )
+                if(NOT "${arg_add_kernel_INCLUDE_DIRECTORIES}" STREQUAL "")
+                    set(PYTHON_ARGS ${PYTHON_ARGS} "--include_directories" "${arg_add_kernel_INCLUDE_DIRECTORIES}")
+                endif()
+                add_custom_command(
+                    OUTPUT ${${kernel}_${soc}_output}
+                    DEPENDS ${srcs}
+                    WORKING_DIRECTORY ${OPS_PROJECT_ROOT_DIR}
+                    COMMAND python3 ${MKI_SCRIPT_DIR}/compile_ascendc.py ${PYTHON_ARGS}
+                )
             endif()
-            if(NOT "${arg_add_kernel_INCLUDE_DIRECTORIES}" STREQUAL "")
-                set(PYTHON_ARGS ${PYTHON_ARGS} "--include_directories" "${arg_add_kernel_INCLUDE_DIRECTORIES}")
-            endif()
-            add_custom_command(
-                OUTPUT ${${kernel}_${soc}_output}
-                DEPENDS ${srcs}
-                WORKING_DIRECTORY ${OPS_PROJECT_ROOT_DIR}
-                COMMAND python3 ${MKI_SCRIPT_DIR}/compile_ascendc.py ${PYTHON_ARGS}
-            )
             # build target: obj/soc/op/kernel.cpp
             set(${kernel}_${soc}_cpp_output
                 ${CMAKE_BINARY_DIR}/obj/${soc}/${op_name}/${kernel}.cpp)
