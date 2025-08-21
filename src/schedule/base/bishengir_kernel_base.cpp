@@ -275,12 +275,11 @@ Status BishengIRKernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &r
     return Status::FailStatus(ERROR_INVALID_VALUE, "Mki BuildArgs fail");
 }
 
-Status BishengIRKernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runinfo)
+Status BishengIRKernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
 {
     (void)args;
     (void)stream;
     (void)isDeviceAddr;
-    (void)runinfo;
     MKI_LOG(ERROR) << "RunWithArgs in BishengIRKernel is not implemented!";
     return Status::FailStatus(ERROR_INVALID_VALUE, "Mki RunWithArgs fail");
 }

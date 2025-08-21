@@ -344,7 +344,17 @@ Status KernelBase::Run(const LaunchParam &launchParam, RunInfo &runInfo)
 {
     Status st = BuildArgs(launchParam, runInfo, nullptr);
     MKI_CHECK(st.Ok(), "build args failed, abort running", return st);
-    return RunWithArgs(kernelInfo_.GetArgs(), runInfo.GetStream(), false, runInfo);
+    st = RunWithArgs(kernelInfo_.GetArgs(), runInfo.GetStream(), false);
+#ifdef USE_ASCENDC_DUMP
+    // Adapt Dump tensor and printf
+    // 在原来的workspace后添加75MB
+    int ret = aclrtSynchronizeStream(runInfo.GetStream());
+    if (ret == 0) {
+        uint8_t *dumpWorkspaceAddr = runInfo.GetScratchDeviceAddr() + kernelInfo_.GetTotalScratchSize() - ALL_DUMPSIZE;
+        Adx::AdumpPrintWorkSpace(dumpWorkspaceAddr, ALL_DUMPSIZE, runInfo.GetStream(), "device_kernel");
+    }
+#endif
+    return st;
 }
 
 bool KernelBase::CanSupport(const LaunchParam &launchParam) const
@@ -394,7 +404,7 @@ Status KernelBase::BuildArgs(const LaunchParam &launchParam, RunInfo &runinfo, v
     return status;
 }
 
-Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunInfo &runInfo)
+Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr)
 {
     MKI_LOG(INFO) << "Ready to run, KernelInfo:\n" << kernelInfo_.ToString();
     MKI_CHECK(handle_ != nullptr, "handle is nullptr", return Status::FailStatus(ERROR_INVALID_VALUE));
@@ -423,16 +433,6 @@ Status KernelBase::RunWithArgs(void *args, void *stream, bool isDeviceAddr, RunI
         MKI_CHECK(st == MKIRT_SUCCESS, "Mki RtFunction LaunchWithFlag fail",
                     return Status::FailStatus(ERROR_LAUNCH_KERNEL_ERROR, "Mki RtFunction Launch fail"));
     }
-
-#ifdef USE_ASCENDC_DUMP
-    // Adapt Dump tensor and printf
-    // 在原来的workspace后添加75MB
-    int st = aclrtSynchronizeStream(stream);
-    if (st == 0) {
-        uint8_t *dumpWorkspaceAddr = runInfo.GetScratchDeviceAddr() + kernelInfo_.GetTotalScratchSize() - ALL_DUMPSIZE;
-        Adx::AdumpPrintWorkSpace(dumpWorkspaceAddr, ALL_DUMPSIZE, stream, "device_kernel");
-    }
-#endif
     return Status::OkStatus();
 }
 
