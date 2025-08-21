@@ -22,14 +22,14 @@ namespace {
 constexpr uint32_t TILING_ADDR_NEG_IDX = 2;
 constexpr uint32_t OVERFLOW_ADDR_NEG_IDX = 1;
 #ifdef USE_ASCENDC_DUMP
-    constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
+constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
 #endif
 }
 #ifdef USE_ASCENDC_DUMP
-    namespace Adx {
-        void AdumpPrintWorkSpace(const void *dumpBufferAddr, const size_t dumpBufferSize,
-                                 aclrtStream stream, const char *opType);
-    }
+namespace Adx {
+    void AdumpPrintWorkSpace(const void *dumpBufferAddr, const size_t dumpBufferSize,
+                                aclrtStream stream, const char *opType);
+}
 #endif
 
 namespace Mki {
