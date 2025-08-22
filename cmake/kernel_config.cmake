@@ -34,7 +34,7 @@ macro(add_kernel kernel soc channel srcs tac)
                     WORKING_DIRECTORY ${OPS_PROJECT_ROOT_DIR}
                     COMMAND python3 ${MKI_SCRIPT_DIR}/generate_kernel_api.py ${DUMP_PYTHON_ARGS}
                 )
-                set(PYTHON_ARGS ${PYTHON_ARGS} "--use_ascendc_dump")
+                set(ADDITIONAL_ARGS "--use_ascendc_dump")
                 set(kernel_srcs ${decorated_${kernel}_srcs})
             endif()
             set(PYTHON_ARGS 
@@ -47,6 +47,7 @@ macro(add_kernel kernel soc channel srcs tac)
                 "--use_msdebug" "${USE_MSDEBUG}"
                 "--use_mssanitizer" "${USE_MSSANITIZER}"
                 "--no_warning"
+                ${ADDITIONAL_ARGS}
             )
             if(NOT "${KERNEL_INCLUDE_DIRECTORIES}" STREQUAL "")
                 set(PYTHON_ARGS ${PYTHON_ARGS} "--include_directories" "${KERNEL_INCLUDE_DIRECTORIES}")
