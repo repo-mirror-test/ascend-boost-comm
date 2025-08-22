@@ -109,7 +109,6 @@ def save_to_file(dist_path, new_src_content):
             os.makedirs(os.path.dirname(dist_path), exist_ok=True)
         with open(dist_path, 'w', encoding='utf-8') as file:
             file.write(new_src_content)
-        print(f"write file path: {dist_path}")
     except Exception as e:
         print(f"write file fail, write file path: {dist_path}, and error: {str(e)}")
 

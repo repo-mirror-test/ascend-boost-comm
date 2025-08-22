@@ -51,7 +51,7 @@ def gen_compile_cmd(args, dst: str, sub_arch: str, compile_options):
     compile_cmd += ["-std=c++17"]
     compile_cmd += ["--cce-mask-opt"]
     if (args.use_ascendc_dump):
-        ompile_cmd += ["--cce-long-call=true"]
+        compile_cmd += ["--cce-long-call=true"]
         compile_cmd += ["-DASCENDC_DUMP=1"]
         compile_cmd += ["-DASCENDC_DEBUG"]
     return compile_cmd
@@ -79,7 +79,7 @@ def gen_compile_cmd_v220(args, dst: str, sub_arch: str, compile_options):
                         "-mllvm", "-cce-aicore-jump-expand=true"]
     compile_cmd += ["-std=c++17"]
     if (args.use_ascendc_dump):
-        ompile_cmd += ["--cce-long-call=true"]
+        compile_cmd += ["--cce-long-call=true"]
         compile_cmd += ["-DASCENDC_DUMP=1"]
         compile_cmd += ["-DASCENDC_DEBUG"]
     return compile_cmd
