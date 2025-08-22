@@ -19,16 +19,16 @@ macro(add_kernel kernel soc channel srcs tac)
             set(multiValueArgs INCLUDE_DIRECTORIES)
             cmake_parse_arguments(arg_add_kernel "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
             set(PYTHON_ARGS 
-                    "--soc" "${soc}"
-                    "--channel" "${channel}"
-                    "--dst" "${${kernel}_${soc}_output}"
-                    "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
-                    "--kernel" "${kernel}"
-                    "--use_msdebug" "${USE_MSDEBUG}"
-                    "--use_mssanitizer" "${USE_MSSANITIZER}"
-                    "--no_warning"
+                "--soc" "${soc}"
+                "--channel" "${channel}"
+                "--dst" "${${kernel}_${soc}_output}"
+                "--code_root" "${OPS_THIRD_PARTY_DIR}/.."
+                "--kernel" "${kernel}"
+                "--use_msdebug" "${USE_MSDEBUG}"
+                "--use_mssanitizer" "${USE_MSSANITIZER}"
+                "--no_warning"
             )
-            if (USE_ASCENDC_DUMP)
+            if(USE_ASCENDC_DUMP)
                 get_filename_component(KERNEL_FILE_PATH ${CMAKE_CURRENT_LIST_DIR}/${srcs} DIRECTORY)
                 message(STATUS "KERNEL_FILE_PATH: ${KERNEL_FILE_PATH}")
                 set(decorated_${kernel}_srcs ${CMAKE_BINARY_DIR}/op_kernels/${soc}/${op_name}/${srcs})

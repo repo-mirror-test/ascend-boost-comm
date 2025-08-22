@@ -28,7 +28,7 @@ constexpr uint32_t ALL_DUMPSIZE = 75 * 1024 * 1024;
 #ifdef USE_ASCENDC_DUMP
 namespace Adx {
     void AdumpPrintWorkSpace(const void *dumpBufferAddr, const size_t dumpBufferSize,
-                                aclrtStream stream, const char *opType);
+                             aclrtStream stream, const char *opType);
 }
 #endif
 
