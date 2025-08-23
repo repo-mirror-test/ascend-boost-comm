@@ -75,6 +75,10 @@ def decorate_kernel_file(kernel_path):
     try:
         with open(kernel_path, 'r', encoding='utf-8') as file:
             src_content = file.read()
+        # 判断是否是memset.cc
+        file_name = os.path.basename(input_args.srcs)
+        if file_name == "memset.cc":
+            return src_content
         # 判断算子代码是AscendC还是CCE
         if (kernel_path.endswith(".cce")):
             file_type = "CCE"
