@@ -64,4 +64,32 @@ TEST(PlatformManagerTest, Finalize)
     Mki::PlatformManager &platformManager = Mki::PlatformManager::Instance();
     EXPECT_EQ(platformManager.Finalize(), 0);
 }
+
+TEST(PlatformInfoTest, GetCoreNumVector)
+{
+    uint32_t deviceId = 1;
+    aclrtSetDevice(deviceId);
+    aclrtStream stream;
+    aclrtCreateStream(&stream);
+    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
+    aclrtUseStreamResInCurrentThread(stream);
+    uint32_t coreNum = MKi::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_VECTOR);
+    EXPECT_EQ(coreNum, 2);
+    aclrtDestroyStream(stream);
+    aclrtResetDevice(deviceId);
+}
+
+TEST(PlatformInfoTest, GetCoreNumCube)
+{
+    uint32_t deviceId = 1;
+    aclrtSetDevice(deviceId);
+    aclrtStream stream;
+    aclrtCreateStream(&stream);
+    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
+    aclrtUseStreamResInCurrentThread(stream);
+    uint32_t coreNum = MKi::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_CUBE);
+    EXPECT_EQ(coreNum, 2);
+    aclrtDestroyStream(stream);
+    aclrtResetDevice(deviceId);
+}
 } // namespace Mki
