@@ -11,6 +11,7 @@
 #include "mki/utils/log/log.h"
 #include "mki/utils/platform/platform_info.h"
 #include "mki/utils/platform/platform_manager.h"
+#include "acl/acl_rt.h"
 
 namespace Mki {
 TEST(PlatformTest, platformTest1)
@@ -88,6 +89,37 @@ TEST(PlatformInfoTest, GetCoreNumCube)
     aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
     aclrtUseStreamResInCurrentThread(stream);
     uint32_t coreNum = MKi::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_CUBE);
+    EXPECT_EQ(coreNum, 2);
+    aclrtDestroyStream(stream);
+    aclrtResetDevice(deviceId);
+}
+
+TEST(PlatformConfigTest, GetCoreNumVector)
+{
+    uint32_t deviceId = 1;
+    aclrtSetDevice(deviceId);
+    aclrtStream stream;
+    aclrtCreateStream(&stream);
+    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
+    aclrtUseStreamResInCurrentThread(stream);
+    Mki::PlatformConfigs configObj;
+    uint32_t coreNum = configObj.GetCoreNumByType("VectorCore");
+    EXPECT_EQ(coreNum, 2);
+    aclrtDestroyStream(stream);
+    aclrtResetDevice(deviceId);
+}
+
+TEST(PlatformConfigTest, GetCoreNumCube)
+{
+    uint32_t deviceId = 1;
+    aclrtSetDevice(deviceId);
+    aclrtStream stream;
+    aclrtCreateStream(&stream);
+    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
+    aclrtUseStreamResInCurrentThread(stream);
+
+    Mki::PlatformConfigs configObj;
+    uint32_t coreNum = configObj.GetCoreNumByType("AiCore");
     EXPECT_EQ(coreNum, 2);
     aclrtDestroyStream(stream);
     aclrtResetDevice(deviceId);

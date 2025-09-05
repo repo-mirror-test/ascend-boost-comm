@@ -17,6 +17,7 @@
 #include "acl/acl_rt.h"
 
 namespace Mki {
+constexpr uint32_t MAX_CORE_NUM = 128;   
 PlatformInfo::PlatformInfo() { Init(); }
 
 PlatformInfo &PlatformInfo::Instance()
@@ -91,6 +92,10 @@ uint32_t PlatformInfo::GetCoreNum(CoreType type)
             coreNum = platformConfigs_.GetCoreNumByType("AiCore");
         }
         MKI_FLOG_WARN("Failed to get thread core number");
+    }
+    if (coreNum == 0 || coreNum > MAX_CORE_NUM) {
+        MKI_LOG(ERROR) << "core_num is out of range : " << coreNum;
+        return 1;
     }
     MKI_FLOG_INFO("Platform get core num %u, type %d", coreNum, type);
     return coreNum;
