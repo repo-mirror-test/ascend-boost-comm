@@ -68,12 +68,16 @@ TEST(PlatformManagerTest, Finalize)
 
 TEST(PlatformInfoTest, GetCoreNumVector)
 {
-    uint32_t deviceId = 1;
-    aclrtSetDevice(deviceId);
+    uint32_t deviceId = 0;
+    aclError setRes = aclrtSetDevice(deviceId);
+    EXPECT_EQ(setRes, 0);
     aclrtStream stream;
-    aclrtCreateStream(&stream);
-    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
-    aclrtUseStreamResInCurrentThread(stream);
+    aclError createRes = aclrtCreateStream(&stream);
+    EXPECT_EQ(createRes, 0);
+    aclError setLimitRes = aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
+    EXPECT_EQ(setLimitRes, 0);
+    aclError useRes = aclrtUseStreamResInCurrentThread(stream);
+    EXPECT_EQ(useRes, 0);
     uint32_t coreNum = Mki::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_VECTOR);
     EXPECT_EQ(coreNum, 2);
     aclrtDestroyStream(stream);
@@ -82,12 +86,16 @@ TEST(PlatformInfoTest, GetCoreNumVector)
 
 TEST(PlatformInfoTest, GetCoreNumCube)
 {
-    uint32_t deviceId = 1;
-    aclrtSetDevice(deviceId);
+    uint32_t deviceId = 0;
+    aclError setRes = aclrtSetDevice(deviceId);
+    EXPECT_EQ(setRes, 0);
     aclrtStream stream;
-    aclrtCreateStream(&stream);
-    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
-    aclrtUseStreamResInCurrentThread(stream);
+    aclError createRes = aclrtCreateStream(&stream);
+    EXPECT_EQ(createRes, 0);
+    aclError setLimitRes = aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
+    EXPECT_EQ(setLimitRes, 0);
+    aclError useRes = aclrtUseStreamResInCurrentThread(stream);
+    EXPECT_EQ(useRes, 0);
     uint32_t coreNum = Mki::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_CUBE);
     EXPECT_EQ(coreNum, 2);
     aclrtDestroyStream(stream);
@@ -96,12 +104,16 @@ TEST(PlatformInfoTest, GetCoreNumCube)
 
 TEST(PlatformConfigTest, GetCoreNumVector)
 {
-    uint32_t deviceId = 1;
-    aclrtSetDevice(deviceId);
+    uint32_t deviceId = 0;
+    aclError setRes = aclrtSetDevice(deviceId);
+    EXPECT_EQ(setRes, 0);
     aclrtStream stream;
-    aclrtCreateStream(&stream);
-    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
-    aclrtUseStreamResInCurrentThread(stream);
+    aclError createRes = aclrtCreateStream(&stream);
+    EXPECT_EQ(createRes, 0);
+    aclError setLimitRes = aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
+    EXPECT_EQ(setLimitRes, 0);
+    aclError useRes = aclrtUseStreamResInCurrentThread(stream);
+    EXPECT_EQ(useRes, 0);
     Mki::PlatformConfigs configObj;
     uint32_t coreNum = configObj.GetCoreNumByType("VectorCore");
     EXPECT_EQ(coreNum, 2);
@@ -111,13 +123,16 @@ TEST(PlatformConfigTest, GetCoreNumVector)
 
 TEST(PlatformConfigTest, GetCoreNumCube)
 {
-    uint32_t deviceId = 1;
-    aclrtSetDevice(deviceId);
+    uint32_t deviceId = 0;
+    aclError setRes = aclrtSetDevice(deviceId);
+    EXPECT_EQ(setRes, 0);
     aclrtStream stream;
-    aclrtCreateStream(&stream);
-    aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
-    aclrtUseStreamResInCurrentThread(stream);
-
+    aclError createRes = aclrtCreateStream(&stream);
+    EXPECT_EQ(createRes, 0);
+    aclError setLimitRes = aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
+    EXPECT_EQ(setLimitRes, 0);
+    aclError useRes = aclrtUseStreamResInCurrentThread(stream);
+    EXPECT_EQ(useRes, 0);
     Mki::PlatformConfigs configObj;
     uint32_t coreNum = configObj.GetCoreNumByType("AiCore");
     EXPECT_EQ(coreNum, 2);
