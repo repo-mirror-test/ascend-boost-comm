@@ -74,7 +74,7 @@ TEST(PlatformInfoTest, GetCoreNumVector)
     aclrtCreateStream(&stream);
     aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_VECTOR_CORE, 2);
     aclrtUseStreamResInCurrentThread(stream);
-    uint32_t coreNum = MKi::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_VECTOR);
+    uint32_t coreNum = Mki::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_VECTOR);
     EXPECT_EQ(coreNum, 2);
     aclrtDestroyStream(stream);
     aclrtResetDevice(deviceId);
@@ -88,7 +88,7 @@ TEST(PlatformInfoTest, GetCoreNumCube)
     aclrtCreateStream(&stream);
     aclrtSetStreamResLimit(stream, ACL_RT_DEV_RES_CUBE_CORE, 2);
     aclrtUseStreamResInCurrentThread(stream);
-    uint32_t coreNum = MKi::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_CUBE);
+    uint32_t coreNum = Mki::PlatformInfo::Instance().GetCoreNum(CoreType::CORE_TYPE_CUBE);
     EXPECT_EQ(coreNum, 2);
     aclrtDestroyStream(stream);
     aclrtResetDevice(deviceId);
