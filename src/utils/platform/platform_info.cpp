@@ -17,7 +17,7 @@
 #include "acl/acl_rt.h"
 
 namespace Mki {
-constexpr uint32_t MAX_CORE_NUM = 128;   
+constexpr uint32_t MAX_CORE_NUM = 128;
 PlatformInfo::PlatformInfo() { Init(); }
 
 PlatformInfo &PlatformInfo::Instance()

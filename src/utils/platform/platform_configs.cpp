@@ -9,8 +9,9 @@
  */
 
 #include "mki/utils/platform/platform_configs.h"
-#include <mutex>
 #include "mki/utils/log/log.h"
+
+#include <mutex>
 #include <acl/acl_rt.h>
 
 namespace Mki {
