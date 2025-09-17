@@ -8,12 +8,12 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "mki/utils/platform/platform_configs.h"
+#include <mutex>
+
 #include "mki/utils/dl/dl.h"
 #include "mki/utils/env/env.h"
 #include "mki/utils/log/log.h"
-#include <mutex>
-
+#include "mki/utils/platform/platform_configs.h"
 
 namespace Mki {
 constexpr uint32_t MAX_CORE_NUM = 128;
