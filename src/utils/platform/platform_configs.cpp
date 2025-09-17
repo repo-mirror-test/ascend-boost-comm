@@ -10,9 +10,9 @@
 
 #include "mki/utils/platform/platform_configs.h"
 #include "mki/utils/log/log.h"
-
+#include "mki/utils/dl/dl.h"
+#include "mki/utils/env/env.h"
 #include <mutex>
-#include <acl/acl_rt.h>
 
 namespace Mki {
 constexpr uint32_t MAX_CORE_NUM = 128;
@@ -48,24 +48,39 @@ bool PlatformConfigs::GetPlatformSpec(const std::string &label, std::map<std::st
     return true;
 }
 
+typedef int (aclrtGetResInCurrentThreadFunc)(int, uint32_t);
+
 uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
 {
     uint32_t coreNum = 0;
-    aclrtDevResLimitType resType = coreType == "VectorCore" ? ACL_RT_DEV_RES_VECTOR_CORE : ACL_RT_DEV_RES_CUBE_CORE;
-    aclError getResRet = aclrtGetResInCurrentThread(resType, &coreNum);
-    if (getResRet != ACL_SUCCESS) {
-        std::string coreNumStr;
-        std::string coreTypeStr = coreType == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
-        (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
-        MKI_LOG(DEBUG) << "Get PlatformConfigs::core_num_ to " << coreTypeStr << ": " << coreNumStr;
-        if (coreNumStr.empty()) {
-            MKI_LOG(ERROR) << "CoreNumStr is empty!";
-            return 1;
+    Dl dl = Dl(std::string(GetEnv("ASCEND_HOME_PATH")) + "/runtime/lib64/libascendcl.so", false);
+    aclrtGetResInCurrentThreadFunc aclrtGetResInCurrentThread = (aclrtGetResInCurrentThreadFunc)dl.GetSymbol("aclrtGetResInCurrentThread");
+    MKI_LOG(INFO) << "ASCEND_HOME_PATH: " << std::string(GetEnv("ASCEND_HOME_PATH"));
+    if (aclrtGetResInCurrentThread != nullptr) {
+        int8_t resType = coreType == "VectorCore" ? 1 : 0;
+        int getResRet = aclrtGetResInCurrentThread(resType, &coreNum);
+        if (getResRet == 0) {
+            if (coreNum == 0 || coreNum > MAX_CORE_NUM) {
+                MKI_LOG(ERROR) << "core_num is out of range : " << coreNum;
+                return 1;
+            } else {
+                return coreNum;
+            }
         } else {
-            coreNum = std::strtoul(coreNumStr.c_str(), nullptr, 10); // 10 进制
+            MKI_LOG(WARN) << "Failed to get thread core num!";
         }
     } else {
-        MKI_LOG(DEBUG) << "Get ThreadResource::core_num_ to " << coreType << ": " << coreNum;
+        MKI_LOG(WARN) << "Failed to load acl function!";
+    }
+    std::string coreNumStr;
+    std::string coreTypeStr = coreType == "VectorCore" ? "vector_core_cnt" : "ai_core_cnt";
+    (void)GetPlatformSpec("SoCInfo", coreTypeStr, coreNumStr);
+    MKI_LOG(DEBUG) << "Get PlatformConfigs::core_num_ to " << coreTypeStr << ": " << coreNumStr;
+    if (coreNumStr.empty()) {
+        MKI_LOG(ERROR) << "CoreNumStr is empty!";
+        return 1;
+    } else {
+        coreNum = std::strtoul(coreNumStr.c_str(), nullptr, 10); // 10 进制
     }
     if (coreNum == 0 || coreNum > MAX_CORE_NUM) {
         MKI_LOG(ERROR) << "core_num is out of range : " << coreNum;
