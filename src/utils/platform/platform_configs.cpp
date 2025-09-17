@@ -9,10 +9,11 @@
  */
 
 #include "mki/utils/platform/platform_configs.h"
+#include <mutex>
 #include "mki/utils/dl/dl.h"
 #include "mki/utils/env/env.h"
 #include "mki/utils/log/log.h"
-#include <mutex>
+
 
 namespace Mki {
 constexpr uint32_t MAX_CORE_NUM = 128;
