@@ -48,7 +48,7 @@ bool PlatformConfigs::GetPlatformSpec(const std::string &label, std::map<std::st
     return true;
 }
 
-typedef int (aclrtGetResInCurrentThreadFunc)(int, uint32_t);
+typedef int (*aclrtGetResInCurrentThreadFunc)(int, uint32_t*);
 
 uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
 {

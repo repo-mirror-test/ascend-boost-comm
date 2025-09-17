@@ -69,7 +69,7 @@ void PlatformInfo::Init()
 
 bool PlatformInfo::Inited() const { return inited_; }
 
-typedef int (aclrtGetResInCurrentThreadFunc)(int, uint32_t);
+typedef int (*aclrtGetResInCurrentThreadFunc)(int, uint32_t*);
 
 uint32_t PlatformInfo::GetCoreNum(CoreType type)
 {
