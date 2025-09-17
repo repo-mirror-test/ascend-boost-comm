@@ -9,9 +9,9 @@
  */
 
 #include "mki/utils/platform/platform_configs.h"
-#include "mki/utils/log/log.h"
 #include "mki/utils/dl/dl.h"
 #include "mki/utils/env/env.h"
+#include "mki/utils/log/log.h"
 #include <mutex>
 
 namespace Mki {
@@ -48,13 +48,14 @@ bool PlatformConfigs::GetPlatformSpec(const std::string &label, std::map<std::st
     return true;
 }
 
-typedef int (*aclrtGetResInCurrentThreadFunc)(int, uint32_t*);
+using AclrtGetResInCurrentThreadFunc = int(*)(int, uint32_t*);
 
 uint32_t PlatformConfigs::GetCoreNumByType(const std::string &coreType)
 {
     uint32_t coreNum = 0;
     Dl dl = Dl(std::string(GetEnv("ASCEND_HOME_PATH")) + "/runtime/lib64/libascendcl.so", false);
-    aclrtGetResInCurrentThreadFunc aclrtGetResInCurrentThread = (aclrtGetResInCurrentThreadFunc)dl.GetSymbol("aclrtGetResInCurrentThread");
+    AclrtGetResInCurrentThreadFunc aclrtGetResInCurrentThread =
+        (AclrtGetResInCurrentThreadFunc)dl.GetSymbol("aclrtGetResInCurrentThread");
     MKI_LOG(INFO) << "ASCEND_HOME_PATH: " << std::string(GetEnv("ASCEND_HOME_PATH"));
     if (aclrtGetResInCurrentThread != nullptr) {
         int8_t resType = coreType == "VectorCore" ? 1 : 0;

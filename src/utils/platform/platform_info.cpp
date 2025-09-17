@@ -69,13 +69,14 @@ void PlatformInfo::Init()
 
 bool PlatformInfo::Inited() const { return inited_; }
 
-typedef int (*aclrtGetResInCurrentThreadFunc)(int, uint32_t*);
+using AclrtGetResInCurrentThreadFunc = int(*)(int, uint32_t*);
 
 uint32_t PlatformInfo::GetCoreNum(CoreType type)
 {
     uint32_t coreNum = 0;
     Dl dl = Dl(std::string(GetEnv("ASCEND_HOME_PATH")) + "/runtime/lib64/libascendcl.so", false);
-    aclrtGetResInCurrentThreadFunc aclrtGetResInCurrentThread = (aclrtGetResInCurrentThreadFunc)dl.GetSymbol("aclrtGetResInCurrentThread");
+    AclrtGetResInCurrentThreadFunc aclrtGetResInCurrentThread =
+        (AclrtGetResInCurrentThreadFunc)dl.GetSymbol("aclrtGetResInCurrentThread");
     MKI_LOG(INFO) << "ASCEND_HOME_PATH: " << std::string(GetEnv("ASCEND_HOME_PATH"));
     if (aclrtGetResInCurrentThread != nullptr) {
         int8_t resType = type == CoreType::CORE_TYPE_VECTOR ? 1 : 0;
